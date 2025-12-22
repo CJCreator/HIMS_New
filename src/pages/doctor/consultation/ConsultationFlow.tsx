@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { PatientSelection } from './PatientSelection';
 import { MedicalHistory } from './MedicalHistory';
 // import { VitalSigns } from './VitalSigns';
@@ -18,8 +18,9 @@ import { ConsultationLayout } from '@/components/ConsultationLayout';
 import { Card, Input } from '@/components';
 
 export function ConsultationFlow() {
+  const { patientId } = useParams<{ patientId: string }>();
   const [currentStep, setCurrentStep] = useState(4); // Start from Chief Complaint
-  const [selectedPatient, setSelectedPatient] = useState<string>('P001'); // Pre-selected by nurse
+  const [selectedPatient, setSelectedPatient] = useState<string>(patientId || 'P001'); // Use URL param or default
   const navigate = useNavigate();
 
   const handleNext = (patientId?: string) => {

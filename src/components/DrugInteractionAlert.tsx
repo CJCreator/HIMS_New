@@ -90,7 +90,7 @@ const DrugInteractionAlert: React.FC<DrugInteractionAlertProps> = ({
               onClick={onViewDetails}
               className="mt-3 text-sm text-blue-600 hover:text-blue-800 font-medium"
             >
-              View Details & Management
+              View Details
             </button>
           )}
         </div>

@@ -85,7 +85,11 @@ export function EnhancedPharmacyDashboard() {
                   <Button variant="primary" size="sm" onClick={() => navigate(`/pharmacist/prescriptions`)}>
                     Process Now
                   </Button>
-                  <Button variant="secondary" size="sm">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => navigate(`/pharmacist/prescriptions/${rx.id}`)}
+                  >
                     View Details
                   </Button>
                 </div>

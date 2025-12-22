@@ -104,7 +104,11 @@ export function ReceptionistDashboard() {
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/receptionist/billing')}>
                 💰 Process Payment
               </Button>
-              <Button variant="secondary" className="justify-start">
+              <Button
+                variant="secondary"
+                className="justify-start"
+                onClick={() => navigate('/receptionist/patients')}
+              >
                 📋 Patient Records
               </Button>
             </div>

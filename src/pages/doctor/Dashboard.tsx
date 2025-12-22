@@ -1,6 +1,7 @@
 import { Card, Button, Badge, EmptyState } from '@/components';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
+import { useMemo, memo } from 'react';
 import { RootState } from '@/store';
 import { updateAppointmentStatus } from '@/store/appointmentSlice';
 
@@ -13,25 +14,29 @@ const weekSchedule = [
   { day: 'Sat', slots: ['10:00 AM - 01:00 PM'], isToday: false },
 ];
 
-export function DoctorDashboard() {
+export const DoctorDashboard = memo(function DoctorDashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { appointments } = useSelector((state: RootState) => state.appointments);
   const { user } = useSelector((state: RootState) => state.auth);
   
-  const myAppointments = appointments.filter(apt => 
-    apt.doctorName === (user?.name || 'Dr. Wilson') && 
-    apt.date === new Date().toISOString().split('T')[0]
-  ).slice(0, 5);
+  const myAppointments = useMemo(() => {
+    return appointments.filter(apt =>
+      apt.doctorName === (user?.name || 'Dr. Wilson') &&
+      apt.date === new Date().toISOString().split('T')[0]
+    ).slice(0, 5);
+  }, [appointments, user?.name]);
 
-  const todayStats = {
+  const todayStats = useMemo(() => ({
     total: 8,
     completed: 6,
     pending: 2,
     rating: 4.8
-  };
+  }), []);
 
-  const nextAppointment = myAppointments.find(apt => apt.status === 'confirmed');
+  const nextAppointment = useMemo(() => {
+    return myAppointments.find(apt => apt.status === 'confirmed');
+  }, [myAppointments]);
 
   return (
     <div className="space-y-6">
@@ -93,7 +98,7 @@ export function DoctorDashboard() {
         </Card>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Appointment Queue */}
         <Card className="lg:col-span-2 p-6">
           <div className="flex justify-between items-start mb-4">
@@ -135,7 +140,7 @@ export function DoctorDashboard() {
                   <div 
                     key={apt.id} 
                     className="flex justify-between items-center p-4 bg-neutral-50 rounded-lg hover:bg-neutral-100 cursor-pointer transition-colors border border-transparent hover:border-primary-200"
-                    onClick={() => navigate('/doctor/consultation')}
+                    onClick={() => navigate(`/doctor/consultation/${apt.patientId}`)}
                   >
                     <div className="flex-1">
                       <p className="text-base font-medium text-neutral-900">{apt.patientName}</p>
@@ -146,10 +151,10 @@ export function DoctorDashboard() {
                         {apt.status}
                       </Badge>
                       {apt.status === 'confirmed' && (
-                        <Button size="sm" onClick={(e) => { 
-                          e.stopPropagation(); 
+                        <Button size="sm" onClick={(e) => {
+                          e.stopPropagation();
                           dispatch(updateAppointmentStatus({ id: apt.id, status: 'in-progress' }));
-                          navigate('/doctor/consultation'); 
+                          navigate(`/doctor/consultation/${apt.patientId}`);
                         }}>
                           Start
                         </Button>
@@ -238,7 +243,7 @@ export function DoctorDashboard() {
             Manage
           </Button>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
           {weekSchedule.map((schedule) => (
             <div 
               key={schedule.day} 
@@ -267,4 +272,4 @@ export function DoctorDashboard() {
       </Card>
     </div>
   );
-}
+});

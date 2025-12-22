@@ -3,6 +3,7 @@ export { Input } from './Input';
 export { Card } from './Card';
 export { Badge } from './Badge';
 export { Modal } from './Modal';
+export { Breadcrumb } from './Breadcrumb';
 export { Sidebar } from './Sidebar';
 export { TopBar } from './TopBar';
 export { Layout } from './Layout';

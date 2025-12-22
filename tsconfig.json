@@ -21,7 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "src/__tests__", "src/test"],
+  "include": ["src", "src/__tests__", "src/test", "src/vite-env.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

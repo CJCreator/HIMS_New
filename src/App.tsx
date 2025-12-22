@@ -77,6 +77,7 @@ import { VirtualWaitingRoom } from '@/pages/telemedicine/VirtualWaitingRoom';
 import { VideoConsultation } from '@/pages/telemedicine/VideoConsultation';
 import { ConsultationScheduler } from '@/pages/telemedicine/ConsultationScheduler';
 import { ResponsiveLayout } from '@/components/ResponsiveLayout';
+import { WebSocketProvider } from '@/components/WebSocketProvider';
 import { EmergencyButton } from '@/components/EmergencyAlert';
 import { QuickAccessGuide } from '@/pages/QuickAccessGuide';
 
@@ -84,7 +85,7 @@ function App() {
   return (
     <ErrorBoundary>
       <Provider store={store}>
-        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Router>
           <Routes>
           <Route path="/signin" element={<SignIn />} />
           <Route path="/patient-login" element={<PatientLogin />} />
@@ -94,8 +95,9 @@ function App() {
           <Route path="/" element={<Navigate to="/quick-access" replace />} />
 
           <Route path="/*" element={
-            <ResponsiveLayout>
-              <Routes>
+            <WebSocketProvider>
+              <ResponsiveLayout>
+                <Routes>
                 <Route
                   path="/admin/*"
                   element={
@@ -227,9 +229,10 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-              </Routes>
-              <EmergencyButton />
-            </ResponsiveLayout>
+                </Routes>
+                <EmergencyButton />
+              </ResponsiveLayout>
+            </WebSocketProvider>
           } />
           </Routes>
         </Router>

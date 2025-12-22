@@ -1,11 +1,25 @@
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Card, Button, Input } from '@/components';
+import { addNotification } from '@/store/notificationSlice';
 
 export function Settings() {
+  const dispatch = useDispatch();
   const [hospitalName, setHospitalName] = useState('AroCord General Hospital');
   const [address, setAddress] = useState('123 Medical Center Drive');
   const [phone, setPhone] = useState('+1 (555) 123-4567');
   const [email, setEmail] = useState('admin@arocord.com');
+
+  const handleSaveSettings = () => {
+    // In a real app, this would make an API call
+    dispatch(addNotification({
+      type: 'success',
+      title: 'Settings Saved',
+      message: 'Hospital configuration has been updated successfully',
+      priority: 'medium',
+      category: 'system'
+    }));
+  };
 
   return (
     <div className="space-y-6">
@@ -39,7 +53,7 @@ export function Settings() {
             />
           </div>
           <div className="flex justify-end mt-6">
-            <Button>Save Changes</Button>
+            <Button onClick={handleSaveSettings}>Save Changes</Button>
           </div>
         </Card>
 

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card, Button, Input } from '@/components';
 import { addPatient } from '@/store/patientSlice';
 import { addNotification, addRoleNotification } from '@/store/notificationSlice';
+import { syncPatientRegistration } from '@/utils/dataSynchronization';
 
 interface PatientData {
   personalDetails: {
@@ -41,6 +42,7 @@ export function PatientRegistration() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [patientData, setPatientData] = useState<PatientData>({
     personalDetails: { firstName: '', lastName: '', dateOfBirth: '', gender: '', bloodGroup: '' },
     contactInfo: { phone: '', email: '', address: '', city: '', zipCode: '' },
@@ -59,40 +61,43 @@ export function PatientRegistration() {
   const handleNext = () => setCurrentStep(prev => Math.min(prev + 1, 5));
   const handlePrevious = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
-  const handleSubmit = () => {
-    const fullName = `${patientData.personalDetails.firstName} ${patientData.personalDetails.lastName}`;
-    
-    dispatch(addPatient({
-      name: fullName,
-      age: new Date().getFullYear() - new Date(patientData.personalDetails.dateOfBirth).getFullYear(),
-      gender: patientData.personalDetails.gender,
-      phone: patientData.contactInfo.phone,
-      email: patientData.contactInfo.email,
-      address: `${patientData.contactInfo.address}, ${patientData.contactInfo.city}, ${patientData.contactInfo.zipCode}`,
-      emergencyContact: `${patientData.emergencyContact.phone} (${patientData.emergencyContact.name} - ${patientData.emergencyContact.relationship})`,
-      medicalHistory: patientData.medicalHistory.conditions ? patientData.medicalHistory.conditions.split(',').map(c => c.trim()) : [],
-      currentMedications: patientData.medicalHistory.medications ? patientData.medicalHistory.medications.split(',').map(m => m.trim()) : [],
-      allergies: patientData.medicalHistory.allergies ? patientData.medicalHistory.allergies.split(',').map(a => a.trim()) : [],
-    }));
-    
-    dispatch(addNotification({
-      type: 'success',
-      title: 'Patient Registered',
-      message: `${fullName} registered successfully`,
-      priority: 'medium',
-      category: 'patient'
-    }));
-    
-    dispatch(addRoleNotification({
-      role: 'nurse',
-      type: 'info',
-      title: 'New Patient',
-      message: `New patient registered: ${fullName}`,
-      priority: 'medium',
-      category: 'patient'
-    }));
-    
-    navigate('/receptionist/patients');
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const fullName = `${patientData.personalDetails.firstName} ${patientData.personalDetails.lastName}`;
+      const patientInfo = {
+        name: fullName,
+        age: new Date().getFullYear() - new Date(patientData.personalDetails.dateOfBirth).getFullYear(),
+        gender: patientData.personalDetails.gender,
+        phone: patientData.contactInfo.phone,
+        email: patientData.contactInfo.email,
+        address: `${patientData.contactInfo.address}, ${patientData.contactInfo.city}, ${patientData.contactInfo.zipCode}`,
+        emergencyContact: `${patientData.emergencyContact.phone} (${patientData.emergencyContact.name} - ${patientData.emergencyContact.relationship})`,
+        medicalHistory: patientData.medicalHistory.conditions ? patientData.medicalHistory.conditions.split(',').map(c => c.trim()) : [],
+        currentMedications: patientData.medicalHistory.medications ? patientData.medicalHistory.medications.split(',').map(m => m.trim()) : [],
+        allergies: patientData.medicalHistory.allergies ? patientData.medicalHistory.allergies.split(',').map(a => a.trim()) : [],
+      };
+
+      dispatch(addPatient(patientInfo));
+
+      // Use cross-portal synchronization
+      await syncPatientRegistration(patientInfo, {
+        notifyRoles: ['doctor', 'nurse'],
+        createInitialAppointment: false // Could be made configurable in future
+      });
+
+      navigate('/receptionist/patients');
+    } catch (error) {
+      dispatch(addNotification({
+        type: 'error',
+        title: 'Registration Failed',
+        message: 'Failed to register patient. Please try again.',
+        priority: 'high',
+        category: 'system'
+      }));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderStep = () => {
@@ -306,7 +311,7 @@ export function PatientRegistration() {
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Patient Registration</h1>
       </div>
-      <div className="max-w-4xl mx-auto space-y-6 px-4 sm:px-0">
+      <div className="max-w-4xl mx-auto space-y-6 px-4 sm:px-0 overflow-x-auto">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-4 sm:space-y-0">
           <div>
             <h2 className="text-h3 text-neutral-900">New Patient Registration</h2>
@@ -334,7 +339,11 @@ export function PatientRegistration() {
             Previous
           </Button>
           {currentStep === 5 ? (
-            <Button onClick={handleSubmit} className="w-full sm:w-auto">
+            <Button
+              onClick={handleSubmit}
+              loading={isSubmitting}
+              className="w-full sm:w-auto"
+            >
               Register Patient
             </Button>
           ) : (

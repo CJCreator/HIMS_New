@@ -64,3 +64,10 @@ export const handlers = [
 
 // Setup MSW server
 export const server = setupServer(...handlers);
+
+// Setup function for tests
+export const setupMockApi = () => {
+  beforeAll(() => server.listen());
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
+};

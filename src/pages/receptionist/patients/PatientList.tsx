@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { Card, Button, Input, Table, Badge } from '@/components';
+import { maskPhone } from '@/utils/dataMasking';
 
 export function PatientList() {
   const [searchTerm, setSearchTerm] = useState('');
@@ -16,7 +17,7 @@ export function PatientList() {
     id: p.id,
     name: p.name,
     age: p.age,
-    phone: p.phone,
+    phone: maskPhone(p.phone),
     lastVisit: new Date().toISOString().split('T')[0],
     status: 'active'
   }));

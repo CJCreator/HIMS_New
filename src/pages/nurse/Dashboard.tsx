@@ -127,7 +127,11 @@ export function NurseDashboard() {
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/medications')}>
                 💊 Medication Requests
               </Button>
-              <Button variant="secondary" className="justify-start">
+              <Button
+                variant="secondary"
+                className="justify-start"
+                onClick={() => navigate('/nurse/wards')}
+              >
                 📋 Ward Management
               </Button>
             </div>
