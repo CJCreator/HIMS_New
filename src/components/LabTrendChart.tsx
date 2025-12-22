@@ -39,7 +39,7 @@ export function LabTrendChart({ results, testName }: LabTrendChartProps) {
           />
           <Tooltip 
             contentStyle={{ fontSize: 12 }}
-            formatter={(value: number | undefined) => value !== undefined ? [`${value} ${unit}`, 'Value'] : ['', 'Value']}
+            formatter={(value: any) => value !== undefined ? [`${value} ${unit}`, 'Value'] : ['', 'Value']}
           />
           <Legend />
           <ReferenceLine 

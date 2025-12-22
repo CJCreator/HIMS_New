@@ -108,8 +108,18 @@ export const RealTimeUpdates: React.FC<RealTimeUpdatesProps> = ({ userRole }) =>
   return null;
 };
 
-function generateMockEvents(userRole: string) {
-  const events = [];
+interface MockEvent {
+  type: string;
+  targetRole: 'doctor' | 'nurse' | 'pharmacy' | 'receptionist' | 'admin';
+  title: string;
+  message: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  relatedId?: string;
+  data?: any;
+}
+
+function generateMockEvents(userRole: string): MockEvent[] {
+  const events: MockEvent[] = [];
   const random = Math.random();
   
   // Generate events based on role and random chance

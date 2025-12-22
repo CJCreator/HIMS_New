@@ -42,7 +42,7 @@ export function Calendar({ events = [], onDateSelect, onEventClick, selected, on
   };
 
   // Simplified calendar - just show current month grid
-  const getDaysInMonth = () => {
+  const getDaysInMonth = (): (Date | null)[] => {
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth();
     const firstDay = new Date(year, month, 1);

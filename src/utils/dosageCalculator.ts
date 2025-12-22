@@ -14,6 +14,7 @@ export interface DosageResult {
   route: string;
   warnings: string[];
   adjustments: string[];
+  maxDailyDose?: number;
 }
 
 export function calculateDosage(params: DosageCalculationParams): DosageResult {
@@ -75,4 +76,18 @@ export function validateDosageParams(params: DosageCalculationParams): string[] 
   }
 
   return errors;
+}
+
+// Additional exports for tests
+export function validatePatientData(data: any): string[] {
+  return validateDosageParams(data);
+}
+
+export function checkRenalAdjustment(params: DosageCalculationParams): boolean {
+  return params.renalFunction ? params.renalFunction < 60 : false;
+}
+
+export function getDosageWarnings(params: DosageCalculationParams): string[] {
+  const result = calculateDosage(params);
+  return result.warnings;
 }

@@ -40,10 +40,10 @@ class MockIntersectionObserver {
   unobserve() {}
 }
 
-global.IntersectionObserver = MockIntersectionObserver as any;
+(globalThis as any).IntersectionObserver = MockIntersectionObserver;
 
 // Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
+(globalThis as any).ResizeObserver = class ResizeObserver {
   constructor() {}
   disconnect() {}
   observe() {}

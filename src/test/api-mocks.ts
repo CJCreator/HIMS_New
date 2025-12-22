@@ -1,4 +1,4 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 // Mock data
@@ -15,50 +15,46 @@ export const mockAppointments = [
 // API handlers
 export const handlers = [
   // Patients
-  rest.get('/api/patients', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(mockPatients));
+  http.get('/api/patients', () => {
+    return HttpResponse.json(mockPatients);
   }),
 
-  rest.get('/api/patients/:id', (req, res, ctx) => {
-    const { id } = req.params;
+  http.get('/api/patients/:id', ({ params }) => {
+    const { id } = params;
     const patient = mockPatients.find(p => p.id === id);
     return patient
-      ? res(ctx.status(200), ctx.json(patient))
-      : res(ctx.status(404), ctx.json({ error: 'Patient not found' }));
+      ? HttpResponse.json(patient)
+      : HttpResponse.json({ error: 'Patient not found' }, { status: 404 });
   }),
 
-  rest.post('/api/patients', (req, res, ctx) => {
-    return res(ctx.status(201), ctx.json({ id: 'P003', ...req.body }));
+  http.post('/api/patients', async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({ id: 'P003', ...body }, { status: 201 });
   }),
 
   // Appointments
-  rest.get('/api/appointments', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(mockAppointments));
+  http.get('/api/appointments', () => {
+    return HttpResponse.json(mockAppointments);
   }),
 
-  rest.post('/api/appointments', (req, res, ctx) => {
-    return res(ctx.status(201), ctx.json({ id: 'A003', ...req.body }));
+  http.post('/api/appointments', async ({ request }) => {
+    const body = await request.json();
+    return HttpResponse.json({ id: 'A003', ...body }, { status: 201 });
   }),
 
   // Auth
-  rest.post('/api/auth/signin', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json({
-        token: 'mock-token',
-        user: { id: 'U001', email: 'doctor@hospital.com', role: 'doctor' }
-      })
-    );
+  http.post('/api/auth/signin', () => {
+    return HttpResponse.json({
+      token: 'mock-token',
+      user: { id: 'U001', email: 'doctor@hospital.com', role: 'doctor' }
+    });
   }),
 
   // Prescriptions
-  rest.get('/api/prescriptions', (req, res, ctx) => {
-    return res(
-      ctx.status(200),
-      ctx.json([
-        { id: 'RX001', patientId: 'P001', medication: 'Lisinopril', dosage: '10mg' }
-      ])
-    );
+  http.get('/api/prescriptions', () => {
+    return HttpResponse.json([
+      { id: 'RX001', patientId: 'P001', medication: 'Lisinopril', dosage: '10mg' }
+    ]);
   }),
 ];
 

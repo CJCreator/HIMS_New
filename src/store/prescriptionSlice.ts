@@ -28,6 +28,7 @@ interface PrescriptionState {
   prescriptions: Prescription[];
   loading: boolean;
   error: string | null;
+  draft?: Partial<Prescription>;
 }
 
 const initialState: PrescriptionState = {
@@ -149,6 +150,7 @@ const initialState: PrescriptionState = {
   ],
   loading: false,
   error: null,
+  draft: undefined,
 };
 
 const prescriptionSlice = createSlice({

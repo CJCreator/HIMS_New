@@ -1,16 +1,21 @@
 import { Middleware } from '@reduxjs/toolkit';
 import { addRoleNotification } from './notificationSlice';
 
+interface ActionWithPayload {
+  type: string;
+  payload: any;
+}
 
 export const notificationMiddleware: Middleware = (store) => (next) => (action) => {
   const result = next(action);
+  const typedAction = action as ActionWithPayload;
   
   // Trigger notifications based on actions
-  switch (action.type) {
+  switch (typedAction.type) {
     case 'inventory/updateStock':
-      const { itemId, newStock } = action.payload;
-      const state = store.getState();
-      const item = state.inventory.items.find((i: any) => i.id === itemId);
+      const { itemId, newStock } = typedAction.payload;
+      const state = store.getState() as any;
+      const item = state.inventory?.items?.find((i: any) => i.id === itemId);
       
       if (item && newStock <= item.minStock) {
         store.dispatch(addRoleNotification({
@@ -29,19 +34,19 @@ export const notificationMiddleware: Middleware = (store) => (next) => (action) 
         role: 'pharmacy',
         type: 'info',
         title: 'New Medication Request',
-        message: `Request for ${action.payload.medication} from Room ${action.payload.roomNumber}`,
+        message: `Request for ${typedAction.payload.medication} from Room ${typedAction.payload.roomNumber}`,
         category: 'medication',
-        priority: action.payload.urgency === 'high' ? 'urgent' : 'medium'
+        priority: typedAction.payload.urgency === 'high' ? 'urgent' : 'medium'
       }));
       break;
       
     case 'prescriptions/updatePrescriptionStatus':
-      if (action.payload.status === 'ready') {
+      if (typedAction.payload.status === 'ready') {
         store.dispatch(addRoleNotification({
           role: 'receptionist',
           type: 'success',
           title: 'Prescription Ready',
-          message: `Prescription ${action.payload.id} is ready for pickup`,
+          message: `Prescription ${typedAction.payload.id} is ready for pickup`,
           category: 'medication',
           priority: 'medium'
         }));
@@ -50,12 +55,12 @@ export const notificationMiddleware: Middleware = (store) => (next) => (action) 
       
     case 'lab/addLabOrder':
       store.dispatch(addRoleNotification({
-        role: 'admin', // In real app, this would be 'lab_technician'
+        role: 'admin',
         type: 'info',
         title: 'New Lab Order',
-        message: `Lab tests ordered for ${action.payload.patientName}`,
+        message: `Lab tests ordered for ${typedAction.payload.patientName}`,
         category: 'lab',
-        priority: action.payload.priority === 'stat' ? 'urgent' : 'medium'
+        priority: typedAction.payload.priority === 'stat' ? 'urgent' : 'medium'
       }));
       break;
   }

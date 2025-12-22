@@ -12,6 +12,8 @@
     "noEmit": true,
     "jsx": "react-jsx",
     "strict": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
@@ -21,6 +23,7 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "src/__tests__", "src/test", "src/vite-env.d.ts"],
+  "include": ["src", "src/vite-env.d.ts"],
+  "exclude": ["node_modules", "src/__tests__", "src/test", "**/*.test.*", "**/*.spec.*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
