@@ -1,0 +1,45 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary-blue: #2563eb;
+  --primary-dark: #1e40af;
+  --primary-light: #3b82f6;
+  --background: #f1f5f9;
+  --surface-white: #ffffff;
+  --border: #e2e8f0;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --dark: #444444;
+  --black: #000000;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  --admin: #8b5cf6;
+  --doctor: #2563eb;
+  --receptionist: #ec4899;
+  --nurse: #10b981;
+  --pharmacist: #f59e0b;
+}
+
+@layer base {
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: var(--background);
+    color: var(--text-primary);
+  }
+}
+
+@layer components {
+  .text-h1 { @apply text-[32px] leading-[40px] font-semibold; }
+  .text-h2 { @apply text-[24px] leading-[32px] font-semibold; }
+  .text-h3 { @apply text-[20px] leading-[28px] font-semibold; }
+  .text-h4 { @apply text-[18px] leading-[24px] font-medium; }
+  .text-body-lg { @apply text-[16px] leading-[24px] font-normal; }
+  .text-body { @apply text-[14px] leading-[20px] font-normal; }
+  .text-body-sm { @apply text-[12px] leading-[16px] font-normal; }
+  .text-caption { @apply text-[10px] leading-[14px] font-normal; }
+}

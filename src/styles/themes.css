@@ -1,0 +1,31 @@
+/* Dark Mode Theme */
+:root {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border: #e5e7eb;
+}
+
+.dark {
+  --bg-primary: #1f2937;
+  --bg-secondary: #111827;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border: #374151;
+}
+
+.dark body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark .bg-white { background-color: var(--bg-primary); }
+.dark .bg-gray-50 { background-color: var(--bg-secondary); }
+.dark .text-gray-900 { color: var(--text-primary); }
+.dark .text-gray-600 { color: var(--text-secondary); }
+.dark .border-gray-200 { border-color: var(--border); }
+
+* {
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
