@@ -24,7 +24,7 @@ export { ConflictAlert } from './ConflictAlert';
 export { DateRangePicker } from './DateRangePicker';
 export { ResultEntryForm } from './ResultEntryForm';
 export { ResultTrendChart } from './ResultTrendChart';
-export { EmptyState } from './EmptyState';
+export { default as EmptyState } from './EmptyState';
 export { LoadingSpinner } from './LoadingSpinner';
 export { UnifiedPatientContext } from './UnifiedPatientContext';
 export { UnifiedPatientStatusDashboard } from './UnifiedPatientStatusDashboard';

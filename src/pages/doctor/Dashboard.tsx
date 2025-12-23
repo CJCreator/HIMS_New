@@ -130,8 +130,7 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
               icon="📅"
               title="No appointments today"
               description="You have no scheduled appointments for today. Check back later or view your full schedule."
-              actionLabel="View All Appointments"
-              onAction={() => navigate('/doctor/appointments')}
+              action={{ label: 'View All Appointments', onClick: () => navigate('/doctor/appointments') }}
             />
           ) : (
             <>

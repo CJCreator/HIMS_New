@@ -1,22 +1,26 @@
+import { useState, useEffect } from 'react';
 import { Card, Button, Badge } from '@/components';
 import { SmartNotificationSystem } from '@/components/SmartNotificationSystem';
 import { useNavigate } from 'react-router-dom';
+import { mockDataService } from '@/services/mockDataService';
+import { useRealtimeSimulation } from '@/hooks/useRealtimeSimulation';
 
 export function EnhancedPharmacyDashboard() {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({ pending: 0, processing: 0, completed: 0, avgTime: 12 });
+  const [prescriptions, setPrescriptions] = useState<any[]>([]);
+  const { updateCount } = useRealtimeSimulation();
 
-  const todayStats = {
-    pending: 3,
-    processing: 2,
-    completed: 15,
-    avgTime: 12 // minutes - down from 20
-  };
-
-  const recentPrescriptions = [
-    { id: 'RX001', patient: 'John Smith', doctor: 'Dr. Wilson', meds: 3, priority: 'high', time: '2 min ago' },
-    { id: 'RX002', patient: 'Sarah Johnson', doctor: 'Dr. Brown', meds: 2, priority: 'normal', time: '5 min ago' },
-    { id: 'RX003', patient: 'Mike Davis', doctor: 'Dr. Wilson', meds: 1, priority: 'normal', time: '10 min ago' }
-  ];
+  useEffect(() => {
+    const rxs = mockDataService.getPrescriptions();
+    setPrescriptions(rxs.slice(0, 3));
+    setStats({
+      pending: rxs.filter(r => r.status === 'pending').length,
+      processing: rxs.filter(r => r.status === 'processing').length,
+      completed: rxs.filter(r => r.status === 'completed').length,
+      avgTime: 12
+    });
+  }, [updateCount]);
 
   return (
     <div className="space-y-6">
@@ -33,19 +37,19 @@ export function EnhancedPharmacyDashboard() {
       {/* Statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4">
-          <div className="text-h2 text-warning">{todayStats.pending}</div>
+          <div className="text-h2 text-warning">{stats.pending}</div>
           <div className="text-body text-neutral-600">Pending</div>
         </Card>
         <Card className="p-4">
-          <div className="text-h2 text-info">{todayStats.processing}</div>
+          <div className="text-h2 text-info">{stats.processing}</div>
           <div className="text-body text-neutral-600">Processing</div>
         </Card>
         <Card className="p-4">
-          <div className="text-h2 text-success">{todayStats.completed}</div>
+          <div className="text-h2 text-success">{stats.completed}</div>
           <div className="text-body text-neutral-600">Completed Today</div>
         </Card>
         <Card className="p-4 bg-success/10">
-          <div className="text-h2 text-success">{todayStats.avgTime}m</div>
+          <div className="text-h2 text-success">{stats.avgTime}m</div>
           <div className="text-body text-neutral-600">Avg Processing</div>
           <p className="text-xs text-success">↓ 40% faster</p>
         </Card>
@@ -56,11 +60,11 @@ export function EnhancedPharmacyDashboard() {
         <Card className="lg:col-span-2 p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-h3 text-neutral-900">Live Prescription Queue</h2>
-            <Badge status="error">{todayStats.pending} New</Badge>
+            <Badge status="error">{stats.pending} New</Badge>
           </div>
           
           <div className="space-y-3">
-            {recentPrescriptions.map(rx => (
+            {prescriptions.map(rx => (
               <div 
                 key={rx.id}
                 className={`p-4 rounded-small border-l-4 ${
@@ -70,15 +74,15 @@ export function EnhancedPharmacyDashboard() {
                 <div className="flex items-center justify-between mb-2">
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="text-body font-medium">{rx.patient}</h4>
+                      <h4 className="text-body font-medium">{rx.patientName}</h4>
                       {rx.priority === 'high' && <Badge status="error">HIGH PRIORITY</Badge>}
                     </div>
                     <p className="text-body-sm text-neutral-600">
-                      Prescribed by {rx.doctor} • {rx.meds} medications
+                      Prescribed by {rx.doctor} • {rx.medications?.length || 0} medications
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-body-sm text-neutral-600">{rx.time}</p>
+                    <p className="text-body-sm text-neutral-600">{Math.floor((Date.now() - rx.timestamp) / 60000)} min ago</p>
                   </div>
                 </div>
                 <div className="flex gap-2 mt-2">

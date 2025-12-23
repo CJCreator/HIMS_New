@@ -82,6 +82,22 @@ export default defineConfig({
       name: 'Google Chrome',
       use: { ...devices['Desktop Chrome'], channel: 'chrome' },
     },
+
+    /* Test against custom viewports. */
+    {
+      name: 'Tablet',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 768, height: 1024 },
+      },
+    },
+    {
+      name: 'Large Desktop',
+      use: {
+        ...devices['Desktop Chrome'],
+        viewport: { width: 2560, height: 1440 },
+      },
+    },
   ],
 
   /* Run your local dev server before starting the tests */

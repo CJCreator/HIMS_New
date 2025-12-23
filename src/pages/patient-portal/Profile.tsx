@@ -1,161 +1,182 @@
 import React, { useState } from 'react';
-import { Card, Button, Input } from '../../components';
-import { User, Phone, Mail, MapPin, AlertCircle, Bell } from 'lucide-react';
-import { NotificationPreferences } from '../../components/NotificationPreferences';
+import { Card, Button, Input } from '@/components';
+import { User, Phone, Mail, MapPin, Shield } from 'lucide-react';
 
 export const Profile: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'personal' | 'emergency' | 'preferences'>('personal');
   const [isEditing, setIsEditing] = useState(false);
-  const [profile, setProfile] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
+  const [profileData, setProfileData] = useState({
+    name: 'John Patient',
+    email: 'john.patient@example.com',
     phone: '(555) 123-4567',
-    dateOfBirth: '1985-06-15',
     address: '123 Main St, City, State 12345',
-    bloodType: 'O+',
-    allergies: 'Penicillin',
-    emergencyContact: {
-      name: 'Jane Doe',
-      relationship: 'Spouse',
-      phone: '(555) 987-6543'
-    }
+    emergencyContact: 'Jane Patient - (555) 987-6543',
+    dateOfBirth: '1990-01-15',
+    patientId: 'P001'
   });
 
   const handleSave = () => {
+    // Mock save functionality
     setIsEditing(false);
-    // Save profile logic
+    // Show success message
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
   };
 
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
-        {activeTab === 'personal' && (
-          <Button
-            variant={isEditing ? 'primary' : 'secondary'}
-            onClick={() => isEditing ? handleSave() : setIsEditing(true)}
-          >
-            {isEditing ? 'Save Changes' : 'Edit Profile'}
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">My Profile</h1>
+          <p className="text-gray-600">Manage your personal information and preferences</p>
+        </div>
+        <div className="flex space-x-2">
+          {isEditing ? (
+            <>
+              <Button variant="secondary" onClick={() => setIsEditing(false)}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={handleSave}>
+                Save Changes
+              </Button>
+            </>
+          ) : (
+            <Button variant="primary" onClick={() => setIsEditing(true)}>
+              Edit Profile
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Profile Picture */}
+        <Card className="p-6 text-center">
+          <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+            <User className="w-12 h-12 text-gray-500" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900">{profileData.name}</h3>
+          <p className="text-sm text-gray-600">Patient ID: {profileData.patientId}</p>
+          <Button variant="secondary" size="sm" className="mt-4">
+            Change Photo
           </Button>
-        )}
-      </div>
+        </Card>
 
-      <div className="flex space-x-2 border-b">
-        {[
-          { id: 'personal', label: 'Personal Info', icon: User },
-          { id: 'emergency', label: 'Emergency Contact', icon: AlertCircle },
-          { id: 'preferences', label: 'Preferences', icon: Bell }
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id as any)}
-            className={`flex items-center space-x-2 px-4 py-2 font-medium ${
-              activeTab === tab.id
-                ? 'border-b-2 border-blue-600 text-blue-600'
-                : 'text-gray-600 hover:text-gray-900'
-            }`}
-          >
-            <tab.icon className="w-4 h-4" />
-            <span>{tab.label}</span>
-          </button>
-        ))}
-      </div>
-
-      {activeTab === 'personal' && (
-        <Card className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Personal Information */}
+        <Card className="lg:col-span-2 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input
               label="Full Name"
-              value={profile.name}
-              onChange={(e) => setProfile({...profile, name: e.target.value})}
+              value={profileData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
               disabled={!isEditing}
             />
             <Input
               label="Date of Birth"
               type="date"
-              value={profile.dateOfBirth}
-              onChange={(e) => setProfile({...profile, dateOfBirth: e.target.value})}
+              value={profileData.dateOfBirth}
+              onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
               disabled={!isEditing}
             />
             <Input
-              label="Email"
+              label="Email Address"
               type="email"
-              value={profile.email}
-              onChange={(e) => setProfile({...profile, email: e.target.value})}
+              value={profileData.email}
+              onChange={(e) => handleInputChange('email', e.target.value)}
               disabled={!isEditing}
-            />
-            <Input
-              label="Phone"
-              type="tel"
-              value={profile.phone}
-              onChange={(e) => setProfile({...profile, phone: e.target.value})}
-              disabled={!isEditing}
-            />
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-              <textarea
-                rows={2}
-                value={profile.address}
-                onChange={(e) => setProfile({...profile, address: e.target.value})}
-                disabled={!isEditing}
-                className="w-full border border-gray-300 rounded-md px-3 py-2 disabled:bg-gray-50"
-              />
-            </div>
-            <Input
-              label="Blood Type"
-              value={profile.bloodType}
-              onChange={(e) => setProfile({...profile, bloodType: e.target.value})}
-              disabled={!isEditing}
-            />
-            <Input
-              label="Known Allergies"
-              value={profile.allergies}
-              onChange={(e) => setProfile({...profile, allergies: e.target.value})}
-              disabled={!isEditing}
-            />
-          </div>
-        </Card>
-      )}
-
-      {activeTab === 'emergency' && (
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Emergency Contact Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Input
-              label="Contact Name"
-              value={profile.emergencyContact.name}
-              onChange={(e) => setProfile({
-                ...profile,
-                emergencyContact: {...profile.emergencyContact, name: e.target.value}
-              })}
-            />
-            <Input
-              label="Relationship"
-              value={profile.emergencyContact.relationship}
-              onChange={(e) => setProfile({
-                ...profile,
-                emergencyContact: {...profile.emergencyContact, relationship: e.target.value}
-              })}
             />
             <Input
               label="Phone Number"
               type="tel"
-              value={profile.emergencyContact.phone}
-              onChange={(e) => setProfile({
-                ...profile,
-                emergencyContact: {...profile.emergencyContact, phone: e.target.value}
-              })}
+              value={profileData.phone}
+              onChange={(e) => handleInputChange('phone', e.target.value)}
+              disabled={!isEditing}
             />
           </div>
-          <div className="mt-6">
-            <Button variant="primary">Update Emergency Contact</Button>
+          <div className="mt-4">
+            <Input
+              label="Address"
+              value={profileData.address}
+              onChange={(e) => handleInputChange('address', e.target.value)}
+              disabled={!isEditing}
+            />
+          </div>
+          <div className="mt-4">
+            <Input
+              label="Emergency Contact"
+              value={profileData.emergencyContact}
+              onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
+              disabled={!isEditing}
+            />
           </div>
         </Card>
-      )}
+      </div>
 
-      {activeTab === 'preferences' && (
-        <NotificationPreferences />
-      )}
+      {/* Quick Info Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Mail className="w-5 h-5 text-blue-600 mr-3" />
+            <div>
+              <p className="text-sm text-gray-600">Email</p>
+              <p className="font-medium text-gray-900 truncate">{profileData.email}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Phone className="w-5 h-5 text-green-600 mr-3" />
+            <div>
+              <p className="text-sm text-gray-600">Phone</p>
+              <p className="font-medium text-gray-900">{profileData.phone}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <MapPin className="w-5 h-5 text-red-600 mr-3" />
+            <div>
+              <p className="text-sm text-gray-600">Address</p>
+              <p className="font-medium text-gray-900 truncate">{profileData.address}</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-4">
+          <div className="flex items-center">
+            <Shield className="w-5 h-5 text-purple-600 mr-3" />
+            <div>
+              <p className="text-sm text-gray-600">Patient ID</p>
+              <p className="font-medium text-gray-900">{profileData.patientId}</p>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Security Settings */}
+      <Card className="p-6">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Security Settings</h2>
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-gray-900">Password</h3>
+              <p className="text-sm text-gray-600">Last changed 30 days ago</p>
+            </div>
+            <Button variant="secondary" size="sm">
+              Change Password
+            </Button>
+          </div>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-medium text-gray-900">Two-Factor Authentication</h3>
+              <p className="text-sm text-gray-600">Add an extra layer of security</p>
+            </div>
+            <Button variant="secondary" size="sm">
+              Enable 2FA
+            </Button>
+          </div>
+        </div>
+      </Card>
     </div>
   );
 };

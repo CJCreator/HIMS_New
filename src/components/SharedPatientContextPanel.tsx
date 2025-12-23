@@ -1,4 +1,6 @@
+import { useState, useEffect } from 'react';
 import { Card, Badge, Button } from '@/components';
+import { mockDataService } from '@/services/mockDataService';
 
 interface SharedPatientContextPanelProps {
   patientId: string;
@@ -6,17 +8,27 @@ interface SharedPatientContextPanelProps {
 }
 
 export function SharedPatientContextPanel({ patientId, currentRole }: SharedPatientContextPanelProps) {
-  const patientData = {
-    id: 'P001',
-    name: 'John Smith',
-    age: 45,
-    status: 'in-consultation',
-    location: 'Consultation Room 2',
-    waitTime: 15,
-    priority: 'normal',
-    allergies: ['Penicillin', 'Sulfa drugs'],
-    currentMedications: ['Metformin 500mg', 'Lisinopril 10mg']
-  };
+  const [patientData, setPatientData] = useState<any>(null);
+  const [note, setNote] = useState('');
+
+  useEffect(() => {
+    const patient = mockDataService.getPatient(patientId);
+    if (patient) {
+      setPatientData({
+        id: patient.id,
+        name: patient.name,
+        age: patient.age,
+        status: patient.status,
+        location: patient.currentStage,
+        waitTime: patient.waitTime,
+        priority: patient.priority,
+        allergies: patient.allergies,
+        currentMedications: patient.medications
+      });
+    }
+  }, [patientId]);
+
+  if (!patientData) return <div>Loading...</div>;
 
   const recentActivities = [
     { time: '10:15 AM', role: 'Doctor', action: 'Started consultation', status: 'in-progress' },
@@ -47,6 +59,13 @@ export function SharedPatientContextPanel({ patientId, currentRole }: SharedPati
     ]
   };
 
+  const handleShareNote = () => {
+    if (note.trim()) {
+      alert(`Note shared: ${note}`);
+      setNote('');
+    }
+  };
+
   return (
     <Card className="sticky top-4">
       <h3 className="text-h4 text-neutral-900 mb-3">Patient Context</h3>
@@ -75,11 +94,11 @@ export function SharedPatientContextPanel({ patientId, currentRole }: SharedPati
         <div className="space-y-1">
           <div className="p-2 bg-error/10 rounded-small">
             <p className="text-body-sm font-medium text-error">Allergies</p>
-            <p className="text-body-sm">{patientData.allergies.join(', ')}</p>
+            <p className="text-body-sm">{patientData.allergies.length > 0 ? patientData.allergies.join(', ') : 'None'}</p>
           </div>
           <div className="p-2 bg-info/10 rounded-small">
             <p className="text-body-sm font-medium text-info">Current Medications</p>
-            <p className="text-body-sm">{patientData.currentMedications.join(', ')}</p>
+            <p className="text-body-sm">{patientData.currentMedications.length > 0 ? patientData.currentMedications.join(', ') : 'None'}</p>
           </div>
         </div>
       </div>
@@ -127,8 +146,10 @@ export function SharedPatientContextPanel({ patientId, currentRole }: SharedPati
           className="w-full p-2 text-body-sm border border-neutral-300 rounded-small"
           placeholder="Add notes for other roles..."
           rows={3}
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
         />
-        <Button variant="primary" size="sm" className="w-full mt-2">
+        <Button variant="primary" size="sm" className="w-full mt-2" onClick={handleShareNote}>
           Share Note
         </Button>
       </div>

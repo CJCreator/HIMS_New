@@ -1,8 +1,19 @@
 import { Card, Button } from '@/components';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 export function QuickAccessGuide() {
   const navigate = useNavigate();
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+
+  const handleNavigation = (path: string, requiresAuth: boolean = true) => {
+    if (requiresAuth && !isAuthenticated) {
+      navigate('/signin');
+    } else {
+      navigate(path);
+    }
+  };
 
   const roles = [
     { name: 'Admin', path: '/signin', icon: '👨‍💼', color: 'bg-purple-100' },
@@ -46,28 +57,28 @@ export function QuickAccessGuide() {
           <div className="grid grid-cols-2 gap-3">
             <Button 
               variant="secondary" 
-              onClick={() => navigate('/book-appointment')}
+              onClick={() => handleNavigation('/book-appointment', false)}
               className="justify-start"
             >
               📅 Book Appointment
             </Button>
             <Button 
               variant="secondary" 
-              onClick={() => navigate('/admin/implementation-progress')}
+              onClick={() => handleNavigation('/admin/implementation-progress')}
               className="justify-start"
             >
               📊 View Progress
             </Button>
             <Button 
               variant="secondary" 
-              onClick={() => navigate('/admin/system-comparison')}
+              onClick={() => handleNavigation('/admin/system-comparison')}
               className="justify-start"
             >
               📈 System Comparison
             </Button>
             <Button 
               variant="secondary" 
-              onClick={() => navigate('/doctor/consultation')}
+              onClick={() => handleNavigation('/doctor/consultation')}
               className="justify-start"
             >
               ⚡ Enhanced Consultation

@@ -528,8 +528,7 @@ export function UserManagement() {
             <EmptyState
               title={searchTerm || roleFilter !== 'all' || statusFilter !== 'all' ? 'No users found' : 'No users yet'}
               description={searchTerm || roleFilter !== 'all' || statusFilter !== 'all' ? 'Try adjusting your search or filters' : 'Get started by adding your first user'}
-              actionLabel="Add New User"
-              onAction={() => setShowCreateModal(true)}
+              action={{ label: 'Add New User', onClick: () => setShowCreateModal(true) }}
             />
           ) : (
             <Table

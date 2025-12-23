@@ -4,17 +4,30 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Input, Card } from '@/components';
 import { loginStart, loginSuccess } from '@/store/authSlice';
 import { UserRole } from '@/types';
+import { validateForm, authSchemas } from '@/utils/validationSchemas';
 
 export function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>('admin');
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate form
+    const formData = { email, password };
+    const validationErrors = validateForm(formData, authSchemas.signIn);
+    
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
+    }
+    
+    setErrors({});
     setLoading(true);
     dispatch(loginStart());
 
@@ -33,6 +46,16 @@ export function SignIn() {
     }, 1000);
   };
 
+  const handleInputChange = (field: string, value: string) => {
+    if (field === 'email') setEmail(value);
+    if (field === 'password') setPassword(value);
+    
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
@@ -46,8 +69,9 @@ export function SignIn() {
             label="Email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => handleInputChange('email', e.target.value)}
             placeholder="Enter your email"
+            error={errors.email}
             required
           />
 
@@ -55,8 +79,9 @@ export function SignIn() {
             label="Password"
             type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => handleInputChange('password', e.target.value)}
             placeholder="Enter your password"
+            error={errors.password}
             required
           />
 
@@ -74,6 +99,7 @@ export function SignIn() {
               <option value="receptionist">Receptionist</option>
               <option value="nurse">Nurse</option>
               <option value="pharmacist">Pharmacist</option>
+              <option value="lab">Lab Technician</option>
             </select>
           </div>
 

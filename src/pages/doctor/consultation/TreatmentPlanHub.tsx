@@ -1,26 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Input, Button, Badge } from '@/components';
 import { UnifiedPatientContext } from '@/components/UnifiedPatientContext';
+import { mockDataService } from '@/services/mockDataService';
 
 interface TreatmentPlanHubProps {
   onNext: () => void;
   onPrevious: () => void;
   onSave: () => void;
+  data?: any;
+  setData?: (data: any) => void;
 }
 
-export function TreatmentPlanHub({ onNext, onPrevious, onSave }: TreatmentPlanHubProps) {
-  const [selectedTemplate, setSelectedTemplate] = useState('');
-  const [medications, setMedications] = useState<any[]>([]);
+export function TreatmentPlanHub({ onNext, onPrevious, onSave, data, setData }: TreatmentPlanHubProps) {
+  const [selectedTemplate, setSelectedTemplate] = useState(data?.treatmentPlan?.template || '');
+  const [medications, setMedications] = useState<any[]>(data?.treatmentPlan?.medications || []);
+  const [patientData, setPatientData] = useState<any>(null);
 
-  const patientData = {
-    patientId: 'P001',
-    patientName: 'John Smith',
-    age: 45,
-    gender: 'Male',
-    allergies: ['Penicillin', 'Sulfa drugs'],
-    currentMedications: ['Metformin 500mg', 'Lisinopril 10mg'],
-    vitalSigns: { bp: '120/80', hr: 72, temp: 98.6, o2: 98 }
+  useEffect(() => {
+    const patient = mockDataService.getPatient(data?.patientId || 'P001');
+    const vitals = mockDataService.getVitals(data?.patientId || 'P001')[0];
+    if (patient) {
+      setPatientData({
+        patientId: patient.id,
+        patientName: patient.name,
+        age: patient.age,
+        gender: patient.gender,
+        allergies: patient.allergies,
+        currentMedications: patient.medications,
+        vitalSigns: vitals || { bp: '120/80', hr: 72, temp: 98.6, o2: 98 }
+      });
+    }
+  }, [data?.patientId]);
+
+  const handleNext = () => {
+    if (setData) setData({ ...data, treatmentPlan: { template: selectedTemplate, medications } });
+    onNext();
   };
+
+  const handleSave = () => {
+    if (setData) setData({ ...data, treatmentPlan: { template: selectedTemplate, medications } });
+    onSave();
+  };
+
+  if (!patientData) return <div>Loading...</div>;
 
   const prescriptionTemplates = [
     { id: 1, name: 'Diabetes Management', meds: ['Metformin 500mg', 'Glipizide 5mg'] },
@@ -45,8 +67,8 @@ export function TreatmentPlanHub({ onNext, onPrevious, onSave }: TreatmentPlanHu
         <h2 className="text-h3 text-neutral-900">Treatment Plan Hub</h2>
         <div className="flex gap-2">
           <Button variant="tertiary" size="sm" onClick={onPrevious}>← Back</Button>
-          <Button variant="secondary" size="sm" onClick={onSave}>Save Draft</Button>
-          <Button onClick={onNext}>Continue to Review →</Button>
+          <Button variant="secondary" size="sm" onClick={handleSave}>Save Draft</Button>
+          <Button onClick={handleNext}>Continue to Review →</Button>
         </div>
       </div>
 

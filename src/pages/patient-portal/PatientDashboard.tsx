@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../../store';
-import { Card, Button } from '../../components';
+import { RootState } from '@/store';
+import { Card, Button } from '@/components';
 import { Calendar, FileText, Pill, CreditCard, MessageSquare } from 'lucide-react';
 
 export const PatientDashboard: React.FC = () => {

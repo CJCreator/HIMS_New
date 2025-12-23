@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { loginSuccess } from '../../store/authSlice';
-import { Button, Input, Card } from '../../components';
+import { loginSuccess } from '@/store/authSlice';
+import { Button, Input, Card } from '@/components';
 
 export const PatientLogin: React.FC = () => {
   const dispatch = useDispatch();

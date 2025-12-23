@@ -122,9 +122,9 @@ export function NurseDashboard() {
                 📊 Record Vitals
               </Button>
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/patients')}>
-                👥 Patient Records
+                👥 View Patients
               </Button>
-              <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/medications')}>
+              <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/medication-requests')}>
                 💊 Medication Requests
               </Button>
               <Button
@@ -132,7 +132,7 @@ export function NurseDashboard() {
                 className="justify-start"
                 onClick={() => navigate('/nurse/wards')}
               >
-                📋 Ward Management
+                🏥 Ward Management
               </Button>
             </div>
           </Card>

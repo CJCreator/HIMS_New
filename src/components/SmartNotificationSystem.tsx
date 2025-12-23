@@ -1,104 +1,17 @@
+import { useState, useEffect } from 'react';
 import { Card, Button, Badge } from '@/components';
 import { useNavigate } from 'react-router-dom';
-
-interface SmartNotification {
-  id: string;
-  type: 'info' | 'success' | 'warning' | 'urgent';
-  fromRole: string;
-  toRole: string;
-  title: string;
-  message: string;
-  patientContext: {
-    id: string;
-    name: string;
-    vitals?: string;
-  };
-  quickActions: Array<{
-    label: string;
-    action: string;
-  }>;
-  timestamp: string;
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-}
+import { mockDataService } from '@/services/mockDataService';
+import { useRealtimeSimulation } from '@/hooks/useRealtimeSimulation';
 
 export function SmartNotificationSystem() {
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const { updateCount } = useRealtimeSimulation();
 
-  const notifications: SmartNotification[] = [
-    {
-      id: 'N001',
-      type: 'urgent',
-      fromRole: 'Nurse',
-      toRole: 'Doctor',
-      title: 'Patient Ready for Consultation',
-      message: 'John Smith (P001) vitals complete',
-      patientContext: {
-        id: 'P001',
-        name: 'John Smith',
-        vitals: 'BP: 120/80, HR: 72'
-      },
-      quickActions: [
-        { label: 'Start Consultation', action: '/doctor/consultation' },
-        { label: 'View Vitals', action: '/doctor/patients/P001' }
-      ],
-      timestamp: '2 min ago',
-      priority: 'high'
-    },
-    {
-      id: 'N002',
-      type: 'info',
-      fromRole: 'Doctor',
-      toRole: 'Pharmacy',
-      title: 'Prescription Ready',
-      message: 'Prescription ready for Sarah Johnson - 2 medications',
-      patientContext: {
-        id: 'P002',
-        name: 'Sarah Johnson'
-      },
-      quickActions: [
-        { label: 'Process Now', action: '/pharmacy/prescriptions/P002' },
-        { label: 'View Details', action: '/pharmacy/patients/P002' }
-      ],
-      timestamp: '5 min ago',
-      priority: 'medium'
-    },
-    {
-      id: 'N003',
-      type: 'warning',
-      fromRole: 'Lab',
-      toRole: 'Doctor',
-      title: 'Critical Lab Results',
-      message: 'Critical results for Michael Chen - HbA1c: 12.5%',
-      patientContext: {
-        id: 'P003',
-        name: 'Michael Chen'
-      },
-      quickActions: [
-        { label: 'Review Immediately', action: '/doctor/lab-results/P003' },
-        { label: 'Contact Patient', action: '/doctor/patients/P003/contact' }
-      ],
-      timestamp: '1 min ago',
-      priority: 'urgent'
-    },
-    {
-      id: 'N004',
-      type: 'success',
-      fromRole: 'Doctor',
-      toRole: 'Receptionist',
-      title: 'Consultation Complete',
-      message: 'Consultation complete for Jane Doe',
-      patientContext: {
-        id: 'P004',
-        name: 'Jane Doe'
-      },
-      quickActions: [
-        { label: 'Ready for Billing', action: '/receptionist/billing/P004' },
-        { label: 'Schedule Follow-up', action: '/receptionist/appointments/new?patient=P004' }
-      ],
-      timestamp: '10 min ago',
-      priority: 'medium'
-    }
-  ];
+  useEffect(() => {
+    setNotifications(mockDataService.getNotifications());
+  }, [updateCount]);
 
   const getNotificationStyle = (type: string) => {
     switch (type) {
@@ -109,22 +22,33 @@ export function SmartNotificationSystem() {
     }
   };
 
-  const handleQuickAction = (action: string) => {
+  const handleQuickAction = (notificationId: string, action: string) => {
+    mockDataService.markNotificationRead(notificationId);
     navigate(action);
   };
+
+  const formatTimestamp = (timestamp: number) => {
+    const minutes = Math.floor((Date.now() - timestamp) / 60000);
+    if (minutes < 1) return 'Just now';
+    if (minutes < 60) return `${minutes} min ago`;
+    const hours = Math.floor(minutes / 60);
+    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+  };
+
+  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
     <Card>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-h3 text-neutral-900">Smart Notifications</h2>
-        <Badge status="error">4 New</Badge>
+        <Badge status="error">{unreadCount} New</Badge>
       </div>
 
       <div className="space-y-3">
-        {notifications.map(notification => (
+        {notifications.slice(0, 5).map(notification => (
           <div 
             key={notification.id}
-            className={`p-4 rounded-small ${getNotificationStyle(notification.type)}`}
+            className={`p-4 rounded-small ${getNotificationStyle(notification.type)} ${notification.read ? 'opacity-60' : ''}`}
           >
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
@@ -139,29 +63,30 @@ export function SmartNotificationSystem() {
                 {/* Patient Context */}
                 <div className="p-2 bg-white rounded-small mb-2">
                   <p className="text-body-sm">
-                    <span className="font-medium">{notification.patientContext.name}</span>
-                    {' '}({notification.patientContext.id})
-                    {notification.patientContext.vitals && (
-                      <span className="text-neutral-600"> • {notification.patientContext.vitals}</span>
-                    )}
+                    <span className="font-medium">{notification.patientName}</span>
+                    {' '}({notification.patientId})
                   </p>
                 </div>
               </div>
-              <span className="text-body-sm text-neutral-600 ml-3">{notification.timestamp}</span>
+              <span className="text-body-sm text-neutral-600 ml-3">{formatTimestamp(notification.timestamp)}</span>
             </div>
 
             {/* Quick Actions */}
             <div className="flex gap-2">
-              {notification.quickActions.map((action, idx) => (
-                <Button 
-                  key={idx}
-                  variant={idx === 0 ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={() => handleQuickAction(action.action)}
-                >
-                  {action.label}
-                </Button>
-              ))}
+              <Button 
+                variant="primary"
+                size="sm"
+                onClick={() => handleQuickAction(notification.id, `/doctor/consultation/${notification.patientId}`)}
+              >
+                Start Consultation
+              </Button>
+              <Button 
+                variant="secondary"
+                size="sm"
+                onClick={() => handleQuickAction(notification.id, `/doctor/patients/${notification.patientId}`)}
+              >
+                View Details
+              </Button>
             </div>
 
             {/* From/To Indicator */}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { Card, Input, Button } from '@/components';
+import { Layout, Card, Input, Button } from '@/components';
 import { addNotification, addRoleNotification } from '@/store/notificationSlice';
 import { updatePatientVitals } from '@/store/patientSlice';
 
@@ -71,11 +71,9 @@ export function VitalsEntry() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-gray-900">Record Vital Signs</h1>
-      </div>
-      <div className="max-w-4xl mx-auto space-y-6">
+    <Layout title="Record Vital Signs" breadcrumb={['Nurse', 'Vitals']}>
+      <div className="space-y-6">
+        <div className="max-w-4xl mx-auto space-y-6">
         <Card>
           <div className="flex justify-between items-center mb-6">
             <div>
@@ -210,7 +208,8 @@ export function VitalsEntry() {
             </div>
           </div>
         </Card>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }

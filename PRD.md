@@ -1,12 +1,15 @@
 # Product Requirements Document (PRD)
-## Healthcare Consultation Management System
+## Healthcare Information Management System (HIMS)
+**Project Name**: AROCORD-HIMS
+**Version**: 2.1
+**Technology Stack**: React + TypeScript + Vite
 
 ---
 
 ## 1. Executive Summary
 
 ### 1.1 Product Overview
-A comprehensive, role-based healthcare management system designed to streamline patient care workflows from appointment booking through consultation, prescription management, pharmacy dispensing, and billing. The system integrates multiple healthcare roles into a unified platform with real-time notifications and data synchronization.
+A comprehensive, role-based healthcare management system (AROCORD-HIMS) built with React, TypeScript, and Vite. The system streamlines patient care workflows from appointment booking through consultation, prescription management, pharmacy dispensing, and billing. Features a modern 5-step consultation workflow with real-time notifications, WebSocket-based queue management, and comprehensive role-based access control across 7 user types.
 
 ### 1.2 Product Vision
 To create a seamless, efficient healthcare delivery system that reduces administrative overhead, minimizes errors, improves patient outcomes, and enhances communication between healthcare providers.
@@ -24,13 +27,22 @@ To create a seamless, efficient healthcare delivery system that reduces administ
 
 ## 2. System Architecture
 
-### 2.1 Technology Stack
-- **Frontend**: React + TypeScript + Vite
-- **State Management**: Redux Toolkit
-- **Routing**: React Router v6
-- **Styling**: Tailwind CSS
-- **Real-time Communication**: WebSocket (for queue updates)
-- **Testing**: Vitest + React Testing Library
+### 2.1 Technology Stack (Current Implementation)
+- **Frontend Framework**: React 18.3.1
+- **Language**: TypeScript 5.7.2
+- **Build Tool**: Vite 6.0.3
+- **State Management**: Redux Toolkit 2.3.0
+- **Routing**: React Router DOM 7.1.0
+- **Styling**: Tailwind CSS 3.4.15
+- **UI Components**: Custom component library with Headless UI
+- **Icons**: Heroicons 2.2.0 + Lucide React 0.468.0
+- **Charts**: Recharts 2.13.3
+- **Forms**: React Hook Form 7.54.0
+- **Date Handling**: date-fns 4.1.0
+- **Real-time Communication**: WebSocket (custom implementation)
+- **Testing Framework**: Vitest 4.0.16
+- **E2E Testing**: Playwright
+- **Code Quality**: ESLint + Prettier
 
 ### 2.2 Core Modules
 1. Authentication & Authorization
@@ -88,7 +100,7 @@ To create a seamless, efficient healthcare delivery system that reduces administ
 #### **Doctor**
 - **Access Level**: Full clinical access
 - **Primary Functions**:
-  - Patient consultation (14-step workflow)
+  - Patient consultation (5-step workflow)
   - Diagnosis and treatment planning
   - Prescription creation
   - Lab test ordering
@@ -157,21 +169,12 @@ To create a seamless, efficient healthcare delivery system that reduces administ
    ├─ Allergy verification
    └─ Patient added to doctor's queue
 
-4. DOCTOR CONSULTATION (14 Steps)
-   ├─ Step 1: Patient Selection
-   ├─ Step 2: Medical History Review
-   ├─ Step 3: Vital Signs Review
-   ├─ Step 4: Chief Complaint
-   ├─ Step 5: Symptoms Recording
-   ├─ Step 6: Physical Examination
-   ├─ Step 7: Diagnosis Entry (ICD-10)
-   ├─ Step 8: Treatment Plan
-   ├─ Step 9: Prescription Creation
-   ├─ Step 10: Lab Test Orders
-   ├─ Step 11: Follow-up Scheduling
-   ├─ Step 12: Consultation Notes
-   ├─ Step 13: Review & Confirm
-   └─ Step 14: Summary & Print
+4. DOCTOR CONSULTATION (5 Steps - Current Implementation)
+   ├─ Step 1: Patient Overview Hub (Selection & History Review)
+   ├─ Step 2: Clinical Assessment Center (Symptoms & Examination)
+   ├─ Step 3: Treatment Plan Hub (Diagnosis & Treatment)
+   ├─ Step 4: Final Review Station (Prescriptions & Lab Orders)
+   └─ Step 5: Summary & Handoff Dashboard (Completion & Billing)
 
 5. PRESCRIPTION PROCESSING
    ├─ Prescription sent to pharmacy queue
@@ -204,117 +207,55 @@ To create a seamless, efficient healthcare delivery system that reduces administ
    └─ Outcome monitoring
 ```
 
-### 4.2 Consultation Workflow (Detailed)
+### 4.2 Consultation Workflow (5-Step Implementation)
 
-#### **Step 1: Patient Selection**
-- **Actor**: Doctor
-- **Input**: Patient queue list
-- **Actions**: Select patient from queue
-- **Output**: Patient loaded into consultation
-- **Skip**: No
+#### **Step 1: Patient Overview Hub**
+- **Component**: `PatientOverviewHub.tsx`
+- **Features**: 
+  - Unified patient context display
+  - Medical history review with search
+  - Vital signs validation (nurse-recorded)
+  - Collapsible sections for better UX
+  - Quick action buttons
+- **Data Sources**: Mock data service integration
+- **Navigation**: Continue to Clinical Assessment
 
-#### **Step 2: Medical History Review**
-- **Actor**: Doctor
-- **Input**: Historical medical records
-- **Actions**: Review past diagnoses, medications, allergies
-- **Output**: Context for current consultation
-- **Skip**: No
+#### **Step 2: Clinical Assessment Center**
+- **Component**: `ClinicalAssessmentCenter.tsx`
+- **Features**:
+  - Chief complaint documentation
+  - Symptom recording with severity scales
+  - Physical examination by body systems
+  - Clinical decision support integration
+- **Skip Logic**: None (required step)
 
-#### **Step 3: Vital Signs Review**
-- **Actor**: Doctor (reviewing nurse's entry)
-- **Input**: BP, HR, Temperature, O2 Saturation, nursing notes
-- **Actions**: Review and validate vital signs
-- **Output**: Baseline health status
-- **Skip**: No
+#### **Step 3: Treatment Plan Hub**
+- **Component**: `TreatmentPlanHub.tsx`
+- **Features**:
+  - ICD-10 diagnosis code search
+  - Primary/secondary diagnosis marking
+  - Treatment plan documentation
+  - Clinical guidelines integration
+- **Skip Logic**: None (required step)
 
-#### **Step 4: Chief Complaint**
-- **Actor**: Doctor
-- **Input**: Patient's primary concern
-- **Actions**: Document main reason for visit
-- **Output**: Chief complaint recorded
-- **Skip**: Yes (if already documented by nurse)
+#### **Step 4: Final Review Station**
+- **Component**: `FinalReviewStation.tsx`
+- **Features**:
+  - Prescription creation with drug interaction checking
+  - Lab test ordering with priority levels
+  - Follow-up appointment scheduling
+  - Allergy verification
+- **Skip Logic**: Partial (prescriptions/lab orders optional)
 
-#### **Step 5: Symptoms Recording**
-- **Actor**: Doctor
-- **Input**: Patient-reported symptoms
-- **Actions**: Document symptoms with severity, duration, onset
-- **Output**: Symptom profile
-- **Skip**: Yes
-
-#### **Step 6: Physical Examination**
-- **Actor**: Doctor
-- **Input**: Clinical examination findings
-- **Actions**: Document examination by body system
-- **Output**: Physical exam findings
-- **Skip**: Yes
-
-#### **Step 7: Diagnosis Entry**
-- **Actor**: Doctor
-- **Input**: Clinical assessment
-- **Actions**: 
-  - Search and select ICD-10 codes
-  - Mark primary and secondary diagnoses
-  - Add clinical notes
-- **Output**: Coded diagnosis
-- **Skip**: No
-
-#### **Step 8: Treatment Plan**
-- **Actor**: Doctor
-- **Input**: Diagnosis and clinical guidelines
-- **Actions**: Document treatment approach
-- **Output**: Treatment plan
-- **Skip**: Yes
-
-#### **Step 9: Prescription Creation**
-- **Actor**: Doctor
-- **Input**: Medication requirements
-- **Actions**:
-  - Search medications
-  - Specify dosage, frequency, duration
-  - Check drug interactions
-  - Check allergies
-  - Add instructions
-- **Output**: Prescription ready for pharmacy
-- **Skip**: No (if medications needed)
-
-#### **Step 10: Lab Test Orders**
-- **Actor**: Doctor
-- **Input**: Diagnostic requirements
-- **Actions**:
-  - Select lab tests
-  - Mark priority
-  - Add clinical notes
-- **Output**: Lab orders sent to lab queue
-- **Skip**: Yes
-
-#### **Step 11: Follow-up Scheduling**
-- **Actor**: Doctor
-- **Input**: Follow-up requirements
-- **Actions**: Schedule next appointment
-- **Output**: Follow-up appointment created
-- **Skip**: Yes
-
-#### **Step 12: Consultation Notes**
-- **Actor**: Doctor
-- **Input**: Additional documentation
-- **Actions**: Add detailed clinical notes
-- **Output**: Comprehensive consultation record
-- **Skip**: Yes
-
-#### **Step 13: Review & Confirm**
-- **Actor**: Doctor
-- **Input**: All consultation data
-- **Actions**: Review and validate all entries
-- **Output**: Confirmed consultation
-- **Skip**: No
-
-#### **Step 14: Summary & Print**
-- **Actor**: Doctor
-- **Input**: Complete consultation data
-- **Actions**:
-  - Generate summary
-  - Print/email to patient
-  - Send prescription to pharmacy
+#### **Step 5: Summary & Handoff Dashboard**
+- **Component**: `SummaryHandoffDashboard.tsx`
+- **Features**:
+  - Complete consultation review
+  - Summary generation and printing
+  - Prescription handoff to pharmacy
+  - Billing notification to receptionist
+  - Consultation completion marking
+- **Skip Logic**: None (required step) to pharmacy
   - Notify receptionist for billing
   - Mark consultation complete
 - **Output**: Completed consultation
@@ -743,7 +684,134 @@ To create a seamless, efficient healthcare delivery system that reduces administ
 
 ---
 
-## 15. Future Enhancements
+## 15. Demonstration & Validation Framework
+
+### 15.1 Comprehensive Demo Scenarios
+
+#### **Scenario 1: Complete Patient Journey**
+End-to-end patient experience validation covering:
+- **Patient Portal Access**: Login validation, responsive design testing
+- **Appointment Booking**: Calendar widget functionality, doctor availability
+- **Check-in Process**: Receptionist workflow, queue management
+- **Vitals Recording**: Nurse interface, data validation
+- **Doctor Consultation**: Full 5-step workflow validation
+- **Prescription Processing**: Pharmacy queue, drug interaction alerts
+- **Lab Testing**: Order processing, result entry workflow
+- **Billing & Checkout**: Invoice generation, payment processing
+- **Follow-up Care**: Appointment scheduling, medication tracking
+
+#### **Scenario 2: Emergency Workflow**
+Critical care pathway validation:
+- **Emergency Alert System**: Priority escalation, role notifications
+- **Triage Process**: Priority patient handling, urgent queue management
+- **Stat Consultations**: Emergency consultation workflow
+- **Critical Lab Orders**: Urgent test processing, result prioritization
+- **Emergency Medication**: Priority prescription dispensing
+
+#### **Scenario 3: Administrative Oversight**
+System management and analytics validation:
+- **System Analytics**: KPI dashboards, chart responsiveness
+- **User Management**: Role-based access control validation
+- **Resource Management**: Bed/room allocation, capacity planning
+
+### 15.2 UI Element Validation Matrix
+
+#### **Global Elements Checklist**
+- ✅ Navigation sidebar/menu responsiveness
+- ✅ Top bar notifications and user profile dropdown
+- ✅ Logout functionality across all roles
+- ✅ Theme toggle and accessibility features
+- ✅ Mobile hamburger menu functionality
+
+#### **Form Elements Validation**
+- ✅ Input field validation (text, email, password)
+- ✅ Dropdown/select functionality
+- ✅ Checkbox/radio button interactions
+- ✅ Date/time picker responsiveness
+- ✅ File upload capabilities
+- ✅ Form validation message display
+- ✅ Submit/reset button functionality
+
+#### **Data Display Components**
+- ✅ Tables with sorting/filtering capabilities
+- ✅ Charts and graphs responsiveness
+- ✅ Cards and status badges
+- ✅ Modal dialogs and overlays
+- ✅ Loading spinners and progress indicators
+- ✅ Empty state handling and guidance
+
+### 15.3 Responsiveness Testing Framework
+
+#### **Device Breakpoints**
+- **Mobile**: 375x667 (iPhone SE) - Touch target validation (44px minimum)
+- **Tablet**: 768x1024 (iPad) - Form layout adaptation
+- **Desktop**: 1920x1080 (Full HD) - Full feature accessibility
+- **Large Desktop**: 2560x1440 (QHD) - Layout scaling
+
+#### **Responsive Elements Testing**
+- Layout adaptation across breakpoints
+- Touch target accessibility on mobile devices
+- Text readability and font scaling
+- Image and media scaling
+- Form layout optimization
+- Table horizontal scrolling on mobile
+
+### 15.4 Role-Based Permission Validation
+
+#### **Permission Matrix Verification**
+| Feature | Patient | Receptionist | Nurse | Doctor | Pharmacist | Lab Tech | Admin |
+|---------|---------|--------------|-------|--------|------------|----------|-------|
+| View own records | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Book appointments | ✅ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Manage schedule | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Record vitals | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Conduct consultations | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ |
+| Process prescriptions | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| Manage lab tests | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| System administration | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+
+#### **Workflow Integration Validation**
+- Doctor prescription → Pharmacy queue integration
+- Lab orders → Lab technician workflow
+- Consultation completion → Billing system
+- Nurse vitals → Doctor consultation data
+- Emergency alerts → Priority escalation
+
+### 15.5 Link and Navigation Testing
+
+#### **Navigation Link Validation**
+- Sidebar menu item functionality
+- Breadcrumb navigation accuracy
+- Action button routing
+- Footer link verification
+- External link handling
+
+#### **Role-Based Routing Security**
+- Protected route enforcement
+- Post-login redirect validation
+- Access denied page handling
+- 404 error page functionality
+- Session timeout handling
+
+### 15.6 Performance Validation Criteria
+
+#### **Page Load Performance**
+- Initial page load: < 2 seconds
+- Navigation between pages: < 1 second
+- Form submission response: < 500ms
+- Real-time notification delivery: < 300ms
+- Database query response: < 100ms
+
+#### **Concurrent User Testing**
+- Support for 500+ simultaneous users
+- Queue management under load
+- Notification system scalability
+- Database performance under stress
+- Memory usage optimization
+
+---
+
+## 16. Future Enhancements
 
 ### 15.1 Planned Features
 - **AI-powered diagnosis assistance**
@@ -768,7 +836,48 @@ To create a seamless, efficient healthcare delivery system that reduces administ
 
 ---
 
-## 16. Glossary
+## 17. Emergency Care Specifications
+
+### 17.1 Emergency Alert System
+- **Trigger Mechanisms**: Manual emergency button, automated vital sign alerts, critical lab values
+- **Alert Propagation**: Real-time notifications to all relevant roles within 30 seconds
+- **Priority Levels**: 
+  - **Code Red**: Life-threatening emergency (immediate response)
+  - **Code Yellow**: Urgent care needed (15-minute response)
+  - **Code Blue**: Medical emergency (5-minute response)
+
+### 17.2 Emergency Workflow Integration
+- **Triage Override**: Emergency patients bypass normal queue
+- **Resource Allocation**: Automatic bed/room assignment for emergency cases
+- **Staff Notification**: Cascade alerts to on-call physicians and specialists
+- **Documentation**: Streamlined emergency consultation workflow (3-step process)
+
+### 17.3 Critical Care Pathways
+- **Trauma Protocol**: Specialized workflow for trauma patients
+- **Cardiac Emergency**: Dedicated pathway for cardiac events
+- **Pediatric Emergency**: Child-specific emergency protocols
+- **Medication Emergency**: Stat medication ordering and dispensing
+
+---
+
+## 18. Quality Assurance Framework
+
+### 18.1 Testing Protocols
+- **Unit Testing**: 90%+ code coverage requirement
+- **Integration Testing**: End-to-end workflow validation
+- **User Acceptance Testing**: Role-based scenario testing
+- **Performance Testing**: Load testing with 1000+ concurrent users
+- **Security Testing**: Penetration testing and vulnerability assessment
+
+### 18.2 Validation Checkpoints
+- **Pre-deployment**: Full regression testing suite
+- **Post-deployment**: Smoke testing and monitoring
+- **User Feedback**: Continuous feedback collection and analysis
+- **Performance Monitoring**: Real-time system health tracking
+
+---
+
+## 19. Glossary
 
 - **ICD-10**: International Classification of Diseases, 10th Revision
 - **HIPAA**: Health Insurance Portability and Accountability Act
@@ -783,17 +892,18 @@ To create a seamless, efficient healthcare delivery system that reduces administ
 
 ---
 
-## Document Control
+## 20. Document Control
 
-**Version**: 1.0  
+**Version**: 2.0  
 **Last Updated**: January 2024  
 **Document Owner**: Product Management Team  
 **Review Cycle**: Quarterly  
-**Next Review**: April 2024
+**Next Review**: April 2024  
+**Latest Updates**: Enhanced with comprehensive demo scenarios, UI validation framework, and emergency workflow specifications
 
 ---
 
-## Appendix
+## 21. Appendix
 
 ### A. User Stories
 

@@ -40,12 +40,10 @@ const menuItems: Record<UserRole, Array<{name: string; path: string; icon: strin
   nurse: [
     { name: 'Dashboard', path: '/nurse', icon: '📊' },
     { name: 'Patient Records', path: '/nurse/patients', icon: '📋' },
-    { name: 'Timeline', path: '/nurse/patient-timeline', icon: '📅' },
-    { name: 'Problem List', path: '/nurse/problem-list', icon: '📝' },
-    { name: 'Immunization', path: '/nurse/immunization', icon: '💉' },
-    { name: 'Allergies', path: '/nurse/allergy-management', icon: '⚠️' },
+    { name: 'Vitals Entry', path: '/nurse/vitals', icon: '📊' },
     { name: 'Medication Requests', path: '/nurse/medication-requests', icon: '💊' },
     { name: 'Ward Management', path: '/nurse/wards', icon: '🏥' },
+    { name: 'Shift Handover', path: '/nurse/shift-handover', icon: '🔄' },
   ],
   pharmacist: [
     { name: 'Dashboard', path: '/pharmacist', icon: '📊' },
@@ -57,6 +55,13 @@ const menuItems: Record<UserRole, Array<{name: string; path: string; icon: strin
     { name: 'Reorder', path: '/pharmacist/reorder-management', icon: '🔄' },
     { name: 'Batch Tracking', path: '/pharmacist/batch-tracking', icon: '🏷️' },
     { name: 'Analytics', path: '/pharmacist/inventory-analytics', icon: '📈' },
+  ],
+  lab: [
+    { name: 'Dashboard', path: '/lab', icon: '🔬' },
+    { name: 'Order Queue', path: '/lab/orders', icon: '📋' },
+    { name: 'Result Entry', path: '/lab/results', icon: '📝' },
+    { name: 'Verification', path: '/lab/verification', icon: '✅' },
+    { name: 'Reports', path: '/lab/reports', icon: '📊' },
   ],
   patient: [
     { name: 'Dashboard', path: '/patient-portal', icon: '📊' },
@@ -82,10 +87,15 @@ const roleColors: Record<UserRole, string> = {
   receptionist: 'text-receptionist',
   nurse: 'text-nurse',
   pharmacist: 'text-pharmacist',
-  patient: 'text-blue-600',
+  lab: 'text-blue-600',
+  patient: 'text-teal-600',
 };
 
-export function Sidebar() {
+interface SidebarProps {
+  onClose?: () => void;
+}
+
+export function Sidebar({ onClose }: SidebarProps = {}) {
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();
 
@@ -95,7 +105,7 @@ export function Sidebar() {
   const roleColor = roleColors[user.role];
 
   return (
-    <div className="w-sidebar h-screen bg-white border-r border-neutral-200 flex flex-col">
+    <div className="w-sidebar h-screen bg-white border-r border-neutral-200 flex flex-col" role="complementary" aria-label="Sidebar navigation">
       <div className="p-6 border-b border-neutral-200">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-primary-600 rounded-small flex items-center justify-center">
@@ -108,23 +118,24 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 p-4 overflow-y-auto">
+      <nav className="flex-1 p-4 overflow-y-auto" role="navigation" aria-label="Main navigation">
         <ul className="space-y-2">
           {items.map((item) => (
             <li key={item.path}>
               <NavLink
                 to={item.path}
-                end={item.path === '/doctor' || item.path === '/admin' || item.path === '/nurse' || item.path === '/receptionist' || item.path === '/pharmacist' || item.path === '/patient-portal'}
+                end={item.path === '/doctor' || item.path === '/admin' || item.path === '/nurse' || item.path === '/receptionist' || item.path === '/pharmacist' || item.path === '/patient-portal' || item.path === '/lab'}
                 className={({ isActive }: { isActive: boolean }) =>
-                  `flex items-center space-x-3 px-3 py-2 rounded-small text-body transition-colors ${
+                  `flex items-center space-x-3 px-3 py-3 rounded-small text-body transition-colors min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-opacity-50 ${
                     isActive
                       ? 'bg-primary-50 text-primary-700 font-medium'
                       : 'text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900'
                   }`
                 }
-                aria-current={undefined}
+                onClick={() => onClose?.()}
+                aria-label={`Navigate to ${item.name}`}
               >
-                <span className="text-lg">{item.icon}</span>
+                <span className="text-lg" aria-hidden="true">{item.icon}</span>
                 <span>{item.name}</span>
               </NavLink>
             </li>
@@ -146,7 +157,8 @@ export function Sidebar() {
         </div>
         <button
           onClick={() => dispatch(logout())}
-          className="w-full text-left px-3 py-2 text-body text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-small transition-colors"
+          className="w-full text-left px-3 py-2 text-body text-neutral-600 hover:bg-neutral-50 hover:text-neutral-900 rounded-small transition-colors min-h-[44px] focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:ring-opacity-50"
+          aria-label="Sign out of your account"
         >
           Sign Out
         </button>

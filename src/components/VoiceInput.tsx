@@ -13,9 +13,16 @@ export function VoiceInput({ onTranscript, placeholder = 'Click to speak...', cl
 
   const startListening = () => {
     setIsListening(true);
-    // Simulated voice recognition - in production, use Web Speech API
+    // Mock transcription with medical terminology
     setTimeout(() => {
-      const mockTranscript = 'Patient reports persistent headache for 3 days, mild fever, and fatigue';
+      const mockTranscripts = [
+        'Patient reports persistent headache for 3 days, mild fever, and fatigue',
+        'Experiencing chest pain radiating to left arm, shortness of breath',
+        'Complains of abdominal pain in lower right quadrant, nausea and vomiting',
+        'Presents with cough, sore throat, and body aches for 2 days',
+        'Reports dizziness, blurred vision, and elevated blood pressure readings'
+      ];
+      const mockTranscript = mockTranscripts[Math.floor(Math.random() * mockTranscripts.length)];
       setTranscript(mockTranscript);
       onTranscript(mockTranscript);
       setIsListening(false);

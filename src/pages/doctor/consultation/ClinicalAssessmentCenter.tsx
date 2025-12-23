@@ -1,31 +1,53 @@
-import { useState } from 'react';
-import { Card, Input, Button, VoiceInput, AISuggestions } from '@/components';
+import { useState, useEffect } from 'react';
+import { Card, Input, Button } from '@/components';
+import { VoiceInput, AISuggestions } from '@/components';
 import { UnifiedPatientContext } from '@/components/UnifiedPatientContext';
+import { mockDataService } from '@/services/mockDataService';
 
 interface ClinicalAssessmentCenterProps {
   onNext: () => void;
   onPrevious: () => void;
   onSave: () => void;
+  data?: any;
+  setData?: (data: any) => void;
 }
 
-export function ClinicalAssessmentCenter({ onNext, onPrevious, onSave }: ClinicalAssessmentCenterProps) {
-  const [chiefComplaint, setChiefComplaint] = useState('');
-  const [symptoms, setSymptoms] = useState<string[]>([]);
-  const [diagnosis, setDiagnosis] = useState('');
+export function ClinicalAssessmentCenter({ onNext, onPrevious, onSave, data, setData }: ClinicalAssessmentCenterProps) {
+  const [chiefComplaint, setChiefComplaint] = useState(data?.clinicalAssessment?.chiefComplaint || '');
+  const [symptoms, setSymptoms] = useState<string[]>(data?.clinicalAssessment?.symptoms || []);
+  const [diagnosis, setDiagnosis] = useState(data?.clinicalAssessment?.diagnosis || '');
+  const [patientData, setPatientData] = useState<any>(null);
 
-  const patientData = {
-    patientId: 'P001',
-    patientName: 'John Smith',
-    age: 45,
-    gender: 'Male',
-    allergies: ['Penicillin', 'Sulfa drugs'],
-    currentMedications: ['Metformin 500mg', 'Lisinopril 10mg'],
-    vitalSigns: { bp: '120/80', hr: 72, temp: 98.6, o2: 98 }
+  useEffect(() => {
+    const patient = mockDataService.getPatient(data?.patientId || 'P001');
+    const vitals = mockDataService.getVitals(data?.patientId || 'P001')[0];
+    if (patient) {
+      setPatientData({
+        patientId: patient.id,
+        patientName: patient.name,
+        age: patient.age,
+        gender: patient.gender,
+        allergies: patient.allergies,
+        currentMedications: patient.medications,
+        vitalSigns: vitals || { bp: '120/80', hr: 72, temp: 98.6, o2: 98 }
+      });
+    }
+  }, [data?.patientId]);
+
+  const handleNext = () => {
+    if (setData) setData({ ...data, clinicalAssessment: { chiefComplaint, symptoms, diagnosis } });
+    onNext();
   };
+
+  const handleSave = () => {
+    if (setData) setData({ ...data, clinicalAssessment: { chiefComplaint, symptoms, diagnosis } });
+    onSave();
+  };
+
+  if (!patientData) return <div>Loading...</div>;
 
   const commonComplaints = ['Fever', 'Cough', 'Headache', 'Chest Pain', 'Abdominal Pain'];
   const commonSymptoms = ['Fatigue', 'Nausea', 'Dizziness', 'Shortness of breath', 'Loss of appetite'];
-  const aiSuggestions = ['Type 2 Diabetes - Uncontrolled (E11.65)', 'Hypertension (I10)', 'Upper Respiratory Infection (J06.9)'];
 
   return (
     <div className="space-y-4">
@@ -33,8 +55,8 @@ export function ClinicalAssessmentCenter({ onNext, onPrevious, onSave }: Clinica
         <h2 className="text-h3 text-neutral-900">Clinical Assessment Center</h2>
         <div className="flex gap-2">
           <Button variant="tertiary" size="sm" onClick={onPrevious}>← Back</Button>
-          <Button variant="secondary" size="sm" onClick={onSave}>Save Draft</Button>
-          <Button onClick={onNext}>Continue to Treatment →</Button>
+          <Button variant="secondary" size="sm" onClick={handleSave}>Save Draft</Button>
+          <Button onClick={handleNext}>Continue to Treatment →</Button>
         </div>
       </div>
 

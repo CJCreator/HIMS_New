@@ -1,25 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, Input, Button } from '@/components';
 import { UnifiedPatientContext } from '@/components/UnifiedPatientContext';
+import { mockDataService } from '@/services/mockDataService';
 
 interface PatientOverviewHubProps {
   onNext: () => void;
   onSave: () => void;
+  data?: any;
+  setData?: (data: any) => void;
 }
 
-export function PatientOverviewHub({ onNext, onSave }: PatientOverviewHubProps) {
+export function PatientOverviewHub({ onNext, onSave, data, setData }: PatientOverviewHubProps) {
   const [expanded, setExpanded] = useState({ history: true, vitals: true });
+  const [patientData, setPatientData] = useState<any>(null);
 
-  const patientData = {
-    patientId: 'P001',
-    patientName: 'John Smith',
-    age: 45,
-    gender: 'Male',
-    allergies: ['Penicillin', 'Sulfa drugs'],
-    currentMedications: ['Metformin 500mg', 'Lisinopril 10mg'],
-    vitalSigns: { bp: '120/80', hr: 72, temp: 98.6, o2: 98 },
-    lastVisit: '2024-01-15'
+  useEffect(() => {
+    const patient = mockDataService.getPatient(data?.patientId || 'P001');
+    const vitals = mockDataService.getVitals(data?.patientId || 'P001')[0];
+    if (patient) {
+      setPatientData({
+        patientId: patient.id,
+        patientName: patient.name,
+        age: patient.age,
+        gender: patient.gender,
+        allergies: patient.allergies,
+        currentMedications: patient.medications,
+        vitalSigns: vitals || { bp: '120/80', hr: 72, temp: 98.6, o2: 98 },
+        lastVisit: '2024-01-15'
+      });
+    }
+  }, [data?.patientId]);
+
+  const handleNext = () => {
+    if (setData && patientData) setData({ ...data, patientOverview: patientData });
+    onNext();
   };
+
+  const handleSave = () => {
+    if (setData && patientData) setData({ ...data, patientOverview: patientData });
+    onSave();
+  };
+
+  if (!patientData) return <div>Loading...</div>;
 
   const medicalHistory = [
     { date: '2024-01-15', condition: 'Type 2 Diabetes', status: 'Ongoing' },
@@ -32,8 +54,8 @@ export function PatientOverviewHub({ onNext, onSave }: PatientOverviewHubProps) 
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-h3 text-neutral-900">Patient Overview Hub</h2>
         <div className="flex gap-2">
-          <Button variant="secondary" size="sm" onClick={onSave}>Save Draft</Button>
-          <Button onClick={onNext}>Continue to Assessment →</Button>
+          <Button variant="secondary" size="sm" onClick={handleSave}>Save Draft</Button>
+          <Button onClick={handleNext}>Continue to Assessment →</Button>
         </div>
       </div>
 

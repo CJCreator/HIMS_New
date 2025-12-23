@@ -1,59 +1,15 @@
+import { useState, useEffect } from 'react';
 import { Card, Badge } from '@/components';
-
-interface PatientStatus {
-  id: string;
-  name: string;
-  currentStage: string;
-  status: 'ready' | 'in-progress' | 'waiting' | 'delayed';
-  assignedDoctor: string;
-  waitTime: number;
-  priority: 'normal' | 'urgent' | 'critical';
-  nextAction: string;
-}
+import { mockDataService } from '@/services/mockDataService';
+import { useRealtimeSimulation } from '@/hooks/useRealtimeSimulation';
 
 export function UnifiedPatientStatusDashboard() {
-  const patients: PatientStatus[] = [
-    {
-      id: 'P001',
-      name: 'John Smith',
-      currentStage: 'Consultation',
-      status: 'in-progress',
-      assignedDoctor: 'Dr. Wilson',
-      waitTime: 5,
-      priority: 'normal',
-      nextAction: 'Prescription pending'
-    },
-    {
-      id: 'P002',
-      name: 'Sarah Johnson',
-      currentStage: 'Vitals Recording',
-      status: 'in-progress',
-      assignedDoctor: 'Dr. Brown',
-      waitTime: 12,
-      priority: 'urgent',
-      nextAction: 'Waiting for nurse'
-    },
-    {
-      id: 'P003',
-      name: 'Mike Davis',
-      currentStage: 'Pharmacy',
-      status: 'waiting',
-      assignedDoctor: 'Dr. Wilson',
-      waitTime: 8,
-      priority: 'normal',
-      nextAction: 'Prescription processing'
-    },
-    {
-      id: 'P004',
-      name: 'Emily Chen',
-      currentStage: 'Check-in',
-      status: 'ready',
-      assignedDoctor: 'Dr. Brown',
-      waitTime: 2,
-      priority: 'critical',
-      nextAction: 'Ready for vitals'
-    }
-  ];
+  const [patients, setPatients] = useState<any[]>([]);
+  const { updateCount } = useRealtimeSimulation();
+
+  useEffect(() => {
+    setPatients(mockDataService.getPatients());
+  }, [updateCount]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -120,7 +76,7 @@ export function UnifiedPatientStatusDashboard() {
             </div>
             
             <div className="flex items-center justify-between mt-2 pt-2 border-t border-neutral-200">
-              <p className="text-body-sm text-neutral-700">Next: {patient.nextAction}</p>
+              <p className="text-body-sm text-neutral-700">Next: {patient.currentStage}</p>
               <div className={`w-2 h-2 rounded-full ${getStatusColor(patient.status)} animate-pulse`} />
             </div>
           </div>
@@ -130,19 +86,19 @@ export function UnifiedPatientStatusDashboard() {
       {/* Queue Statistics */}
       <div className="grid grid-cols-4 gap-3 mt-4 pt-4 border-t border-neutral-200">
         <div className="text-center">
-          <p className="text-h4 text-success">1</p>
+          <p className="text-h4 text-success">{patients.filter(p => p.status === 'ready').length}</p>
           <p className="text-body-sm text-neutral-600">Ready</p>
         </div>
         <div className="text-center">
-          <p className="text-h4 text-warning">2</p>
+          <p className="text-h4 text-warning">{patients.filter(p => p.status === 'in-progress').length}</p>
           <p className="text-body-sm text-neutral-600">In Progress</p>
         </div>
         <div className="text-center">
-          <p className="text-h4 text-info">1</p>
+          <p className="text-h4 text-info">{patients.filter(p => p.status === 'waiting').length}</p>
           <p className="text-body-sm text-neutral-600">Waiting</p>
         </div>
         <div className="text-center">
-          <p className="text-h4 text-neutral-700">15 min</p>
+          <p className="text-h4 text-neutral-700">{Math.round(patients.reduce((sum, p) => sum + p.waitTime, 0) / patients.length)} min</p>
           <p className="text-body-sm text-neutral-600">Avg Wait</p>
         </div>
       </div>

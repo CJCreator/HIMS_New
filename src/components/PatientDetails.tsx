@@ -20,10 +20,12 @@ export const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId }) => 
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'vitals', label: 'Vitals' },
+    { id: 'timeline', label: 'Timeline' },
     { id: 'medications', label: 'Medications' },
     { id: 'allergies', label: 'Allergies' },
-    { id: 'history', label: 'Medical History' },
-    { id: 'timeline', label: 'Timeline' }
+    { id: 'immunization', label: 'Immunization' },
+    { id: 'problems', label: 'Problem List' },
+    { id: 'history', label: 'Medical History' }
   ];
 
   return (
@@ -182,6 +184,95 @@ export const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId }) => 
                 <div className="flex-1 border-l-2 border-gray-300 pl-4 pb-4">
                   <div className="font-medium">Medication Administered</div>
                   <div className="text-sm text-gray-600">Regular schedule</div>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <div className="w-24 text-sm text-gray-600">2 days ago</div>
+                <div className="flex-1 border-l-2 border-gray-300 pl-4 pb-4">
+                  <div className="font-medium">Lab Results Reviewed</div>
+                  <div className="text-sm text-gray-600">All values within normal range</div>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {activeTab === 'immunization' && (
+          <Card className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold">Immunization Records</h3>
+              <Button size="sm">Add Immunization</Button>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border rounded-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-medium">💉 COVID-19 Vaccine (Pfizer)</div>
+                    <div className="text-sm text-gray-600">Administered: March 15, 2024</div>
+                    <div className="text-sm text-gray-600">Next due: September 15, 2024</div>
+                  </div>
+                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Up to date</span>
+                </div>
+              </div>
+              <div className="p-4 border rounded-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-medium">💉 Influenza Vaccine</div>
+                    <div className="text-sm text-gray-600">Administered: October 10, 2023</div>
+                    <div className="text-sm text-gray-600">Next due: October 2024</div>
+                  </div>
+                  <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded">Due soon</span>
+                </div>
+              </div>
+              <div className="p-4 border rounded-lg">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-medium">💉 Tetanus/Diphtheria</div>
+                    <div className="text-sm text-gray-600">Administered: January 20, 2020</div>
+                    <div className="text-sm text-gray-600">Next due: January 2030</div>
+                  </div>
+                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded">Up to date</span>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        {activeTab === 'problems' && (
+          <Card className="p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="font-semibold">Active Problem List</h3>
+              <Button size="sm">Add Problem</Button>
+            </div>
+            <div className="space-y-3">
+              <div className="p-4 border-l-4 border-red-500 bg-red-50 rounded">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-medium text-red-800">🔴 Hypertension</div>
+                    <div className="text-sm text-red-600">Onset: January 2023 • Status: Active</div>
+                    <div className="text-sm text-red-600">Last BP: {patient.vitals?.bloodPressure || 'N/A'}</div>
+                  </div>
+                  <span className="px-2 py-1 bg-red-200 text-red-800 text-xs rounded">High Priority</span>
+                </div>
+              </div>
+              <div className="p-4 border-l-4 border-yellow-500 bg-yellow-50 rounded">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-medium text-yellow-800">🟡 Type 2 Diabetes</div>
+                    <div className="text-sm text-yellow-600">Onset: March 2022 • Status: Controlled</div>
+                    <div className="text-sm text-yellow-600">Last HbA1c: 6.8% (Target: &lt;7%)</div>
+                  </div>
+                  <span className="px-2 py-1 bg-yellow-200 text-yellow-800 text-xs rounded">Monitoring</span>
+                </div>
+              </div>
+              <div className="p-4 border-l-4 border-blue-500 bg-blue-50 rounded">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <div className="font-medium text-blue-800">🔵 Seasonal Allergies</div>
+                    <div className="text-sm text-blue-600">Onset: Childhood • Status: Seasonal</div>
+                    <div className="text-sm text-blue-600">Triggers: Pollen, dust mites</div>
+                  </div>
+                  <span className="px-2 py-1 bg-blue-200 text-blue-800 text-xs rounded">Stable</span>
                 </div>
               </div>
             </div>

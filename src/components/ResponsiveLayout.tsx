@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { RootState } from '../store';
+import { RootState } from '@/store';
 import { Sidebar } from './Sidebar';
 import { NotificationCenter } from './NotificationCenter';
 import { RealTimeUpdates } from './RealtimeUpdates';
@@ -33,15 +33,18 @@ export const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({ children }) 
     <div className="min-h-screen bg-gray-50">
       {/* Mobile Header */}
       {isMobile && (
-        <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between lg:hidden">
+        <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between lg:hidden sticky top-0 z-30">
           <button
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+            className="p-3 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 min-h-[44px] min-w-[44px] flex items-center justify-center"
+            aria-label="Toggle sidebar"
           >
-            <span className="text-xl">☰</span>
+            <span className="text-xl">{sidebarOpen ? '✕' : '☰'}</span>
           </button>
-          <h1 className="text-lg font-semibold text-gray-900">AroCord HIMS</h1>
-          <NotificationCenter />
+          <h1 className="text-lg font-semibold text-gray-900 truncate">AroCord HIMS</h1>
+          <div className="min-h-[44px] min-w-[44px] flex items-center justify-center">
+            <NotificationCenter />
+          </div>
         </div>
       )}
 
@@ -49,17 +52,18 @@ export const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({ children }) 
         {/* Sidebar */}
         <div className={`${
           isMobile 
-            ? `fixed inset-y-0 left-0 z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out`
+            ? `fixed inset-y-0 left-0 z-50 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-200 ease-out w-sidebar`
             : 'relative'
         }`}>
-          <Sidebar />
+          <Sidebar onClose={() => setSidebarOpen(false)} />
         </div>
 
         {/* Mobile Overlay */}
         {isMobile && sidebarOpen && (
           <div 
-            className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden"
+            className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden transition-opacity duration-200"
             onClick={() => setSidebarOpen(false)}
+            onTouchStart={() => setSidebarOpen(false)}
           />
         )}
 
@@ -91,7 +95,11 @@ export const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({ children }) 
           )}
 
           {/* Page Content */}
-          <main className={`${isMobile ? 'p-4' : 'p-6'} max-w-full overflow-x-auto`}>
+          <main className={`${
+            isMobile 
+              ? 'p-3 pt-4' 
+              : 'p-6'
+          } max-w-full overflow-x-auto min-h-screen`}>
             {children}
           </main>
         </div>

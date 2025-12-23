@@ -1,17 +1,25 @@
+import { useState, useEffect } from 'react';
 import { Card, Button, Badge } from '@/components';
 import { UnifiedPatientStatusDashboard } from '@/components/UnifiedPatientStatusDashboard';
 import { SharedPatientContextPanel } from '@/components/SharedPatientContextPanel';
 import { useNavigate } from 'react-router-dom';
+import { mockDataService } from '@/services/mockDataService';
+import { useRealtimeSimulation } from '@/hooks/useRealtimeSimulation';
 
 export function EnhancedNurseDashboard() {
   const navigate = useNavigate();
+  const [stats, setStats] = useState({ total: 0, vitalsComplete: 0, pending: 0, readyForDoctor: 0 });
+  const { updateCount } = useRealtimeSimulation();
 
-  const todayStats = {
-    total: 12,
-    vitalsComplete: 8,
-    pending: 4,
-    readyForDoctor: 3
-  };
+  useEffect(() => {
+    const patients = mockDataService.getPatients();
+    setStats({
+      total: patients.length,
+      vitalsComplete: patients.filter(p => p.currentStage !== 'Check-in' && p.currentStage !== 'Waiting Room').length,
+      pending: patients.filter(p => p.currentStage === 'Vitals Recording').length,
+      readyForDoctor: patients.filter(p => p.status === 'ready').length
+    });
+  }, [updateCount]);
 
   return (
     <div className="space-y-6">
@@ -28,19 +36,19 @@ export function EnhancedNurseDashboard() {
       {/* Statistics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4">
-          <div className="text-h2 text-nurse">{todayStats.total}</div>
+          <div className="text-h2 text-nurse">{stats.total}</div>
           <div className="text-body text-neutral-600">Patients Today</div>
         </Card>
         <Card className="p-4">
-          <div className="text-h2 text-success">{todayStats.vitalsComplete}</div>
+          <div className="text-h2 text-success">{stats.vitalsComplete}</div>
           <div className="text-body text-neutral-600">Vitals Complete</div>
         </Card>
         <Card className="p-4">
-          <div className="text-h2 text-warning">{todayStats.pending}</div>
+          <div className="text-h2 text-warning">{stats.pending}</div>
           <div className="text-body text-neutral-600">Pending Vitals</div>
         </Card>
         <Card className="p-4 bg-success/10">
-          <div className="text-h2 text-success">{todayStats.readyForDoctor}</div>
+          <div className="text-h2 text-success">{stats.readyForDoctor}</div>
           <div className="text-body text-neutral-600">Ready for Doctor</div>
         </Card>
       </div>
