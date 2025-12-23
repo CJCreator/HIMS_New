@@ -1,0 +1,196 @@
+{
+  "config": {
+    "configFile": "c:\\Users\\HP\\OneDrive\\Desktop\\Projects\\KIRO\\HIMS-New\\playwright.config.ts",
+    "rootDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "c:\\Users\\HP\\OneDrive\\Desktop\\Projects\\KIRO\\HIMS-New\\e2e\\global-setup.ts",
+    "globalTeardown": "c:\\Users\\HP\\OneDrive\\Desktop\\Projects\\KIRO\\HIMS-New\\e2e\\global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/e2e-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "test-results/e2e-junit.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Microsoft Edge",
+        "name": "Microsoft Edge",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Google Chrome",
+        "name": "Google Chrome",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Tablet",
+        "name": "Tablet",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/test-results/e2e-artifacts",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "Large Desktop",
+        "name": "Large Desktop",
+        "testDir": "c:/Users/HP/OneDrive/Desktop/Projects/KIRO/HIMS-New/e2e",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.57.0",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true,
+      "timeout": 120000
+    }
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "Error: ENOTEMPTY: directory not empty, rmdir 'c:\\Users\\HP\\OneDrive\\Desktop\\Projects\\KIRO\\HIMS-New\\test-results\\e2e-artifacts'",
+      "stack": "Error: ENOTEMPTY: directory not empty, rmdir 'c:\\Users\\HP\\OneDrive\\Desktop\\Projects\\KIRO\\HIMS-New\\test-results\\e2e-artifacts'"
+    }
+  ],
+  "stats": {
+    "startTime": "2025-12-23T13:03:02.982Z",
+    "duration": 100082.83200000001,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

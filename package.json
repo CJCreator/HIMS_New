@@ -33,7 +33,7 @@
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
     "autoprefixer": "^10.4.20",
-    "axe-playwright": "^1.2.3",
+    "@axe-core/playwright": "^4.8.3",
     "eslint": "^9.15.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
@@ -56,6 +56,21 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest --coverage",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:headed": "playwright test --headed",
+    "test:cross-browser": "playwright test --project=chromium --project=firefox --project=webkit --project='Microsoft Edge' --project='Google Chrome'",
+    "test:devices": "playwright test --project='Mobile Chrome' --project='Mobile Safari' --project=Tablet --project='Large Desktop'",
+    "test:runner": "node scripts/test-runner.js",
+    "test:runner:cross-browser": "node scripts/test-runner.js cross-browser",
+    "test:runner:devices": "node scripts/test-runner.js devices",
+    "test:runner:accessibility": "node scripts/test-runner.js accessibility",
+    "test:runner:performance": "node scripts/test-runner.js performance",
+    "test:runner:role-based": "node scripts/test-runner.js role-based",
+    "test:runner:all": "node scripts/test-runner.js all",
+    "test:report": "node scripts/test-reporter.js",
+    "test:dashboard": "npm run test:runner:all && npm run test:report && open test-report/index.html"
   }
 }

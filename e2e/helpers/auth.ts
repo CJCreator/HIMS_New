@@ -68,7 +68,7 @@ export async function loginAsRole(page: Page, role: string): Promise<void> {
 
   const selector = dashboardSelectors[role];
   if (selector) {
-    await page.waitForSelector(selector);
+    await page.waitForSelector(selector, { timeout: 15000 });
   }
 }
 

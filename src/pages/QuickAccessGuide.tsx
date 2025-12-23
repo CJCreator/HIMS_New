@@ -16,12 +16,13 @@ export function QuickAccessGuide() {
   };
 
   const roles = [
-    { name: 'Admin', path: '/signin', icon: '👨‍💼', color: 'bg-purple-100' },
-    { name: 'Doctor', path: '/signin', icon: '👨‍⚕️', color: 'bg-blue-100' },
-    { name: 'Nurse', path: '/signin', icon: '👩‍⚕️', color: 'bg-green-100' },
+    { name: 'Admin', path: '/signin', icon: '👨💼', color: 'bg-purple-100' },
+    { name: 'Doctor', path: '/signin', icon: '👨⚕️', color: 'bg-blue-100' },
+    { name: 'Nurse', path: '/signin', icon: '👩⚕️', color: 'bg-green-100' },
     { name: 'Pharmacist', path: '/signin', icon: '💊', color: 'bg-orange-100' },
     { name: 'Receptionist', path: '/signin', icon: '📋', color: 'bg-pink-100' },
-    { name: 'Patient', path: '/patient-login', icon: '🧑‍🦱', color: 'bg-teal-100' }
+    { name: 'Lab Technician', path: '/signin', icon: '🔬', color: 'bg-cyan-100' },
+    { name: 'Patient', path: '/patient-login', icon: '🧑🦱', color: 'bg-teal-100' }
   ];
 
   return (
@@ -36,7 +37,7 @@ export function QuickAccessGuide() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
           {roles.map(role => (
             <button
               key={role.name}

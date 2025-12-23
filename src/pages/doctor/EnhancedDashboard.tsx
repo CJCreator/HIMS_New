@@ -126,62 +126,6 @@ export function EnhancedDoctorDashboard() {
         </Card>
       )}
 
-      {/* Quick Access to Consultation Flows */}
-      <Card className="p-6">
-        <h2 className="text-h3 text-neutral-900 mb-4">Quick Access - Consultation Flows</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          <Button 
-            variant="primary" 
-            className="justify-start h-auto py-4"
-            onClick={() => navigate('/doctor/consultation')}
-          >
-            <div className="text-left">
-              <div className="font-semibold">Complete System</div>
-              <div className="text-xs opacity-90">All features enabled</div>
-            </div>
-          </Button>
-          <Button 
-            variant="secondary" 
-            className="justify-start h-auto py-4"
-            onClick={() => navigate('/doctor/consultation-phase3')}
-          >
-            <div className="text-left">
-              <div className="font-semibold">Phase 3</div>
-              <div className="text-xs opacity-90">Workflow automation</div>
-            </div>
-          </Button>
-          <Button 
-            variant="secondary" 
-            className="justify-start h-auto py-4"
-            onClick={() => navigate('/doctor/consultation-phase2')}
-          >
-            <div className="text-left">
-              <div className="font-semibold">Phase 2</div>
-              <div className="text-xs opacity-90">AI & collaboration</div>
-            </div>
-          </Button>
-          <Button 
-            variant="secondary" 
-            className="justify-start h-auto py-4"
-            onClick={() => navigate('/doctor/consultation-phase1')}
-          >
-            <div className="text-left">
-              <div className="font-semibold">Phase 1</div>
-              <div className="text-xs opacity-90">5 unified dashboards</div>
-            </div>
-          </Button>
-        </div>
-        <div className="mt-3">
-          <Button 
-            variant="tertiary" 
-            size="sm"
-            onClick={() => navigate('/doctor/consultation-legacy')}
-          >
-            View Legacy Flow (14 steps)
-          </Button>
-        </div>
-      </Card>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Patient Status - 2 columns */}
         <div className="lg:col-span-2">

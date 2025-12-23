@@ -7,6 +7,7 @@ import { UserRole } from '@/types';
 import { validateForm, authSchemas } from '@/utils/validationSchemas';
 
 export function SignIn() {
+  // Staff login form
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>('admin');
@@ -72,6 +73,7 @@ export function SignIn() {
             onChange={(e) => handleInputChange('email', e.target.value)}
             placeholder="Enter your email"
             error={errors.email}
+            data-testid="email"
             required
           />
 
@@ -82,6 +84,7 @@ export function SignIn() {
             onChange={(e) => handleInputChange('password', e.target.value)}
             placeholder="Enter your password"
             error={errors.password}
+            data-testid="password"
             required
           />
 
@@ -93,6 +96,7 @@ export function SignIn() {
               value={role}
               onChange={(e) => setRole(e.target.value as UserRole)}
               className="block w-full px-3 py-2 border border-neutral-300 rounded-minimal shadow-sm text-body focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+              data-testid="role-select"
             >
               <option value="admin">Admin</option>
               <option value="doctor">Doctor</option>
@@ -108,6 +112,7 @@ export function SignIn() {
             className="w-full"
             loading={loading}
             disabled={!email || !password}
+            data-testid="signin-button"
           >
             Sign In
           </Button>

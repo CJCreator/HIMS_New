@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { loginAsRole } from './helpers/auth';
 
 test.describe('Doctor Consultation Workflow', () => {
   test.beforeEach(async ({ page }) => {
@@ -213,32 +214,69 @@ test.describe('Emergency Scenarios', () => {
   });
 });
 
+test.describe('Doctor Navigation and Features', () => {
+  test.beforeEach(async ({ page }) => {
+    await loginAsRole(page, 'doctor');
+  });
+
+  test('doctor can access appointments', async ({ page }) => {
+    await page.click('[data-testid="doctor-nav"]');
+    await page.click('[data-testid="appointments-link"]');
+    await expect(page.locator('[data-testid="appointment-calendar"]')).toBeVisible();
+    await expect(page.locator('[data-testid="upcoming-appointments"]')).toBeVisible();
+  });
+
+  test('doctor can access prescription history', async ({ page }) => {
+    await page.click('[data-testid="doctor-nav"]');
+    await page.click('[data-testid="prescription-history-link"]');
+    await expect(page.locator('[data-testid="prescription-list"]')).toBeVisible();
+  });
+
+  test('doctor can access clinical support tools', async ({ page }) => {
+    await page.click('[data-testid="doctor-nav"]');
+    await page.click('[data-testid="clinical-support-link"]');
+    await expect(page.locator('[data-testid="guidelines-panel"]')).toBeVisible();
+  });
+
+  test('doctor can access performance dashboard', async ({ page }) => {
+    await page.click('[data-testid="doctor-nav"]');
+    await page.click('[data-testid="performance-link"]');
+    await expect(page.locator('[data-testid="performance-metrics"]')).toBeVisible();
+  });
+
+  test('doctor can access profile settings', async ({ page }) => {
+    await page.click('[data-testid="doctor-nav"]');
+    await page.click('[data-testid="profile-link"]');
+    await expect(page.locator('[data-testid="profile-form"]')).toBeVisible();
+  });
+});
+
 test.describe('Performance and Accessibility', () => {
   test('consultation workflow loads within performance budget', async ({ page }) => {
     // Start performance monitoring
     await page.goto('/auth/signin');
     await page.fill('[data-testid="email"]', 'doctor@hospital.com');
     await page.fill('[data-testid="password"]', 'password123');
-    
+
     const startTime = Date.now();
     await page.click('[data-testid="signin-button"]');
-    
+
     // Wait for dashboard to fully load
     await expect(page.locator('[data-testid="doctor-dashboard"]')).toBeVisible();
     const loadTime = Date.now() - startTime;
-    
+
     // Verify load time is under 3 seconds
     expect(loadTime).toBeLessThan(3000);
-    
+
     // Navigate to consultation
     const consultationStartTime = Date.now();
     await page.click('[data-testid="patient-queue-nav"]');
     await page.click('[data-testid="patient-item"]:first-child');
     await page.click('[data-testid="start-consultation"]');
-    
+
     await expect(page.locator('[data-testid="consultation-step-1"]')).toBeVisible();
     const consultationLoadTime = Date.now() - consultationStartTime;
-    
+
     // Verify consultation loads quickly
     expect(consultationLoadTime).toBeLessThan(2000);
   });
@@ -248,32 +286,32 @@ test.describe('Performance and Accessibility', () => {
     await page.fill('[data-testid="email"]', 'doctor@hospital.com');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="signin-button"]');
-    
+
     await page.click('[data-testid="patient-queue-nav"]');
     await page.click('[data-testid="patient-item"]:first-child');
     await page.click('[data-testid="start-consultation"]');
-    
+
     // Skip to diagnosis step
     for (let i = 0; i < 6; i++) {
       await page.keyboard.press('Tab');
       await page.keyboard.press('Enter'); // Skip steps
     }
-    
+
     // Test keyboard navigation in diagnosis form
     await page.keyboard.press('Tab'); // Focus on diagnosis search
     await page.keyboard.type('Hypertension');
     await page.keyboard.press('ArrowDown'); // Navigate suggestions
     await page.keyboard.press('Enter'); // Select diagnosis
-    
+
     await page.keyboard.press('Tab'); // Move to primary diagnosis checkbox
     await page.keyboard.press('Space'); // Check checkbox
-    
+
     await page.keyboard.press('Tab'); // Move to notes field
     await page.keyboard.type('Essential hypertension');
-    
+
     await page.keyboard.press('Tab'); // Move to next button
     await page.keyboard.press('Enter'); // Proceed to next step
-    
+
     // Verify we moved to next step
     await expect(page.locator('[data-testid="consultation-step-8"]')).toBeVisible();
   });
