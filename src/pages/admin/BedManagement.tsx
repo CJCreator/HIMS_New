@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Card, Button } from '@/components';
+import { toast } from 'sonner';
+import { Card, Button, Modal, Input, Breadcrumbs } from '@/components';
 
 interface Bed {
   id: string;
@@ -215,13 +216,15 @@ const mockEmergencyWorkflows: EmergencyWorkflow[] = [
 
 
 export function BedManagement() {
-  const [beds] = useState<Bed[]>(mockBeds);
+  const [beds, setBeds] = useState<Bed[]>(mockBeds);
   const [bedAnalytics] = useState<BedAnalytics[]>(mockBedAnalytics);
   const [emergencyWorkflows] = useState<EmergencyWorkflow[]>(mockEmergencyWorkflows);
   const [selectedWard, setSelectedWard] = useState<string>('all');
   const [, setShowAnalyticsModal] = useState(false);
   const [, setShowEmergencyModal] = useState(false);
   const [, setSelectedBedForEmergency] = useState<Bed | null>(null);
+  const [showAddBedModal, setShowAddBedModal] = useState(false);
+  const [newBed, setNewBed] = useState({ number: '', ward: 'General' });
 
   const wards = ['all', 'ICU', 'General', 'Pediatric', 'Emergency'];
   const filteredBeds = selectedWard === 'all' ? beds : beds.filter(bed => bed.ward === selectedWard);
@@ -257,8 +260,23 @@ export function BedManagement() {
   };
 
   const handleQuickAction = (bed: Bed, action: 'assign' | 'discharge' | 'clean') => {
-    console.log(`Quick action ${action} for bed ${bed.number}`);
-    // Here you would implement the actual logic
+    const updatedBeds = beds.map(b => {
+      if (b.id === bed.id) {
+        if (action === 'assign') return { ...b, status: 'occupied' as const };
+        if (action === 'discharge') return { ...b, status: 'cleaning' as const, patient: undefined };
+        if (action === 'clean') return { ...b, status: 'available' as const };
+      }
+      return b;
+    });
+    setBeds(updatedBeds);
+    toast.success(`Bed ${bed.number} ${action === 'assign' ? 'assigned' : action === 'discharge' ? 'discharged' : 'cleaned'}`);
+  };
+
+  const handleAddBed = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success(`Bed ${newBed.number} added to ${newBed.ward} ward`);
+    setNewBed({ number: '', ward: 'General' });
+    setShowAddBedModal(false);
   };
 
   const stats = {
@@ -273,6 +291,7 @@ export function BedManagement() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs />
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Bed Management</h1>
         <p className="text-gray-600">Real-time bed occupancy and operational management</p>
@@ -331,11 +350,11 @@ export function BedManagement() {
               >
                 📈 Ward Analytics
               </Button>
-              <Button>Add New Bed</Button>
+              <Button onClick={() => setShowAddBedModal(true)}>Add New Bed</Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {filteredBeds.map((bed) => {
               const occupancyInfo = getOccupancyStatus(bed);
               return (
@@ -533,6 +552,25 @@ export function BedManagement() {
             </div>
           </Card>
         )}
+
+      <Modal isOpen={showAddBedModal} onClose={() => setShowAddBedModal(false)} title="Add New Bed" size="sm">
+        <form onSubmit={handleAddBed} className="space-y-4">
+          <Input label="Bed Number" placeholder="e.g., A101" value={newBed.number} onChange={(e) => setNewBed({...newBed, number: e.target.value})} required />
+          <div>
+            <label className="block text-body font-medium text-neutral-700 mb-1">Ward</label>
+            <select className="block w-full px-3 py-2 border border-neutral-300 rounded-minimal shadow-sm text-body focus:outline-none focus:ring-2 focus:ring-primary-500" value={newBed.ward} onChange={(e) => setNewBed({...newBed, ward: e.target.value})}>
+              <option value="ICU">ICU</option>
+              <option value="General">General</option>
+              <option value="Pediatric">Pediatric</option>
+              <option value="Emergency">Emergency</option>
+            </select>
+          </div>
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button variant="secondary" onClick={() => setShowAddBedModal(false)}>Cancel</Button>
+            <Button type="submit">Add Bed</Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

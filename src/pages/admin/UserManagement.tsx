@@ -172,6 +172,7 @@ export function UserManagement() {
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedUserForActivity, setSelectedUserForActivity] = useState<User | null>(null);
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
+  const [newUser, setNewUser] = useState({ name: '', email: '', role: 'doctor', password: '' });
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -193,6 +194,13 @@ export function UserManagement() {
     }
     setShowDeleteModal(false);
     setUserToDelete(null);
+  };
+
+  const handleCreateUser = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success(`User ${newUser.name} created successfully`);
+    setNewUser({ name: '', email: '', role: 'doctor', password: '' });
+    setShowCreateModal(false);
   };
 
   // Utility functions for enhanced user management
@@ -534,11 +542,13 @@ export function UserManagement() {
               action={{ label: 'Add New User', onClick: () => setShowCreateModal(true) }}
             />
           ) : (
-            <Table
-              columns={columns}
-              data={filteredUsers}
-              onRowClick={(user) => console.log('Selected user:', sanitizer.forLog(user.id))}
-            />
+            <div className="overflow-x-auto">
+              <Table
+                columns={columns}
+                data={filteredUsers}
+                onRowClick={(user) => console.log('Selected user:', sanitizer.forLog(user.id))}
+              />
+            </div>
           )}
         </div>
       </Card>
@@ -549,19 +559,19 @@ export function UserManagement() {
         title="Add New User"
         size="md"
       >
-        <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-          <Input label="Full Name" placeholder="Enter full name" required />
-          <Input label="Email" type="email" placeholder="Enter email address" required />
+        <form className="space-y-4" onSubmit={handleCreateUser}>
+          <Input label="Full Name" placeholder="Enter full name" value={newUser.name} onChange={(e) => setNewUser({...newUser, name: e.target.value})} required />
+          <Input label="Email" type="email" placeholder="Enter email address" value={newUser.email} onChange={(e) => setNewUser({...newUser, email: e.target.value})} required />
           <div>
             <label className="block text-body font-medium text-neutral-700 mb-1">Role</label>
-            <select className="block w-full px-3 py-2 border border-neutral-300 rounded-minimal shadow-sm text-body focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+            <select className="block w-full px-3 py-2 border border-neutral-300 rounded-minimal shadow-sm text-body focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" value={newUser.role} onChange={(e) => setNewUser({...newUser, role: e.target.value})}>
               <option value="doctor">Doctor</option>
               <option value="nurse">Nurse</option>
               <option value="receptionist">Receptionist</option>
               <option value="pharmacist">Pharmacist</option>
             </select>
           </div>
-          <Input label="Password" type="password" placeholder="Enter password" required />
+          <Input label="Password" type="password" placeholder="Enter password" value={newUser.password} onChange={(e) => setNewUser({...newUser, password: e.target.value})} required />
           <div className="flex justify-end space-x-3 pt-4">
             <Button variant="secondary" onClick={() => setShowCreateModal(false)}>
               Cancel

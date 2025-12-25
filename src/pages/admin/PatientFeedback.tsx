@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { Card, Input, Badge } from '@/components';
+import { Card, Input, Badge, Modal, Breadcrumbs } from '@/components';
 import { NPSChart } from '@/components/NPSChart';
 import { format } from 'date-fns';
 
@@ -9,6 +9,7 @@ export function PatientFeedback() {
   const { feedbacks, npsScore } = useSelector((state: RootState) => state.feedback);
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [selectedFeedback, setSelectedFeedback] = useState<typeof feedbacks[0] | null>(null);
 
   const filteredFeedbacks = feedbacks.filter(fb => {
     const matchesSearch = fb.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -39,6 +40,7 @@ export function PatientFeedback() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs />
       <div>
         <h1 className="text-2xl font-semibold text-gray-900">Patient Feedback</h1>
         <p className="text-sm text-neutral-600 mt-1">Monitor patient satisfaction and NPS</p>
@@ -95,7 +97,11 @@ export function PatientFeedback() {
 
         <div className="space-y-3">
           {filteredFeedbacks.map((feedback) => (
-            <div key={feedback.id} className="p-4 border border-neutral-200 rounded-lg">
+            <div 
+              key={feedback.id} 
+              className="p-4 border border-neutral-200 rounded-lg hover:border-primary-300 hover:shadow-md transition-all cursor-pointer"
+              onClick={() => setSelectedFeedback(feedback)}
+            >
               <div className="flex justify-between items-start mb-3">
                 <div>
                   <p className="text-sm font-medium text-neutral-900">{feedback.patientName}</p>
@@ -127,6 +133,45 @@ export function PatientFeedback() {
           ))}
         </div>
       </Card>
+
+      <Modal isOpen={!!selectedFeedback} onClose={() => setSelectedFeedback(null)} title="Feedback Details" size="lg">
+        {selectedFeedback && (
+          <div className="space-y-4">
+            <div className="flex justify-between items-start">
+              <div>
+                <h3 className="text-lg font-semibold">{selectedFeedback.patientName}</h3>
+                <p className="text-sm text-neutral-600">Dr. {selectedFeedback.doctorName}</p>
+                <p className="text-xs text-neutral-500">{format(new Date(selectedFeedback.submittedAt), 'MMMM dd, yyyy • hh:mm a')}</p>
+              </div>
+              <div className="text-right">
+                {getCategoryBadge(selectedFeedback.category)}
+                <p className="text-3xl font-bold text-primary-600 mt-2">{selectedFeedback.rating}/10</p>
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <h4 className="font-medium mb-3">Rating Breakdown</h4>
+              <div className="grid grid-cols-2 gap-3">
+                {Object.entries(selectedFeedback.aspects).map(([key, value]) => (
+                  <div key={key} className="flex justify-between items-center p-3 bg-neutral-50 rounded">
+                    <span className="text-sm capitalize">{key.replace(/([A-Z])/g, ' $1')}</span>
+                    <span className="text-lg font-medium">{value}/5 {'★'.repeat(value)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {selectedFeedback.comments && (
+              <div className="border-t pt-4">
+                <h4 className="font-medium mb-2">Comments</h4>
+                <p className="text-sm text-neutral-700 bg-neutral-50 p-4 rounded italic">
+                  "{selectedFeedback.comments}"
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }
