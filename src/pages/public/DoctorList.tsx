@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button, Input } from '../../components';
+import { Card, Button } from '../../components';
 import { Search, Star, MapPin, Clock } from 'lucide-react';
 
 interface Doctor {

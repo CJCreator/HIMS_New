@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, Badge } from '@/components';
+import { Card, Button } from '@/components';
 import { UnifiedPatientStatusDashboard } from '@/components/UnifiedPatientStatusDashboard';
 import { SharedPatientContextPanel } from '@/components/SharedPatientContextPanel';
 import { useNavigate } from 'react-router-dom';
@@ -15,9 +15,9 @@ export function EnhancedNurseDashboard() {
     const patients = mockDataService.getPatients();
     setStats({
       total: patients.length,
-      vitalsComplete: patients.filter(p => p.currentStage !== 'Check-in' && p.currentStage !== 'Waiting Room').length,
-      pending: patients.filter(p => p.currentStage === 'Vitals Recording').length,
-      readyForDoctor: patients.filter(p => p.status === 'ready').length
+      vitalsComplete: patients.filter((p: any) => p.currentStage !== 'Check-in' && p.currentStage !== 'Waiting Room').length,
+      pending: patients.filter((p: any) => p.currentStage === 'Vitals Recording').length,
+      readyForDoctor: patients.filter((p: any) => p.status === 'ready').length
     });
   }, [updateCount]);
 

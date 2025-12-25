@@ -5,7 +5,7 @@ import { RootState } from '@/store';
 import { updateAppointmentStatus } from '@/store/appointmentSlice';
 import { addNotification, addRoleNotification } from '@/store/notificationSlice';
 
-const patientQueue = [
+const __patientQueue = [
   { id: 'P001', name: 'John Smith', appointment: '10:00 AM', doctor: 'Dr. Wilson', status: 'waiting', vitalsComplete: false },
   { id: 'P002', name: 'Sarah Johnson', appointment: '10:30 AM', doctor: 'Dr. Brown', status: 'in-progress', vitalsComplete: true },
   { id: 'P003', name: 'Mike Davis', appointment: '11:00 AM', doctor: 'Dr. Wilson', status: 'ready', vitalsComplete: true },

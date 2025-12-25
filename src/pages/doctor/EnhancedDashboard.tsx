@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Card, Button, Badge } from '@/components';
-import { LoadingSkeleton, CardSkeleton } from '@/components/LoadingSkeleton';
+import { Card, Button } from '@/components';
+import { CardSkeleton } from '@/components/LoadingSkeleton';
 import { NoDataEmptyState } from '@/components/EmptyState';
 import { UnifiedPatientStatusDashboard } from '@/components/UnifiedPatientStatusDashboard';
 import { SmartNotificationSystem } from '@/components/SmartNotificationSystem';
@@ -25,8 +25,8 @@ export function EnhancedDoctorDashboard() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       const patients = mockDataService.getPatients();
-      const completed = patients.filter(p => p.status === 'waiting' && p.currentStage === 'Pharmacy').length;
-      const pending = patients.filter(p => p.status === 'ready' || p.status === 'in-progress').length;
+      const completed = patients.filter((p: any) => p.status === 'waiting' && p.currentStage === 'Pharmacy').length;
+      const pending = patients.filter((p: any) => p.status === 'ready' || p.status === 'in-progress').length;
       
       setStats({ todayCompleted: completed, todayPending: pending });
       setHasData(patients.length > 0);

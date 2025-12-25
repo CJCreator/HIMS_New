@@ -43,7 +43,7 @@ export function CollaborationWorkspace({ patientId, patientName }: Collaboration
     }
   ]);
 
-  const [tasks, setTasks] = useState<Task[]>([
+  const [tasks] = useState<Task[]>([
     { id: '1', title: 'Process HbA1c test', assignedTo: 'Lab Tech', status: 'in-progress', dueTime: '30 min' },
     { id: '2', title: 'Prepare prescription', assignedTo: 'Pharmacist', status: 'pending', dueTime: '15 min' }
   ]);

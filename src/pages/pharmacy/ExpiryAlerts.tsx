@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { Card, Button, Input, EmptyState } from '@/components';
-import { ExpiryWarningBadge } from '@/components/ExpiryWarningBadge';
+import { Card, Button, Input, EmptyState, Badge } from '@/components';
 import { differenceInDays, format } from 'date-fns';
 
 export function ExpiryAlerts() {
@@ -189,7 +188,9 @@ export function ExpiryAlerts() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <h3 className="text-base font-semibold text-neutral-900">{item.name}</h3>
-                        <ExpiryWarningBadge expiryDate={item.expiryDate!} size="sm" />
+                        <Badge severity={getExpiryCategory(item.expiryDate!) as 'low' | 'medium' | 'high' | 'critical'} showIcon>
+                          {isExpired ? 'Expired' : `${daysUntilExpiry}d left`}
+                        </Badge>
                       </div>
                       <p className="text-sm text-neutral-600">
                         Batch: {item.batchNumber} • Category: {item.category}

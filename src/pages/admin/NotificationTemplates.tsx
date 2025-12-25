@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, Button, Input } from '../../components';
+import { Card, Button } from '../../components';
 import { ManualNotificationTrigger } from '../../components/ManualNotificationTrigger';
 import { Mail, MessageSquare, Bell, Edit, Trash2, Send } from 'lucide-react';
 
@@ -33,7 +33,7 @@ export const NotificationTemplates: React.FC = () => {
   ]);
 
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [, setIsEditing] = useState(false);
   const [showManualTrigger, setShowManualTrigger] = useState(false);
 
   const getTypeIcon = (type: string) => {

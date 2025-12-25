@@ -13,7 +13,7 @@ interface AISuggestionsProps {
   onSelect: (suggestion: AISuggestion) => void;
 }
 
-export function AISuggestions({ symptoms, onSelect }: AISuggestionsProps) {
+export function AISuggestions({ onSelect }: AISuggestionsProps) {
   const suggestions: AISuggestion[] = [
     {
       diagnosis: 'Type 2 Diabetes - Uncontrolled',

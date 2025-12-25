@@ -3,7 +3,7 @@ import { Card, Badge } from '@/components';
 
 export function OfflineCapabilityManager() {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [syncQueue, setSyncQueue] = useState<any[]>([]);
+  const [syncQueue] = useState<any[]>([]);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);

@@ -18,7 +18,7 @@ interface Prescription {
 }
 
 export const MyPrescriptions: React.FC = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const { prescriptions } = useSelector((state: RootState) => state.prescriptions);
   const { user } = useSelector((state: RootState) => state.auth);
   

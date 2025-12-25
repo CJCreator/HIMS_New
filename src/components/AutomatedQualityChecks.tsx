@@ -12,7 +12,7 @@ interface AutomatedQualityChecksProps {
   consultationData: any;
 }
 
-export function AutomatedQualityChecks({ consultationData }: AutomatedQualityChecksProps) {
+export function AutomatedQualityChecks({ }: AutomatedQualityChecksProps) {
   const checks: QualityCheck[] = [
     {
       id: '1',

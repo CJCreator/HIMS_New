@@ -15,7 +15,6 @@ interface BadgeProps {
 
 export function Badge({ 
   status, 
-  variant = 'default', 
   priority, 
   severity,
   children, 

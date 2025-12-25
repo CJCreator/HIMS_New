@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileX, Plus, Search, RefreshCw } from 'lucide-react';
+import { FileX, Plus, Search } from 'lucide-react';
 
 interface EmptyStateProps {
   icon?: React.ReactNode;

@@ -17,7 +17,7 @@ const services = [
 
 export function BillingDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [, setShowInvoiceModal] = useState(false);
 
   const filteredInvoices = invoices.filter(invoice =>
     invoice.patient.toLowerCase().includes(searchTerm.toLowerCase()) ||

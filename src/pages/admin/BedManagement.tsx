@@ -219,9 +219,9 @@ export function BedManagement() {
   const [bedAnalytics] = useState<BedAnalytics[]>(mockBedAnalytics);
   const [emergencyWorkflows] = useState<EmergencyWorkflow[]>(mockEmergencyWorkflows);
   const [selectedWard, setSelectedWard] = useState<string>('all');
-  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
-  const [showEmergencyModal, setShowEmergencyModal] = useState(false);
-  const [selectedBedForEmergency, setSelectedBedForEmergency] = useState<Bed | null>(null);
+  const [, setShowAnalyticsModal] = useState(false);
+  const [, setShowEmergencyModal] = useState(false);
+  const [, setSelectedBedForEmergency] = useState<Bed | null>(null);
 
   const wards = ['all', 'ICU', 'General', 'Pediatric', 'Emergency'];
   const filteredBeds = selectedWard === 'all' ? beds : beds.filter(bed => bed.ward === selectedWard);

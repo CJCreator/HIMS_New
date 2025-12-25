@@ -13,7 +13,7 @@ interface AdvancedAIDiagnosisProps {
   history: any;
 }
 
-export function AdvancedAIDiagnosis({ symptoms, vitals, history }: AdvancedAIDiagnosisProps) {
+export function AdvancedAIDiagnosis({ }: AdvancedAIDiagnosisProps) {
   const analytics: PredictiveAnalytics = {
     patientRisk: 'medium',
     readmissionRisk: 15,

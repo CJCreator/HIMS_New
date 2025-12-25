@@ -165,7 +165,7 @@ export function UserManagement() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showActivityModal, setShowActivityModal] = useState(false);
-  const [showRoleModal, setShowRoleModal] = useState(false);
+  const [, setShowRoleModal] = useState(false);
   const [userToDelete, setUserToDelete] = useState<User | null>(null);
   const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
   const [selectedUserForActivity, setSelectedUserForActivity] = useState<User | null>(null);

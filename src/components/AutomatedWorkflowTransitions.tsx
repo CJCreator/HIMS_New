@@ -1,4 +1,4 @@
-import { Card, Badge, Button } from '@/components';
+import { Card, Badge } from '@/components';
 
 interface WorkflowStage {
   id: string;
@@ -16,7 +16,7 @@ interface AutomatedWorkflowTransitionsProps {
   onStageComplete: (stageId: string) => void;
 }
 
-export function AutomatedWorkflowTransitions({ patientId, onStageComplete }: AutomatedWorkflowTransitionsProps) {
+export function AutomatedWorkflowTransitions({ }: AutomatedWorkflowTransitionsProps) {
   const stages: WorkflowStage[] = [
     {
       id: 'checkin',

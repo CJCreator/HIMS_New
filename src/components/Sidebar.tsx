@@ -105,7 +105,7 @@ export function Sidebar({ onClose }: SidebarProps = {}) {
   const roleColor = roleColors[user.role];
 
   return (
-    <div className="w-sidebar h-screen bg-white border-r border-neutral-200 flex flex-col" role="complementary" aria-label="Sidebar navigation">
+    <div className="w-[280px] h-screen bg-white border-r border-neutral-200 flex flex-col overflow-y-auto" role="complementary" aria-label="Sidebar navigation">
       <div className="p-6 border-b border-neutral-200">
         <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-primary-600 rounded-small flex items-center justify-center">

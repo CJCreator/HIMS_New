@@ -15,9 +15,9 @@ export function EnhancedPharmacyDashboard() {
     const rxs = mockDataService.getPrescriptions();
     setPrescriptions(rxs.slice(0, 3));
     setStats({
-      pending: rxs.filter(r => r.status === 'pending').length,
-      processing: rxs.filter(r => r.status === 'processing').length,
-      completed: rxs.filter(r => r.status === 'completed').length,
+      pending: rxs.filter((r: any) => r.status === 'pending').length,
+      processing: rxs.filter((r: any) => r.status === 'processing').length,
+      completed: rxs.filter((r: any) => r.status === 'completed').length,
       avgTime: 12
     });
   }, [updateCount]);
