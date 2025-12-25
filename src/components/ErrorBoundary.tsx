@@ -5,6 +5,7 @@ import { logError } from '@/utils/errorLogger';
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
+  onReset?: () => void;
 }
 
 interface State {
@@ -32,6 +33,12 @@ export class ErrorBoundary extends Component<Props, State> {
 
   handleReset = () => {
     this.setState({ hasError: false, error: null });
+    this.props.onReset?.();
+  };
+
+  handleGoHome = () => {
+    this.setState({ hasError: false, error: null });
+    window.location.href = '/quick-access';
   };
 
   render() {
@@ -55,7 +62,7 @@ export class ErrorBoundary extends Component<Props, State> {
                 </Button>
                 <Button 
                   variant="secondary" 
-                  onClick={() => window.location.href = '/'}
+                  onClick={this.handleGoHome}
                   className="w-full"
                 >
                   Go to Home

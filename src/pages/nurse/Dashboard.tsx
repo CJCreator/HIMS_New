@@ -1,9 +1,12 @@
 import { Card, Button, Badge } from '@/components';
+import { NotificationDetailModal } from '@/components/NotificationDetailModal';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { updateAppointmentStatus } from '@/store/appointmentSlice';
-import { addNotification, addRoleNotification } from '@/store/notificationSlice';
+import { addNotification, addRoleNotification, markAsRead } from '@/store/notificationSlice';
+import { useState, useMemo } from 'react';
+import { toast } from 'sonner';
 
 const __patientQueue = [
   { id: 'P001', name: 'John Smith', appointment: '10:00 AM', doctor: 'Dr. Wilson', status: 'waiting', vitalsComplete: false },
@@ -15,28 +18,69 @@ export function NurseDashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { appointments } = useSelector((state: RootState) => state.appointments);
+  const { notifications } = useSelector((state: RootState) => state.notifications);
+  const [selectedNotification, setSelectedNotification] = useState<any>(null);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
   
   const todayAppointments = appointments.filter(apt => 
     apt.status === 'in-progress' || apt.status === 'scheduled'
   ).slice(0, 5);
+
+  const nurseNotifications = useMemo(() => {
+    return notifications.filter(n => !n.read && n.targetRole === 'nurse').slice(0, 3);
+  }, [notifications]);
+
+  const stats = useMemo(() => ({
+    total: todayAppointments.length,
+    vitalsComplete: todayAppointments.filter(apt => apt.status === 'in-progress').length,
+    pending: todayAppointments.filter(apt => apt.status === 'scheduled').length,
+    ready: todayAppointments.filter(apt => apt.status === 'confirmed').length
+  }), [todayAppointments]);
   
-  const markPatientReady = (appointmentId: string, patientName: string, doctorName: string) => {
-    dispatch(updateAppointmentStatus({ id: appointmentId, status: 'confirmed' }));
-    dispatch(addNotification({
-      type: 'success',
-      title: 'Patient Ready',
-      message: `${patientName} is ready for consultation`,
-      priority: 'medium',
-      category: 'patient'
-    }));
-    dispatch(addRoleNotification({
-      role: 'doctor',
-      type: 'info',
-      title: 'Patient Ready',
-      message: `${patientName} vitals complete - Ready for consultation with ${doctorName}`,
-      priority: 'high',
-      category: 'patient'
-    }));
+  const markPatientReady = async (appointmentId: string, patientName: string, doctorName: string) => {
+    setLoadingStates(prev => ({ ...prev, [appointmentId]: true }));
+    
+    try {
+      dispatch(updateAppointmentStatus({ id: appointmentId, status: 'confirmed' }));
+      dispatch(addNotification({
+        type: 'success',
+        title: 'Patient Ready',
+        message: `${patientName} is ready for consultation`,
+        priority: 'medium',
+        category: 'patient'
+      }));
+      dispatch(addRoleNotification({
+        role: 'doctor',
+        type: 'info',
+        title: 'Patient Ready',
+        message: `${patientName} vitals complete - Ready for consultation with ${doctorName}`,
+        priority: 'high',
+        category: 'patient',
+        relatedId: appointmentId
+      }));
+      toast.success(`${patientName} marked as ready`);
+    } catch (error) {
+      toast.error('Failed to mark patient as ready');
+    } finally {
+      setLoadingStates(prev => ({ ...prev, [appointmentId]: false }));
+    }
+  };
+
+  const handleViewNotificationDetails = (notification: any) => {
+    setSelectedNotification(notification);
+    setShowNotificationModal(true);
+  };
+
+  const handleNotificationAction = (action: string) => {
+    if (action === 'start-consultation' && selectedNotification?.relatedId) {
+      navigate(`/nurse/vitals/${selectedNotification.relatedId}`);
+    } else if (action === 'view-history' && selectedNotification?.relatedId) {
+      navigate(`/nurse/patients`);
+    }
+    if (selectedNotification) {
+      dispatch(markAsRead(selectedNotification.id));
+    }
   };
 
   return (
@@ -45,21 +89,54 @@ export function NurseDashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">Nurse Dashboard</h1>
       </div>
       <div className="space-y-6">
+        {/* Smart Notifications */}
+        {nurseNotifications.length > 0 && (
+          <Card className="p-4 bg-blue-50 border-2 border-blue-200">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-base font-semibold text-neutral-900">🔔 Notifications</h3>
+              <Badge status="error">{nurseNotifications.length} New</Badge>
+            </div>
+            <div className="space-y-2">
+              {nurseNotifications.map((notification) => (
+                <div key={notification.id} className="p-3 bg-white rounded-lg border border-neutral-200">
+                  <div className="flex justify-between items-start mb-2">
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-neutral-900">{notification.title}</p>
+                      <p className="text-xs text-neutral-600 mt-1">{notification.message}</p>
+                    </div>
+                    {notification.priority === 'urgent' && (
+                      <Badge status="error">URGENT</Badge>
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => handleViewNotificationDetails(notification)}
+                    className="w-full mt-2"
+                  >
+                    View Details
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="text-center">
-            <div className="text-h2 text-nurse">12</div>
+            <div className="text-h2 text-nurse">{stats.total}</div>
             <div className="text-body text-neutral-600">Patients Today</div>
           </Card>
           <Card className="text-center">
-            <div className="text-h2 text-success">8</div>
+            <div className="text-h2 text-success">{stats.vitalsComplete}</div>
             <div className="text-body text-neutral-600">Vitals Complete</div>
           </Card>
           <Card className="text-center">
-            <div className="text-h2 text-warning">4</div>
+            <div className="text-h2 text-warning">{stats.pending}</div>
             <div className="text-body text-neutral-600">Pending Vitals</div>
           </Card>
           <Card className="text-center">
-            <div className="text-h2 text-info">3</div>
+            <div className="text-h2 text-info">{stats.ready}</div>
             <div className="text-body text-neutral-600">Ready for Doctor</div>
           </Card>
         </div>
@@ -70,7 +147,7 @@ export function NurseDashboard() {
               <h3 className="text-h4 text-neutral-900">Patient Queue</h3>
               <p className="text-body text-neutral-600">Patients requiring pre-consultation preparation</p>
             </div>
-            <Button onClick={() => navigate('/nurse/vitals/new')}>
+            <Button onClick={() => navigate('/nurse/vitals')}>
               Record Vitals
             </Button>
           </div>
@@ -95,6 +172,7 @@ export function NurseDashboard() {
                     variant="primary" 
                     size="sm"
                     onClick={() => navigate(`/nurse/vitals/${apt.patientId}`)}
+                    disabled={loadingStates[apt.id]}
                   >
                     Record Vitals
                   </Button>
@@ -104,8 +182,9 @@ export function NurseDashboard() {
                       size="sm"
                       className="text-success"
                       onClick={() => markPatientReady(apt.id, apt.patientName, apt.doctorName)}
+                      disabled={loadingStates[apt.id]}
                     >
-                      Mark Ready
+                      {loadingStates[apt.id] ? 'Marking...' : 'Mark Ready'}
                     </Button>
                   )}
                 </div>
@@ -118,7 +197,7 @@ export function NurseDashboard() {
           <Card>
             <h3 className="text-h4 text-neutral-900 mb-4">Quick Actions</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/vitals/new')}>
+              <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/vitals')}>
                 📊 Record Vitals
               </Button>
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/patients')}>
@@ -130,9 +209,9 @@ export function NurseDashboard() {
               <Button
                 variant="secondary"
                 className="justify-start"
-                onClick={() => navigate('/nurse/wards')}
+                onClick={() => navigate('/nurse/shift-handover')}
               >
-                🏥 Ward Management
+                📝 Shift Handover
               </Button>
             </div>
           </Card>
@@ -156,6 +235,16 @@ export function NurseDashboard() {
           </Card>
         </div>
       </div>
+
+      {/* Notification Detail Modal */}
+      {selectedNotification && (
+        <NotificationDetailModal
+          isOpen={showNotificationModal}
+          onClose={() => setShowNotificationModal(false)}
+          notification={selectedNotification}
+          onAction={handleNotificationAction}
+        />
+      )}
     </div>
   );
 }

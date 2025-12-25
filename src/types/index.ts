@@ -29,6 +29,18 @@ export interface Appointment {
   type: string;
 }
 
+export interface Notification {
+  id: string;
+  type: 'error' | 'info' | 'success' | 'warning';
+  title: string;
+  message: string;
+  priority: 'low' | 'medium' | 'high';
+  role: string;
+  timestamp: string;
+  read: boolean;
+  category?: 'patient' | 'lab' | 'medication' | 'appointment' | 'system' | 'inventory' | 'billing';
+}
+
 export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'icon' | 'outline';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'search' | 'date' | 'datetime-local' | 'time';

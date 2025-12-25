@@ -2,11 +2,15 @@ import { Card, Button } from '@/components';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { useState } from 'react';
+import { toast } from 'sonner';
 
 export function PatientQueue() {
   const navigate = useNavigate();
   const { appointments } = useSelector((state: RootState) => state.appointments);
   const { patients } = useSelector((state: RootState) => state.patients);
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
+  const [consultationStates, setConsultationStates] = useState<Record<string, 'ready' | 'in-progress' | 'completed'>>({});
   
   const readyPatients = appointments
     .filter(apt => apt.status === 'confirmed' || apt.status === 'scheduled')
@@ -25,8 +29,39 @@ export function PatientQueue() {
       };
     });
 
-  const startConsultation = (patientId: string) => {
+  const startConsultation = async (patientId: string) => {
+    setLoadingStates(prev => ({ ...prev, [patientId]: true }));
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setConsultationStates(prev => ({ ...prev, [patientId]: 'in-progress' }));
+    setLoadingStates(prev => ({ ...prev, [patientId]: false }));
+    toast.success('Consultation started');
     navigate(`/doctor/consultation/${patientId}`);
+  };
+
+  const viewSummary = (patientId: string) => {
+    navigate(`/doctor/patients/${patientId}`);
+  };
+
+  const writePrescription = (patientId: string) => {
+    const state = consultationStates[patientId];
+    if (state !== 'in-progress' && state !== 'completed') {
+      toast.error('Please start consultation first');
+      return;
+    }
+    navigate(`/doctor/consultation/${patientId}?tab=prescription`);
+  };
+
+  const handoffPatient = async (patientId: string) => {
+    const state = consultationStates[patientId];
+    if (state !== 'completed') {
+      toast.error('Please complete consultation first');
+      return;
+    }
+    setLoadingStates(prev => ({ ...prev, [`handoff-${patientId}`]: true }));
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setLoadingStates(prev => ({ ...prev, [`handoff-${patientId}`]: false }));
+    toast.success('Patient handed off successfully');
   };
 
   return (
@@ -91,15 +126,41 @@ export function PatientQueue() {
                     <Button 
                       variant="secondary" 
                       size="sm"
-                      onClick={() => navigate(`/doctor/patients/${patient.id}`)}
+                      onClick={() => viewSummary(patient.id)}
+                      disabled={loadingStates[patient.id]}
                     >
-                      View History
+                      View Summary
                     </Button>
                     <Button 
-                      variant="primary"
+                      variant={consultationStates[patient.id] === 'in-progress' ? 'secondary' : 'primary'}
                       onClick={() => startConsultation(patient.id)}
+                      disabled={loadingStates[patient.id] || consultationStates[patient.id] === 'in-progress'}
                     >
-                      Start Consultation
+                      {loadingStates[patient.id] ? (
+                        <span className="flex items-center gap-2">
+                          <span className="animate-spin">⏳</span> Starting...
+                        </span>
+                      ) : consultationStates[patient.id] === 'in-progress' ? (
+                        'In Progress'
+                      ) : (
+                        'Start Consultation'
+                      )}
+                    </Button>
+                    <Button 
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => writePrescription(patient.id)}
+                      disabled={!consultationStates[patient.id] || consultationStates[patient.id] === 'ready'}
+                    >
+                      Write Prescription
+                    </Button>
+                    <Button 
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => handoffPatient(patient.id)}
+                      disabled={consultationStates[patient.id] !== 'completed' || loadingStates[`handoff-${patient.id}`]}
+                    >
+                      {loadingStates[`handoff-${patient.id}`] ? 'Handing off...' : 'Handoff'}
                     </Button>
                   </div>
                 </div>
@@ -148,13 +209,25 @@ export function PatientQueue() {
           <Card>
             <h3 className="text-h4 text-neutral-900 mb-4">Quick Actions</h3>
             <div className="space-y-2">
-              <Button variant="secondary" className="w-full justify-start">
+              <Button 
+                variant="secondary" 
+                className="w-full justify-start"
+                onClick={() => navigate('/doctor/appointments')}
+              >
                 📋 View All Patients
               </Button>
-              <Button variant="secondary" className="w-full justify-start">
+              <Button 
+                variant="secondary" 
+                className="w-full justify-start"
+                onClick={() => navigate('/doctor/appointments')}
+              >
                 📊 Today's Schedule
               </Button>
-              <Button variant="secondary" className="w-full justify-start">
+              <Button 
+                variant="secondary" 
+                className="w-full justify-start"
+                onClick={() => navigate('/doctor/prescriptions')}
+              >
                 💊 Pending Prescriptions
               </Button>
             </div>

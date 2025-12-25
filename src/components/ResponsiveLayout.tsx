@@ -4,6 +4,8 @@ import { RootState } from '@/store';
 import { Sidebar } from './Sidebar';
 import { NotificationCenter } from './NotificationCenter';
 import { RealTimeUpdates } from './RealtimeUpdates';
+import { Breadcrumb } from './Breadcrumb';
+import { SkipNavLink } from './SkipNavLink';
 
 interface ResponsiveLayoutProps {
   children: React.ReactNode;
@@ -31,6 +33,7 @@ export const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({ children }) 
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SkipNavLink />
       {/* Mobile Header */}
       {isMobile && (
         <div className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between lg:hidden sticky top-0 z-30">
@@ -95,11 +98,12 @@ export const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({ children }) 
           )}
 
           {/* Page Content */}
-          <main className={`${
+          <main id="main-content" className={`${
             isMobile 
               ? 'p-3 pt-4' 
               : 'p-6'
           } max-w-full overflow-x-auto min-h-screen`}>
+            <Breadcrumb />
             {children}
           </main>
         </div>

@@ -36,7 +36,8 @@ export class RouteErrorBoundary extends Component<Props, State> {
   };
 
   handleGoHome = () => {
-    window.location.href = '/';
+    this.setState({ hasError: false, error: undefined });
+    window.location.href = '/quick-access';
   };
 
   render() {

@@ -55,7 +55,7 @@ export function FinalConsultationFlow() {
       {/* Progress Indicator */}
       <Card className="p-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-h3 text-neutral-900">Complete Integrated System (Phase 4)</h2>
+          <h2 className="text-h3 text-neutral-900">Smart Consultation Flow</h2>
           <div className="flex gap-2">
             <Badge status="pending">Step {currentStep} of 5</Badge>
           </div>

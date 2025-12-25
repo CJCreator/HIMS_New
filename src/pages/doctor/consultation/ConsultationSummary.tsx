@@ -18,13 +18,19 @@ export function ConsultationSummary({ onPrevious, onComplete, onSave }: Consulta
   
   const consultationData = {
     patient: { name: 'John Smith', age: 45, id: 'P001' },
+    chiefComplaint: 'Chest pain and shortness of breath',
+    keyFindings: [
+      'Elevated blood pressure (140/90)',
+      'Irregular heartbeat detected',
+      'Patient reports stress and poor sleep'
+    ],
     vitals: { bp: '120/80', hr: '72', temp: '98.6°F', o2: '98%' },
     diagnosis: { primary: 'Hypertension', secondary: ['Type 2 Diabetes'], icd: 'I10' },
     medications: [
       { name: 'Lisinopril', dosage: '10mg', frequency: 'Once daily', duration: '30 days' },
       { name: 'Metformin', dosage: '500mg', frequency: 'Twice daily', duration: '30 days' }
     ],
-    followUp: { date: '2024-02-15', type: 'Regular check-up' }
+    followUp: { date: '2024-02-15', type: 'Regular check-up', instructions: 'Monitor blood pressure daily' }
   };
 
   const handleSendToPharmacy = () => {
@@ -110,6 +116,25 @@ export function ConsultationSummary({ onPrevious, onComplete, onSave }: Consulta
               </div>
 
               <div>
+                <h3 className="text-body font-medium text-neutral-900 mb-2">Chief Complaint</h3>
+                <div className="p-3 bg-blue-50 rounded-small border border-blue-200">
+                  <p className="text-body text-neutral-900">{consultationData.chiefComplaint}</p>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="text-body font-medium text-neutral-900 mb-2">Key Findings</h3>
+                <div className="space-y-2">
+                  {consultationData.keyFindings.map((finding, idx) => (
+                    <div key={idx} className="flex items-start gap-2 p-2 bg-neutral-50 rounded-small">
+                      <span className="text-primary mt-0.5">•</span>
+                      <span className="text-body-sm">{finding}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
                 <h3 className="text-body font-medium text-neutral-900 mb-2">Vital Signs</h3>
                 <div className="grid grid-cols-2 gap-2">
                   <div className="p-2 bg-neutral-50 rounded-small text-center">
@@ -151,7 +176,7 @@ export function ConsultationSummary({ onPrevious, onComplete, onSave }: Consulta
 
             <div className="space-y-4">
               <div>
-                <h3 className="text-body font-medium text-neutral-900 mb-2">Prescribed Medications</h3>
+                <h3 className="text-body font-medium text-neutral-900 mb-2">Treatment Plan</h3>
                 <div className="space-y-3">
                   {consultationData.medications.map((med, index) => (
                     <div key={index} className="p-3 border border-neutral-200 rounded-small">
@@ -168,10 +193,11 @@ export function ConsultationSummary({ onPrevious, onComplete, onSave }: Consulta
               </div>
 
               <div>
-                <h3 className="text-body font-medium text-neutral-900 mb-2">Follow-up</h3>
+                <h3 className="text-body font-medium text-neutral-900 mb-2">Follow-up Plan</h3>
                 <div className="p-3 bg-doctor/10 rounded-small">
-                  <div className="text-body font-medium text-doctor">{consultationData.followUp.date}</div>
-                  <div className="text-body-sm text-neutral-600">{consultationData.followUp.type}</div>
+                  <div className="text-body font-medium text-doctor mb-1">{consultationData.followUp.date}</div>
+                  <div className="text-body-sm text-neutral-900 mb-2">{consultationData.followUp.type}</div>
+                  <div className="text-body-sm text-neutral-600 italic">{consultationData.followUp.instructions}</div>
                 </div>
               </div>
 

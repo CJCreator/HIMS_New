@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { approveRefill } from '@/store/prescriptionSlice';
 import { Card, Button, Input, Badge, EmptyState } from '@/components';
+import { PrescriptionDetailModal } from '@/components/PrescriptionDetailModal';
 import { format } from 'date-fns';
 
 export function PrescriptionHistory() {
@@ -13,6 +14,8 @@ export function PrescriptionHistory() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [showRefillRequests, setShowRefillRequests] = useState(false);
+  const [selectedPrescription, setSelectedPrescription] = useState<any>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
 
   const myPrescriptions = prescriptions.filter(p => p.doctorName === user?.name || true);
 
@@ -28,6 +31,11 @@ export function PrescriptionHistory() {
 
   const handleApproveRefill = (prescriptionId: string) => {
     dispatch(approveRefill(prescriptionId));
+  };
+
+  const handleViewDetails = (prescription: any) => {
+    setSelectedPrescription(prescription);
+    setShowDetailModal(true);
   };
 
   const getStatusBadge = (status: string) => {
@@ -157,7 +165,7 @@ export function PrescriptionHistory() {
                         Approve Refill
                       </Button>
                     )}
-                    <Button variant="secondary" size="sm">
+                    <Button variant="secondary" size="sm" onClick={() => handleViewDetails(prescription)}>
                       View Full Details
                     </Button>
                   </div>
@@ -193,6 +201,15 @@ export function PrescriptionHistory() {
           </div>
         </div>
       </Card>
+
+      {/* Prescription Detail Modal */}
+      {selectedPrescription && (
+        <PrescriptionDetailModal
+          isOpen={showDetailModal}
+          onClose={() => setShowDetailModal(false)}
+          prescription={selectedPrescription}
+        />
+      )}
     </div>
   );
 }

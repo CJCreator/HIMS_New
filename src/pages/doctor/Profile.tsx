@@ -4,6 +4,7 @@ import { addNotification } from '../../store/notificationSlice';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
+import { WeeklyScheduleEditor } from '../../components/WeeklyScheduleEditor';
 
 const User = ({ className }: { className?: string }) => <span className={className}>👤</span>;
 const Edit = ({ className }: { className?: string }) => <span className={className}>✏️</span>;
@@ -48,16 +49,6 @@ export const DoctorProfile: React.FC = () => {
     { title: 'Best Doctor Award 2023', organization: 'Medical Association' },
     { title: 'Excellence in Patient Care', organization: 'Hospital Board' },
     { title: 'Research Publication', organization: 'Cardiology Journal' }
-  ];
-
-  const schedule = [
-    { day: 'Monday', time: '9:00 AM - 5:00 PM' },
-    { day: 'Tuesday', time: '9:00 AM - 5:00 PM' },
-    { day: 'Wednesday', time: '9:00 AM - 1:00 PM' },
-    { day: 'Thursday', time: '9:00 AM - 5:00 PM' },
-    { day: 'Friday', time: '9:00 AM - 5:00 PM' },
-    { day: 'Saturday', time: '9:00 AM - 1:00 PM' },
-    { day: 'Sunday', time: 'Off' }
   ];
 
   return (
@@ -221,25 +212,10 @@ export const DoctorProfile: React.FC = () => {
             ))}
           </div>
         </Card>
-
-        {/* Schedule */}
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <Calendar className="w-5 h-5 mr-2" />
-            Weekly Schedule
-          </h3>
-          <div className="space-y-2">
-            {schedule.map((slot, index) => (
-              <div key={index} className="flex justify-between items-center p-2 border border-gray-200 rounded">
-                <span className="font-medium text-gray-900">{slot.day}</span>
-                <span className={`text-sm ${slot.time === 'Off' ? 'text-red-500' : 'text-gray-600'}`}>
-                  {slot.time}
-                </span>
-              </div>
-            ))}
-          </div>
-        </Card>
       </div>
+
+      {/* Weekly Schedule Editor */}
+      <WeeklyScheduleEditor />
 
       {/* Statistics */}
       <Card className="p-6">

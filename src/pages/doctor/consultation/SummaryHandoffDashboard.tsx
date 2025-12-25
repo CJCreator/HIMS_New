@@ -11,20 +11,22 @@ interface SummaryHandoffDashboardProps {
 export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDashboardProps) {
   const navigate = useNavigate();
   const [handoffStatus, setHandoffStatus] = useState({
-    pharmacy: 'pending',
-    lab: 'pending',
-    billing: 'pending',
-    followUp: 'pending'
+    pharmacy: { status: 'pending', timestamp: null as string | null, attempts: 0 },
+    lab: { status: 'pending', timestamp: null as string | null, attempts: 0 },
+    billing: { status: 'pending', timestamp: null as string | null, attempts: 0 },
+    followUp: { status: 'pending', timestamp: null as string | null, attempts: 0 }
   });
+  const [retrying, setRetrying] = useState<string | null>(null);
 
   useEffect(() => {
     // Simulate handoff notifications
     const timer = setTimeout(() => {
+      const now = new Date().toLocaleTimeString();
       setHandoffStatus({
-        pharmacy: 'sent',
-        lab: 'sent',
-        billing: 'sent',
-        followUp: 'sent'
+        pharmacy: { status: 'sent', timestamp: now, attempts: 1 },
+        lab: { status: 'sent', timestamp: now, attempts: 1 },
+        billing: { status: 'sent', timestamp: now, attempts: 1 },
+        followUp: { status: 'sent', timestamp: now, attempts: 1 }
       });
 
       // Add notifications to mock service
@@ -44,6 +46,29 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
 
     return () => clearTimeout(timer);
   }, [data]);
+
+  const handleRetry = async (department: keyof typeof handoffStatus) => {
+    setRetrying(department);
+    // Simulate retry
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    const now = new Date().toLocaleTimeString();
+    setHandoffStatus(prev => ({
+      ...prev,
+      [department]: {
+        status: 'sent',
+        timestamp: now,
+        attempts: prev[department].attempts + 1
+      }
+    }));
+    setRetrying(null);
+  };
+
+  const handleRefresh = async (department: keyof typeof handoffStatus) => {
+    setRetrying(department);
+    // Simulate refresh
+    await new Promise(resolve => setTimeout(resolve, 500));
+    setRetrying(null);
+  };
 
   const generateSummary = () => {
     const patient = data?.patientOverview || {};
@@ -127,42 +152,177 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
       {/* Multi-Channel Handoff Status */}
       <Card>
         <h3 className="text-h4 text-neutral-900 mb-3">Multi-Channel Handoff Status</h3>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-small">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">💊</span>
-              <span className="text-body">Pharmacy</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {/* Pharmacy */}
+          <div className="p-4 bg-neutral-50 rounded-lg border-2 border-neutral-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">💊</span>
+                <span className="text-body font-medium">Pharmacy</span>
+              </div>
+              <Badge status={handoffStatus.pharmacy.status === 'sent' ? 'delivered' : 'pending'}>
+                {handoffStatus.pharmacy.status === 'sent' ? 'Notified' : 'Pending'}
+              </Badge>
             </div>
-            <Badge status={handoffStatus.pharmacy === 'sent' ? 'delivered' : 'pending'}>
-              {handoffStatus.pharmacy === 'sent' ? 'Notified' : 'Pending'}
-            </Badge>
+            {handoffStatus.pharmacy.timestamp && (
+              <p className="text-xs text-neutral-600 mb-2">
+                🕒 Sent at {handoffStatus.pharmacy.timestamp}
+              </p>
+            )}
+            {handoffStatus.pharmacy.attempts > 0 && (
+              <p className="text-xs text-neutral-600 mb-2">
+                Attempts: {handoffStatus.pharmacy.attempts}
+              </p>
+            )}
+            <div className="flex gap-2">
+              <Button 
+                variant="secondary" 
+                size="sm"
+                onClick={() => handleRefresh('pharmacy')}
+                disabled={retrying === 'pharmacy'}
+              >
+                {retrying === 'pharmacy' ? '⏳ Refreshing...' : '🔄 Refresh'}
+              </Button>
+              {handoffStatus.pharmacy.status !== 'sent' && (
+                <Button 
+                  variant="primary" 
+                  size="sm"
+                  onClick={() => handleRetry('pharmacy')}
+                  disabled={retrying === 'pharmacy'}
+                >
+                  {retrying === 'pharmacy' ? 'Retrying...' : 'Retry'}
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-small">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">🔬</span>
-              <span className="text-body">Laboratory</span>
+
+          {/* Lab */}
+          <div className="p-4 bg-neutral-50 rounded-lg border-2 border-neutral-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">🔬</span>
+                <span className="text-body font-medium">Laboratory</span>
+              </div>
+              <Badge status={handoffStatus.lab.status === 'sent' ? 'delivered' : 'pending'}>
+                {handoffStatus.lab.status === 'sent' ? 'Notified' : 'Pending'}
+              </Badge>
             </div>
-            <Badge status={handoffStatus.lab === 'sent' ? 'delivered' : 'pending'}>
-              {handoffStatus.lab === 'sent' ? 'Notified' : 'Pending'}
-            </Badge>
+            {handoffStatus.lab.timestamp && (
+              <p className="text-xs text-neutral-600 mb-2">
+                🕒 Sent at {handoffStatus.lab.timestamp}
+              </p>
+            )}
+            {handoffStatus.lab.attempts > 0 && (
+              <p className="text-xs text-neutral-600 mb-2">
+                Attempts: {handoffStatus.lab.attempts}
+              </p>
+            )}
+            <div className="flex gap-2">
+              <Button 
+                variant="secondary" 
+                size="sm"
+                onClick={() => handleRefresh('lab')}
+                disabled={retrying === 'lab'}
+              >
+                {retrying === 'lab' ? '⏳ Refreshing...' : '🔄 Refresh'}
+              </Button>
+              {handoffStatus.lab.status !== 'sent' && (
+                <Button 
+                  variant="primary" 
+                  size="sm"
+                  onClick={() => handleRetry('lab')}
+                  disabled={retrying === 'lab'}
+                >
+                  {retrying === 'lab' ? 'Retrying...' : 'Retry'}
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-small">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">💰</span>
-              <span className="text-body">Billing</span>
+
+          {/* Billing */}
+          <div className="p-4 bg-neutral-50 rounded-lg border-2 border-neutral-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">💰</span>
+                <span className="text-body font-medium">Billing</span>
+              </div>
+              <Badge status={handoffStatus.billing.status === 'sent' ? 'delivered' : 'pending'}>
+                {handoffStatus.billing.status === 'sent' ? 'Notified' : 'Pending'}
+              </Badge>
             </div>
-            <Badge status={handoffStatus.billing === 'sent' ? 'delivered' : 'pending'}>
-              {handoffStatus.billing === 'sent' ? 'Notified' : 'Pending'}
-            </Badge>
+            {handoffStatus.billing.timestamp && (
+              <p className="text-xs text-neutral-600 mb-2">
+                🕒 Sent at {handoffStatus.billing.timestamp}
+              </p>
+            )}
+            {handoffStatus.billing.attempts > 0 && (
+              <p className="text-xs text-neutral-600 mb-2">
+                Attempts: {handoffStatus.billing.attempts}
+              </p>
+            )}
+            <div className="flex gap-2">
+              <Button 
+                variant="secondary" 
+                size="sm"
+                onClick={() => handleRefresh('billing')}
+                disabled={retrying === 'billing'}
+              >
+                {retrying === 'billing' ? '⏳ Refreshing...' : '🔄 Refresh'}
+              </Button>
+              {handoffStatus.billing.status !== 'sent' && (
+                <Button 
+                  variant="primary" 
+                  size="sm"
+                  onClick={() => handleRetry('billing')}
+                  disabled={retrying === 'billing'}
+                >
+                  {retrying === 'billing' ? 'Retrying...' : 'Retry'}
+                </Button>
+              )}
+            </div>
           </div>
-          <div className="flex items-center justify-between p-3 bg-neutral-50 rounded-small">
-            <div className="flex items-center gap-2">
-              <span className="text-2xl">📅</span>
-              <span className="text-body">Follow-up</span>
+
+          {/* Follow-up */}
+          <div className="p-4 bg-neutral-50 rounded-lg border-2 border-neutral-200">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">📅</span>
+                <span className="text-body font-medium">Follow-up</span>
+              </div>
+              <Badge status={handoffStatus.followUp.status === 'sent' ? 'delivered' : 'pending'}>
+                {handoffStatus.followUp.status === 'sent' ? 'Scheduled' : 'Pending'}
+              </Badge>
             </div>
-            <Badge status={handoffStatus.followUp === 'sent' ? 'delivered' : 'pending'}>
-              {handoffStatus.followUp === 'sent' ? 'Scheduled' : 'Pending'}
-            </Badge>
+            {handoffStatus.followUp.timestamp && (
+              <p className="text-xs text-neutral-600 mb-2">
+                🕒 Sent at {handoffStatus.followUp.timestamp}
+              </p>
+            )}
+            {handoffStatus.followUp.attempts > 0 && (
+              <p className="text-xs text-neutral-600 mb-2">
+                Attempts: {handoffStatus.followUp.attempts}
+              </p>
+            )}
+            <div className="flex gap-2">
+              <Button 
+                variant="secondary" 
+                size="sm"
+                onClick={() => handleRefresh('followUp')}
+                disabled={retrying === 'followUp'}
+              >
+                {retrying === 'followUp' ? '⏳ Refreshing...' : '🔄 Refresh'}
+              </Button>
+              {handoffStatus.followUp.status !== 'sent' && (
+                <Button 
+                  variant="primary" 
+                  size="sm"
+                  onClick={() => handleRetry('followUp')}
+                  disabled={retrying === 'followUp'}
+                >
+                  {retrying === 'followUp' ? 'Retrying...' : 'Retry'}
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </Card>

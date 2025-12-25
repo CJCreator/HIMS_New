@@ -6,6 +6,7 @@ interface Prescription {
   patientId: string;
   doctorName: string;
   prescriptionDate: string;
+  date?: string; // Alias for prescriptionDate
   medications: {
     name: string;
     dosage: string;

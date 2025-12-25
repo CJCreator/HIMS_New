@@ -1,40 +1,56 @@
+import { useState, useMemo } from 'react';
 import { Card, Button, Badge } from '@/components';
+import { NotificationDetailModal } from '@/components';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { updateAppointmentStatus } from '@/store/appointmentSlice';
 import { addNotification, addRoleNotification } from '@/store/notificationSlice';
-
-const __todayAppointments = [
-  { id: '1', patient: 'John Smith', doctor: 'Dr. Wilson', time: '09:00 AM', status: 'confirmed' },
-  { id: '2', patient: 'Sarah Johnson', doctor: 'Dr. Brown', time: '10:30 AM', status: 'waiting' },
-  { id: '3', patient: 'Mike Davis', doctor: 'Dr. Wilson', time: '02:00 PM', status: 'pending' },
-];
+import type { Notification } from '@/types';
 
 export function ReceptionistDashboard() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { appointments } = useSelector((state: RootState) => state.appointments);
+  const { notifications } = useSelector((state: RootState) => state.notifications);
+  const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   
-  const todayAppointments = appointments.filter(apt => apt.date === new Date().toISOString().split('T')[0]).slice(0, 5);
+  const today = new Date().toISOString().split('T')[0];
+  const todayAppointments = useMemo(() => 
+    appointments.filter(apt => apt.date === today).slice(0, 5),
+    [appointments, today]
+  );
+
+  const stats = useMemo(() => ({
+    total: appointments.filter(apt => apt.date === today).length,
+    confirmed: appointments.filter(apt => apt.date === today && apt.status === 'confirmed').length,
+    pending: appointments.filter(apt => apt.date === today && apt.status === 'scheduled').length,
+    cancelled: appointments.filter(apt => apt.date === today && apt.status === 'cancelled').length,
+  }), [appointments, today]);
   
-  const handleCheckIn = (appointmentId: string, patientName: string) => {
-    dispatch(updateAppointmentStatus({ id: appointmentId, status: 'in-progress' }));
-    dispatch(addNotification({
-      type: 'success',
-      title: 'Patient Checked In',
-      message: `${patientName} has been checked in`,
-      priority: 'medium',
-      category: 'patient'
-    }));
-    dispatch(addRoleNotification({
-      role: 'nurse',
-      type: 'info',
-      title: 'Patient Arrived',
-      message: `${patientName} has checked in and is waiting`,
-      priority: 'high',
-      category: 'patient'
-    }));
+  const handleCheckIn = async (appointmentId: string, patientName: string) => {
+    setIsLoading(true);
+    try {
+      dispatch(updateAppointmentStatus({ id: appointmentId, status: 'in-progress' }));
+      dispatch(addNotification({
+        type: 'success',
+        title: 'Patient Checked In',
+        message: `${patientName} has been checked in`,
+        priority: 'medium',
+        category: 'patient'
+      }));
+      dispatch(addRoleNotification({
+        role: 'nurse',
+        type: 'info',
+        title: 'Patient Arrived',
+        message: `${patientName} has checked in and is waiting`,
+        priority: 'high',
+        category: 'patient'
+      }));
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -45,19 +61,19 @@ export function ReceptionistDashboard() {
       <div className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card className="text-center">
-            <div className="text-h2 text-receptionist">24</div>
+            <div className="text-h2 text-receptionist">{stats.total}</div>
             <div className="text-body text-neutral-600">Today's Appointments</div>
           </Card>
           <Card className="text-center">
-            <div className="text-h2 text-success">18</div>
+            <div className="text-h2 text-success">{stats.confirmed}</div>
             <div className="text-body text-neutral-600">Confirmed</div>
           </Card>
           <Card className="text-center">
-            <div className="text-h2 text-warning">4</div>
+            <div className="text-h2 text-warning">{stats.pending}</div>
             <div className="text-body text-neutral-600">Pending</div>
           </Card>
           <Card className="text-center">
-            <div className="text-h2 text-neutral-700">2</div>
+            <div className="text-h2 text-neutral-700">{stats.cancelled}</div>
             <div className="text-body text-neutral-600">Cancelled</div>
           </Card>
         </div>
@@ -82,7 +98,7 @@ export function ReceptionistDashboard() {
                       {apt.status}
                     </Badge>
                     {apt.status === 'scheduled' && (
-                      <Button size="sm" onClick={() => handleCheckIn(apt.id, apt.patientName)}>
+                      <Button size="sm" onClick={() => handleCheckIn(apt.id, apt.patientName)} loading={isLoading}>
                         Check In
                       </Button>
                     )}
@@ -95,7 +111,7 @@ export function ReceptionistDashboard() {
           <Card>
             <h3 className="text-h4 text-neutral-900 mb-4">Quick Actions</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Button variant="secondary" className="justify-start" onClick={() => navigate('/receptionist/appointments/new')}>
+              <Button variant="secondary" className="justify-start" onClick={() => navigate('/receptionist/appointments')}>
                 📅 Book Appointment
               </Button>
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/receptionist/patients/register')}>
@@ -115,6 +131,14 @@ export function ReceptionistDashboard() {
           </Card>
         </div>
       </div>
+
+      {selectedNotification && (
+        <NotificationDetailModal
+          notification={selectedNotification}
+          isOpen={!!selectedNotification}
+          onClose={() => setSelectedNotification(null)}
+        />
+      )}
     </div>
   );
 }

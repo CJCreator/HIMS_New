@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../store';
-import { addToWaitlist, removeFromWaitlist, bookFromWaitlist } from '../../store/waitlistSlice';
-import { Card } from '../../components/Card';
-import { Button } from '../../components/Button';
-import { Input } from '../../components/Input';
-import { Modal } from '../../components/Modal';
-
-const priorityColors: Record<string, string> = { high: 'red', medium: 'orange', low: 'blue' };
+import { RootState } from '@/store';
+import { addToWaitlist, removeFromWaitlist, bookFromWaitlist } from '@/store/waitlistSlice';
+import { addAppointment } from '@/store/appointmentSlice';
+import { addNotification } from '@/store/notificationSlice';
+import { Card, Button, Input, Modal } from '@/components';
+import { toast } from 'sonner';
 
 export default function Waitlist() {
   const { entries } = useSelector((state: RootState) => state.waitlist);
@@ -19,14 +17,63 @@ export default function Waitlist() {
   const filtered = entries.filter(e => filter === 'all' || e.priority === filter);
 
   const handleAdd = () => {
+    if (!form.patientName || !form.phone || !form.doctor || !form.reason) {
+      toast.error('Please fill all required fields');
+      return;
+    }
+
     dispatch(addToWaitlist({
       ...form,
       id: Date.now().toString(),
       addedDate: new Date().toISOString().split('T')[0],
       preferredDates: form.preferredDates.split(',').map(d => d.trim()).filter(Boolean),
     }));
+    
+    dispatch(addNotification({
+      type: 'success',
+      title: 'Added to Waitlist',
+      message: `${form.patientName} has been added to the waitlist`,
+      priority: 'medium',
+      category: 'patient'
+    }));
+
+    toast.success('Patient added to waitlist');
     setShowModal(false);
     setForm({ patientName: '', phone: '', doctor: '', reason: '', priority: 'medium', preferredDates: '' });
+  };
+
+  const handleBookAppointment = (entry: any) => {
+    const appointmentDate = entry.preferredDates[0] || new Date().toISOString().split('T')[0];
+    
+    dispatch(addAppointment({
+      patientId: `P${Date.now()}`,
+      patientName: entry.patientName,
+      doctorId: 'DR001',
+      doctorName: entry.doctor,
+      date: appointmentDate,
+      time: '09:00',
+      type: 'Consultation',
+      status: 'scheduled' as const,
+    }));
+
+    dispatch(bookFromWaitlist(entry.id));
+    
+    dispatch(addNotification({
+      type: 'success',
+      title: 'Appointment Booked',
+      message: `Appointment booked for ${entry.patientName}`,
+      priority: 'medium',
+      category: 'appointment'
+    }));
+
+    toast.success('Appointment booked from waitlist');
+  };
+
+  const handleRemove = (id: string, name: string) => {
+    if (!confirm(`Remove ${name} from waitlist?`)) return;
+    
+    dispatch(removeFromWaitlist(id));
+    toast.success('Removed from waitlist');
   };
 
   return (
@@ -70,7 +117,7 @@ export default function Waitlist() {
                     {entry.priority}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600">📞 {entry.phone} • 👨‍⚕️ {entry.doctor}</p>
+                <p className="text-sm text-gray-600">📞 {entry.phone} • 👨⚕️ {entry.doctor}</p>
                 <p className="text-sm text-gray-700">Reason: {entry.reason}</p>
                 <p className="text-sm text-gray-500">Added: {entry.addedDate}</p>
                 {entry.preferredDates.length > 0 && (
@@ -78,8 +125,8 @@ export default function Waitlist() {
                 )}
               </div>
               <div className="flex gap-2">
-                <Button size="sm" onClick={() => dispatch(bookFromWaitlist(entry.id))}>Book Appointment</Button>
-                <Button variant="outline" size="sm" onClick={() => dispatch(removeFromWaitlist(entry.id))}>Remove</Button>
+                <Button size="sm" onClick={() => handleBookAppointment(entry)}>Book Appointment</Button>
+                <Button variant="outline" size="sm" onClick={() => handleRemove(entry.id, entry.patientName)}>Remove</Button>
               </div>
             </div>
           </Card>

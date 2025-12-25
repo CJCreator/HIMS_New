@@ -3,10 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { Card, Button, Input, Table, Badge } from '@/components';
+import { PatientDetailsModal } from '@/components/PatientDetailsModal';
 import { maskPhone } from '@/utils/dataMasking';
 
 export function PatientList() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedPatient, setSelectedPatient] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const navigate = useNavigate();
   const { patients } = useSelector((state: RootState) => state.patients);
 
@@ -21,6 +24,18 @@ export function PatientList() {
     lastVisit: new Date().toISOString().split('T')[0],
     status: 'active'
   }));
+
+  const handleViewDetails = (patientId: string) => {
+    const patient = patients.find(p => p.id === patientId);
+    if (patient) {
+      setSelectedPatient(patient);
+      setShowDetailsModal(true);
+    }
+  };
+
+  const handleEdit = () => {
+    setShowDetailsModal(false);
+  };
 
   const columns = [
     { key: 'id', header: 'Patient ID' },
@@ -40,9 +55,9 @@ export function PatientList() {
     {
       key: 'actions',
       header: 'Actions',
-      render: () => (
+      render: (_: any, row: any) => (
         <div className="flex space-x-2">
-          <Button variant="tertiary" size="sm">View</Button>
+          <Button variant="tertiary" size="sm" onClick={() => handleViewDetails(row.id)}>View</Button>
           <Button variant="tertiary" size="sm">Edit</Button>
         </div>
       )
@@ -78,6 +93,15 @@ export function PatientList() {
           <Table columns={columns} data={filteredPatients} />
         </Card>
       </div>
+
+      {selectedPatient && (
+        <PatientDetailsModal
+          patient={selectedPatient}
+          isOpen={showDetailsModal}
+          onClose={() => setShowDetailsModal(false)}
+          onEdit={handleEdit}
+        />
+      )}
     </div>
   );
 }

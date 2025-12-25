@@ -1,9 +1,11 @@
 import { Card, Button, Badge, EmptyState } from '@/components';
+import { NotificationDetailModal } from '@/components/NotificationDetailModal';
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { useMemo, memo } from 'react';
+import { useMemo, memo, useState } from 'react';
 import { RootState } from '@/store';
 import { updateAppointmentStatus } from '@/store/appointmentSlice';
+import { markAsRead } from '@/store/notificationSlice';
 
 const weekSchedule = [
   { day: 'Mon', slots: ['10:00 AM - 01:00 PM', '05:00 PM - 08:00 PM'], isToday: false },
@@ -19,6 +21,9 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
   const dispatch = useDispatch();
   const { appointments } = useSelector((state: RootState) => state.appointments);
   const { user } = useSelector((state: RootState) => state.auth);
+  const { notifications } = useSelector((state: RootState) => state.notifications);
+  const [selectedNotification, setSelectedNotification] = useState<any>(null);
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
   
   const myAppointments = useMemo(() => {
     return appointments.filter(apt =>
@@ -37,6 +42,26 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
   const nextAppointment = useMemo(() => {
     return myAppointments.find(apt => apt.status === 'confirmed');
   }, [myAppointments]);
+
+  const unreadNotifications = useMemo(() => {
+    return notifications.filter(n => !n.read && n.targetRole === 'doctor').slice(0, 3);
+  }, [notifications]);
+
+  const handleViewNotificationDetails = (notification: any) => {
+    setSelectedNotification(notification);
+    setShowNotificationModal(true);
+  };
+
+  const handleNotificationAction = (action: string) => {
+    if (action === 'start-consultation' && selectedNotification?.relatedId) {
+      navigate(`/doctor/consultation/${selectedNotification.relatedId}`);
+    } else if (action === 'view-history' && selectedNotification?.relatedId) {
+      navigate(`/doctor/patients/${selectedNotification.relatedId}`);
+    }
+    if (selectedNotification) {
+      dispatch(markAsRead(selectedNotification.id));
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -97,6 +122,39 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
           </div>
         </Card>
       </div>
+
+      {/* Smart Notifications */}
+      {unreadNotifications.length > 0 && (
+        <Card className="p-4 bg-blue-50 border-2 border-blue-200">
+          <div className="flex justify-between items-center mb-3">
+            <h3 className="text-base font-semibold text-neutral-900">🔔 Smart Notifications</h3>
+            <Badge status="error">{unreadNotifications.length} New</Badge>
+          </div>
+          <div className="space-y-2">
+            {unreadNotifications.map((notification) => (
+              <div key={notification.id} className="p-3 bg-white rounded-lg border border-neutral-200">
+                <div className="flex justify-between items-start mb-2">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-neutral-900">{notification.title}</p>
+                    <p className="text-xs text-neutral-600 mt-1">{notification.message}</p>
+                  </div>
+                  {notification.priority === 'urgent' && (
+                    <Badge status="error">URGENT</Badge>
+                  )}
+                </div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => handleViewNotificationDetails(notification)}
+                  className="w-full mt-2"
+                >
+                  View Details
+                </Button>
+              </div>
+            ))}
+          </div>
+        </Card>
+      )}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Appointment Queue */}
@@ -269,6 +327,16 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
           ))}
         </div>
       </Card>
+
+      {/* Notification Detail Modal */}
+      {selectedNotification && (
+        <NotificationDetailModal
+          isOpen={showNotificationModal}
+          onClose={() => setShowNotificationModal(false)}
+          notification={selectedNotification}
+          onAction={handleNotificationAction}
+        />
+      )}
     </div>
   );
 });

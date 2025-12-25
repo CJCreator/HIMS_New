@@ -3,16 +3,23 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 export interface LabResult {
   id: string;
   patientId: string;
+  patientName?: string;
   testName: string;
   testCode: string;
   value: number;
+  result?: string;
   unit: string;
   normalMin: number;
   normalMax: number;
-  status: 'normal' | 'abnormal' | 'critical';
+  normalRange?: string;
+  status: 'normal' | 'abnormal' | 'critical' | 'pending';
+  critical?: boolean;
   orderedBy: string;
+  orderId?: string;
   performedAt: string;
   resultDate: string;
+  enteredBy?: string;
+  enteredAt?: string;
   notes?: string;
   category: 'hematology' | 'biochemistry' | 'microbiology' | 'pathology' | 'radiology';
 }
@@ -90,9 +97,22 @@ const labResultsSlice = createSlice({
     },
     addResultGroup: (state, action: PayloadAction<LabResultGroup>) => {
       state.groups.push(action.payload);
+    },
+    verifyLabResult: (state, action: PayloadAction<string>) => {
+      const result = state.results.find(r => r.id === action.payload);
+      if (result) {
+        result.status = result.critical ? 'critical' : result.status;
+      }
+    },
+    rejectLabResult: (state, action: PayloadAction<{ id: string; reason: string }>) => {
+      const result = state.results.find(r => r.id === action.payload.id);
+      if (result) {
+        result.notes = action.payload.reason;
+        result.status = 'pending';
+      }
     }
   }
 });
 
-export const { addLabResult, updateLabResult, selectResult, addResultGroup } = labResultsSlice.actions;
+export const { addLabResult, updateLabResult, selectResult, addResultGroup, verifyLabResult, rejectLabResult } = labResultsSlice.actions;
 export default labResultsSlice.reducer;

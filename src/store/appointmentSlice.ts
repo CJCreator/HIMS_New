@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { apiService } from '../services/api';
 
-interface Appointment {
+export interface Appointment {
   id: string;
   patientId: string;
   patientName: string;
@@ -149,6 +149,12 @@ const appointmentSlice = createSlice({
         appointment.status = status;
       }
     },
+    updateAppointment: (state, action: PayloadAction<Appointment>) => {
+      const index = state.appointments.findIndex(a => a.id === action.payload.id);
+      if (index !== -1) {
+        state.appointments[index] = action.payload;
+      }
+    },
     clearError: (state) => {
       state.error = null;
     },
@@ -173,5 +179,5 @@ const appointmentSlice = createSlice({
   },
 });
 
-export const { addAppointment, updateAppointmentStatus, clearError } = appointmentSlice.actions;
+export const { addAppointment, updateAppointmentStatus, updateAppointment, clearError } = appointmentSlice.actions;
 export default appointmentSlice.reducer;

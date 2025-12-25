@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import { EnhancedNurseDashboard } from '@/pages/nurse/EnhancedDashboard';
+import { NurseDashboard } from '@/pages/nurse/Dashboard';
 import { VitalsEntry } from '@/pages/nurse/VitalsEntry';
 import { PatientRecords } from '@/pages/nurse/PatientRecords';
 import { MedicationRequest } from '@/pages/nurse/MedicationRequest';
@@ -9,7 +9,7 @@ import { ShiftHandover } from '@/pages/nurse/ShiftHandover';
 export default function NurseRoutes() {
   return (
     <Routes>
-      <Route index element={<EnhancedNurseDashboard />} />
+      <Route index element={<NurseDashboard />} />
       <Route path="vitals" element={<VitalsEntry />} />
       <Route path="vitals/:patientId" element={<VitalsEntry />} />
       <Route path="patients" element={<PatientRecords />} />
