@@ -1,10 +1,13 @@
 import { Card, Button } from '@/components';
 import { MetricCard } from '@/components/MetricCard';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export function AdminDashboard() {
+  const navigate = useNavigate();
   const { appointments } = useSelector((state: RootState) => state.appointments);
   const { patients } = useSelector((state: RootState) => state.patients);
   const { prescriptions } = useSelector((state: RootState) => state.prescriptions);
@@ -55,6 +58,7 @@ export function AdminDashboard() {
   };
   return (
     <div className="space-y-6">
+      <Breadcrumbs />
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-900">Welcome back, Admin!</h1>
         <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
@@ -160,16 +164,16 @@ export function AdminDashboard() {
             <Card>
               <h3 className="text-h4 text-neutral-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
-                <Button variant="primary" className="w-full justify-start">
+                <Button variant="primary" className="w-full justify-start" onClick={() => navigate('/admin/users')}>
                   👥 Manage Users
                 </Button>
-                <Button variant="secondary" className="w-full justify-start">
+                <Button variant="secondary" className="w-full justify-start" onClick={() => navigate('/admin/beds')}>
                   🛏️ Bed Management
                 </Button>
-                <Button variant="secondary" className="w-full justify-start">
+                <Button variant="secondary" className="w-full justify-start" onClick={() => navigate('/admin/analytics')}>
                   📊 View Reports
                 </Button>
-                <Button variant="secondary" className="w-full justify-start">
+                <Button variant="secondary" className="w-full justify-start" onClick={() => navigate('/admin/settings')}>
                   ⚙️ Settings
                 </Button>
               </div>

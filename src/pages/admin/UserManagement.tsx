@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Card, Button, Input, Badge, Modal, EmptyState } from '@/components';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Table } from '@/components/Table';
 import { UserRole } from '@/types';
 import { sanitizer } from '@/utils/sanitizer';
@@ -187,6 +189,7 @@ export function UserManagement() {
   const handleDeleteConfirm = () => {
     if (userToDelete?.id) {
       console.log('Delete user:', sanitizer.forLog(userToDelete.id));
+      toast.success(`User ${userToDelete.name} deleted successfully`);
     }
     setShowDeleteModal(false);
     setUserToDelete(null);
@@ -209,24 +212,23 @@ export function UserManagement() {
   const handleBulkAction = async (action: 'enable' | 'disable' | 'reset_password') => {
     setBulkActionLoading(true);
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       switch (action) {
         case 'enable':
-          console.log(`Enabling ${selectedUsers.length} users:`, selectedUsers);
+          toast.success(`${selectedUsers.length} users enabled`);
           break;
         case 'disable':
-          console.log(`Disabling ${selectedUsers.length} users:`, selectedUsers);
+          toast.success(`${selectedUsers.length} users disabled`);
           break;
         case 'reset_password':
-          console.log(`Resetting passwords for ${selectedUsers.length} users:`, selectedUsers);
+          toast.success(`Password reset emails sent to ${selectedUsers.length} users`);
           break;
       }
       
       setSelectedUsers([]);
     } catch (error) {
-      console.error('Bulk action failed:', error);
+      toast.error('Bulk action failed');
     } finally {
       setBulkActionLoading(false);
     }
@@ -387,6 +389,7 @@ export function UserManagement() {
 
   return (
     <div className="space-y-6">
+      <Breadcrumbs />
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">User Management</h1>

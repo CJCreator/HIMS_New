@@ -6,7 +6,7 @@ interface CardProps {
   className?: string;
   padding?: 'sm' | 'md' | 'lg';
   shadow?: 'sm' | 'md' | 'lg' | 'xl';
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
 }
 
 export function Card({ 
