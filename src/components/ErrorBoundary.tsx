@@ -1,5 +1,6 @@
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Card, Button } from '@/components';
+import { logError } from '@/utils/errorLogger';
 
 interface Props {
   children: ReactNode;
@@ -22,7 +23,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // Log error (sanitized)
+    logError(error, { component: 'ErrorBoundary', errorInfo });
     console.error('Error caught by boundary:', {
       message: error.message.slice(0, 200),
       stack: error.stack?.slice(0, 500),
