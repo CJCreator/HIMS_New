@@ -9,7 +9,7 @@ interface TreatmentPlanProps {
   onSkip: () => void;
 }
 
-export function TreatmentPlan({ onNext, onPrevious, onSave, onSkip }: TreatmentPlanProps) {
+function TreatmentPlan({ onNext, onPrevious, onSave, onSkip }: TreatmentPlanProps) {
   const [treatments, setTreatments] = useState(['']);
   const [goals, setGoals] = useState('');
   const [timeline, setTimeline] = useState('');
@@ -121,3 +121,5 @@ export function TreatmentPlan({ onNext, onPrevious, onSave, onSkip }: TreatmentP
     </ConsultationLayout>
   );
 }
+
+export default TreatmentPlan;

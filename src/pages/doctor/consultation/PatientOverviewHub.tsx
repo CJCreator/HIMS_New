@@ -10,7 +10,7 @@ interface PatientOverviewHubProps {
   setData?: (data: any) => void;
 }
 
-export function PatientOverviewHub({ onNext, onSave, data, setData }: PatientOverviewHubProps) {
+function PatientOverviewHub({ onNext, onSave, data, setData }: PatientOverviewHubProps) {
   const [expanded, setExpanded] = useState({ history: true, vitals: true });
   const [patientData, setPatientData] = useState<any>(null);
 
@@ -134,3 +134,5 @@ export function PatientOverviewHub({ onNext, onSave, data, setData }: PatientOve
     </div>
   );
 }
+
+export default PatientOverviewHub;

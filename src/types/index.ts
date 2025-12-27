@@ -34,14 +34,15 @@ export interface Notification {
   type: 'error' | 'info' | 'success' | 'warning';
   title: string;
   message: string;
-  priority: 'low' | 'medium' | 'high';
-  role: string;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  role?: string;
   timestamp: string;
   read: boolean;
   category?: 'patient' | 'lab' | 'medication' | 'appointment' | 'system' | 'inventory' | 'billing';
 }
 
-export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'icon' | 'outline';
+export type ButtonVariant = 'primary' | 'secondary' | 'tertiary' | 'icon' | 'outline' | 'destructive';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 export type InputType = 'text' | 'email' | 'password' | 'number' | 'tel' | 'search' | 'date' | 'datetime-local' | 'time';
-export type BadgeStatus = 'request' | 'pending' | 'sent' | 'dispatched' | 'received' | 'delivered' | 'error';
+export type BadgeStatus = 'request' | 'pending' | 'sent' | 'dispatched' | 'received' | 'delivered' | 'error' | 'info' | 'secondary' | 'success' | 'warning' | 'critical' | 'good' | 'excellent';
+export type BadgeSize = 'sm' | 'md' | 'lg';

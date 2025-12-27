@@ -1,24 +1,30 @@
 import { Routes, Route } from 'react-router-dom';
-import { EnhancedDoctorDashboard } from '@/pages/doctor/EnhancedDashboard';
-import { PatientQueue } from '@/pages/doctor/PatientQueue';
-import { DoctorAppointments } from '@/pages/doctor/Appointments';
-import { PrescriptionHistory } from '@/pages/doctor/PrescriptionHistory';
-import PrescriptionSignature from '@/pages/doctor/PrescriptionSignature';
-import DoctorPerformance from '@/pages/doctor/DoctorPerformance';
-import { DoctorProfile } from '@/pages/doctor/Profile';
-import { FinalConsultationFlow } from '@/pages/doctor/consultation/FinalConsultationFlow';
+import { lazy, Suspense } from 'react';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
+
+// Lazy load components
+const EnhancedDoctorDashboard = lazy(() => import('@/pages/doctor/EnhancedDashboard').then(module => ({ default: module.EnhancedDoctorDashboard })));
+const PatientQueue = lazy(() => import('@/pages/doctor/PatientQueue').then(module => ({ default: module.PatientQueue })));
+const DoctorAppointments = lazy(() => import('@/pages/doctor/Appointments').then(module => ({ default: module.DoctorAppointments })));
+const PrescriptionHistory = lazy(() => import('@/pages/doctor/PrescriptionHistory').then(module => ({ default: module.PrescriptionHistory })));
+const PrescriptionSignature = lazy(() => import('@/pages/doctor/PrescriptionSignature'));
+const DoctorPerformance = lazy(() => import('@/pages/doctor/DoctorPerformance'));
+const DoctorProfile = lazy(() => import('@/pages/doctor/Profile').then(module => ({ default: module.DoctorProfile })));
+const FinalConsultationFlow = lazy(() => import('@/pages/doctor/consultation/FinalConsultationFlow').then(module => ({ default: module.FinalConsultationFlow })));
 
 export default function DoctorRoutes() {
   return (
-    <Routes>
-      <Route index element={<EnhancedDoctorDashboard />} />
-      <Route path="queue" element={<PatientQueue />} />
-      <Route path="consultation/:patientId" element={<FinalConsultationFlow />} />
-      <Route path="appointments" element={<DoctorAppointments />} />
-      <Route path="prescriptions" element={<PrescriptionHistory />} />
-      <Route path="prescription-signature" element={<PrescriptionSignature />} />
-      <Route path="performance" element={<DoctorPerformance />} />
-      <Route path="profile" element={<DoctorProfile />} />
-    </Routes>
+    <Suspense fallback={<LoadingSpinner />}>
+      <Routes>
+        <Route index element={<EnhancedDoctorDashboard />} />
+        <Route path="queue" element={<PatientQueue />} />
+        <Route path="consultation/:patientId" element={<FinalConsultationFlow />} />
+        <Route path="appointments" element={<DoctorAppointments />} />
+        <Route path="prescriptions" element={<PrescriptionHistory />} />
+        <Route path="prescription-signature" element={<PrescriptionSignature />} />
+        <Route path="performance" element={<DoctorPerformance />} />
+        <Route path="profile" element={<DoctorProfile />} />
+      </Routes>
+    </Suspense>
   );
 }

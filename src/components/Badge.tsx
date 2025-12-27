@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import { clsx } from 'clsx';
-import { BadgeStatus } from '@/types';
+import { BadgeStatus, BadgeSize } from '@/types';
 import { AlertTriangle, Clock, Zap, AlertCircle } from 'lucide-react';
 
 interface BadgeProps {
@@ -11,15 +11,17 @@ interface BadgeProps {
   children: ReactNode;
   className?: string;
   showIcon?: boolean;
+  size?: BadgeSize;
 }
 
-export function Badge({ 
-  status, 
-  priority, 
+export function Badge({
+  status,
+  priority,
   severity,
-  children, 
+  children,
   className,
-  showIcon = false 
+  showIcon = false,
+  size = 'md'
 }: BadgeProps) {
   const statusClasses: Record<BadgeStatus, string> = {
     request: 'bg-neutral-100 text-neutral-800',
@@ -29,6 +31,13 @@ export function Badge({
     received: 'bg-success/10 text-success',
     delivered: 'bg-success text-white',
     error: 'bg-red-100 text-red-800',
+    info: 'bg-info/10 text-info',
+    secondary: 'bg-neutral-100 text-neutral-800',
+    success: 'bg-success/10 text-success',
+    warning: 'bg-warning/10 text-warning',
+    critical: 'bg-red-100 text-red-800',
+    good: 'bg-green-100 text-green-800',
+    excellent: 'bg-green-100 text-green-800',
   };
 
   const priorityClasses = {
@@ -55,6 +64,12 @@ export function Badge({
     return <Clock className="w-3 h-3" />;
   };
 
+  const sizeClasses = {
+    sm: 'px-2 py-0.5 text-xs',
+    md: 'px-2.5 py-0.5 text-sm',
+    lg: 'px-3 py-1 text-base',
+  };
+
   const getClasses = () => {
     if (status) return statusClasses[status];
     if (priority) return priorityClasses[priority];
@@ -64,7 +79,8 @@ export function Badge({
 
   return (
     <span className={clsx(
-      'inline-flex items-center gap-1 px-2.5 py-0.5 rounded-small text-body-sm font-medium',
+      'inline-flex items-center gap-1 rounded-small font-medium',
+      sizeClasses[size],
       getClasses(),
       className
     )}>

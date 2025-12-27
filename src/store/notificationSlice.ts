@@ -10,7 +10,7 @@ interface Notification {
   actionUrl?: string;
   targetRole?: 'doctor' | 'nurse' | 'pharmacy' | 'receptionist' | 'admin';
   priority: 'low' | 'medium' | 'high' | 'urgent';
-  category: 'medication' | 'appointment' | 'lab' | 'patient' | 'system' | 'inventory';
+  category: 'medication' | 'appointment' | 'lab' | 'patient' | 'system' | 'inventory' | 'billing';
   relatedId?: string;
 }
 
@@ -44,7 +44,7 @@ const notificationSlice = createSlice({
       title: string;
       message: string;
       priority?: 'low' | 'medium' | 'high' | 'urgent';
-      category?: 'medication' | 'appointment' | 'lab' | 'patient' | 'system' | 'inventory';
+      category?: 'medication' | 'appointment' | 'lab' | 'patient' | 'system' | 'inventory' | 'billing';
       relatedId?: string;
     }>) => {
       const notification: Notification = {

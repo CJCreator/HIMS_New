@@ -114,11 +114,9 @@ export function AppointmentCalendar() {
     setIsLoading(true);
     try {
       dispatch(updateAppointment({
-        id: selectedAppointment.id,
-        updates: {
-          date: rescheduleForm.date,
-          time: rescheduleForm.time,
-        }
+        ...selectedAppointment,
+        date: rescheduleForm.date,
+        time: rescheduleForm.time,
       }));
 
       dispatch(addNotification({

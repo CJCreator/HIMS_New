@@ -60,14 +60,11 @@ class WorkflowService {
       // Notify next role
       const nextStep = workflow.steps[stepIndex + 1];
       store.dispatch(addNotification({
-        id: `notif-${Date.now()}`,
         type: 'info',
         title: `New Task: ${nextStep.name}`,
         message: `Workflow step ready for ${nextStep.role}`,
         priority: 'medium',
-        role: nextStep.role as any,
-        timestamp: new Date().toISOString(),
-        read: false,
+        category: 'system',
       }));
     }
 

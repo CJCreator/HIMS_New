@@ -5,7 +5,11 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from 'sonner'
 import App from './App.tsx'
 import { queryClient } from './lib/queryClient'
+import { performanceMonitor } from './utils/performance'
 import './index.css'
+
+// Initialize performance monitoring
+performanceMonitor;
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

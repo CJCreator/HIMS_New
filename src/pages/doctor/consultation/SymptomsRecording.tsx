@@ -15,7 +15,7 @@ const commonSymptoms = [
   'Joint pain', 'Muscle aches', 'Rash', 'Swelling', 'Weight loss'
 ];
 
-export function SymptomsRecording({ onNext, onPrevious, onSave, onSkip }: SymptomsRecordingProps) {
+function SymptomsRecording({ onNext, onPrevious, onSave, onSkip }: SymptomsRecordingProps) {
   const [selectedSymptoms, setSelectedSymptoms] = useState<string[]>([]);
   const [additionalSymptoms, setAdditionalSymptoms] = useState('');
 
@@ -93,3 +93,5 @@ export function SymptomsRecording({ onNext, onPrevious, onSave, onSkip }: Sympto
     </ConsultationLayout>
   );
 }
+
+export default SymptomsRecording;

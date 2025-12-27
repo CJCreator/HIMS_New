@@ -12,7 +12,7 @@ interface FinalReviewStationProps {
   setData?: (data: any) => void;
 }
 
-export function FinalReviewStation({ onNext, onPrevious, onSave, data, setData }: FinalReviewStationProps) {
+function FinalReviewStation({ onNext, onPrevious, onSave, data, setData }: FinalReviewStationProps) {
   const [patientData, setPatientData] = useState<any>(null);
   const [signed, setSigned] = useState(false);
 
@@ -176,3 +176,5 @@ export function FinalReviewStation({ onNext, onPrevious, onSave, data, setData }
     </div>
   );
 }
+
+export default FinalReviewStation;

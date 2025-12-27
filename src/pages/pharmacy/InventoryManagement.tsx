@@ -25,6 +25,9 @@ export const InventoryManagement = () => {
     unit: 'tablets',
     batchNumber: '',
     expiryDate: '',
+    supplier: '',
+    costPerUnit: 0,
+    lastRestocked: new Date().toISOString(),
   });
 
   const categories = useMemo(() => 
@@ -110,6 +113,9 @@ export const InventoryManagement = () => {
         unit: 'tablets',
         batchNumber: '',
         expiryDate: '',
+        supplier: '',
+        costPerUnit: 0,
+        lastRestocked: new Date().toISOString(),
       });
     } finally {
       setIsLoading(false);

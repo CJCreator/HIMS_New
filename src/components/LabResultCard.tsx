@@ -1,6 +1,6 @@
 import { Badge } from './Badge';
 import { format } from 'date-fns';
-import { LabResult } from '@/store/labResultsSlice';
+import type { LabResult } from '@/store/labResultsSlice';
 
 interface LabResultCardProps {
   result: LabResult;

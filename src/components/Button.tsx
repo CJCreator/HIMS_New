@@ -28,6 +28,7 @@ export function Button({
     tertiary: 'text-primary-600 hover:text-primary-700 hover:bg-primary-50 focus:ring-primary-500',
     icon: 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 focus:ring-primary-500',
     outline: 'border border-neutral-300 bg-transparent text-neutral-700 hover:bg-neutral-50 focus:ring-primary-500',
+    destructive: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
   };
 
   const sizeClasses = {

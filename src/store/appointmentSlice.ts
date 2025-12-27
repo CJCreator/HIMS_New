@@ -179,5 +179,7 @@ const appointmentSlice = createSlice({
   },
 });
 
-export const { addAppointment, updateAppointmentStatus, updateAppointment, clearError } = appointmentSlice.actions;
+
 export default appointmentSlice.reducer;
+export const { addAppointment, updateAppointmentStatus, updateAppointment, clearError } = appointmentSlice.actions;
+

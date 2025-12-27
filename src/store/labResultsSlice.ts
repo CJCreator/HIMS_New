@@ -114,5 +114,8 @@ const labResultsSlice = createSlice({
   }
 });
 
-export const { addLabResult, updateLabResult, selectResult, addResultGroup, verifyLabResult, rejectLabResult } = labResultsSlice.actions;
+
 export default labResultsSlice.reducer;
+
+export const { addLabResult, updateLabResult, selectResult, addResultGroup, verifyLabResult, rejectLabResult } = labResultsSlice.actions;
+

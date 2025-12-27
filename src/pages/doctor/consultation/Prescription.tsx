@@ -24,7 +24,7 @@ interface PrescriptionProps {
   onSave: () => void;
 }
 
-export function Prescription({ onNext, onPrevious, onSave }: PrescriptionProps) {
+function Prescription({ onNext, onPrevious, onSave }: PrescriptionProps) {
   const dispatch = useDispatch();
   const { currentCheck } = useSelector((state: RootState) => state.drugInteraction);
   const [medications, setMedications] = useState<Medication[]>([
@@ -251,3 +251,5 @@ export function Prescription({ onNext, onPrevious, onSave }: PrescriptionProps) 
     </ConsultationLayout>
   );
 }
+
+export default Prescription;

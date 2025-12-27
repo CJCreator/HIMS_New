@@ -8,7 +8,7 @@ interface VitalSignsProps {
   onSave: () => void;
 }
 
-export function VitalSigns({ onNext, onPrevious, onSave }: VitalSignsProps) {
+function VitalSigns({ onNext, onPrevious, onSave }: VitalSignsProps) {
   const [vitals, setVitals] = useState({
     bloodPressure: '',
     heartRate: '',
@@ -124,3 +124,5 @@ export function VitalSigns({ onNext, onPrevious, onSave }: VitalSignsProps) {
     </ConsultationLayout>
   );
 }
+
+export default VitalSigns;

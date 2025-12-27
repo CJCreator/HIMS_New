@@ -9,7 +9,7 @@ interface PhysicalExaminationProps {
   onSkip: () => void;
 }
 
-export function PhysicalExamination({ onNext, onPrevious, onSave, onSkip }: PhysicalExaminationProps) {
+function PhysicalExamination({ onNext, onPrevious, onSave, onSkip }: PhysicalExaminationProps) {
   const [examination, setExamination] = useState({
     general: '',
     head: '',
@@ -121,3 +121,5 @@ export function PhysicalExamination({ onNext, onPrevious, onSave, onSkip }: Phys
     </ConsultationLayout>
   );
 }
+
+export default PhysicalExamination;

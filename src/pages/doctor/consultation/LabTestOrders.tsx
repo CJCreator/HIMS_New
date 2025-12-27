@@ -17,7 +17,7 @@ interface LabTestOrdersProps {
   onPrevious: () => void;
 }
 
-export const LabTestOrders: React.FC<LabTestOrdersProps> = ({ 
+const LabTestOrders: React.FC<LabTestOrdersProps> = ({
   patientName, 
   patientId, 
   onNext, 
@@ -217,3 +217,5 @@ export const LabTestOrders: React.FC<LabTestOrdersProps> = ({
     </div>
   );
 };
+
+export default LabTestOrders;

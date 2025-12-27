@@ -37,11 +37,7 @@ export const ResultVerification = () => {
 
     setIsLoading(true);
     try {
-      dispatch(verifyLabResult({
-        id: selectedResult.id,
-        verifiedBy: 'Lab Supervisor',
-        notes: verificationNotes
-      }));
+      dispatch(verifyLabResult(selectedResult.id));
 
       dispatch(addNotification({
         type: 'success',
@@ -88,11 +84,7 @@ export const ResultVerification = () => {
 
     setIsLoading(true);
     try {
-      dispatch(rejectLabResult({
-        id: selectedResult.id,
-        reason: rejectReason,
-        rejectedBy: 'Lab Supervisor'
-      }));
+      dispatch(rejectLabResult({ id: selectedResult.id, reason: rejectReason }));
 
       dispatch(addNotification({
         type: 'warning',

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import { selectResult, LabResult } from '@/store/labResultsSlice';
+import { selectResult } from '@/store/labResultsSlice';
+import type { LabResult } from '@/store/labResultsSlice';
 import { Card, Button, Input, Modal, EmptyState } from '@/components';
 import { LabResultCard } from '@/components/LabResultCard';
 import { LabTrendChart } from '@/components/LabTrendChart';

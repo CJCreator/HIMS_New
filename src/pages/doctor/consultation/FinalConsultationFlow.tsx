@@ -1,8 +1,8 @@
 import { Card, Button, Badge } from '@/components';
-import { PatientOverviewHub } from './PatientOverviewHub';
+import PatientOverviewHub from './PatientOverviewHub';
 import { ClinicalAssessmentCenter } from './ClinicalAssessmentCenter';
 import { TreatmentPlanHub } from './TreatmentPlanHub';
-import { FinalReviewStation } from './FinalReviewStation';
+import FinalReviewStation from './FinalReviewStation';
 import { SummaryHandoffDashboard } from './SummaryHandoffDashboard';
 import { CollaborationWorkspace } from '@/components/CollaborationWorkspace';
 import { AutomatedQualityChecks } from '@/components/AutomatedQualityChecks';

@@ -16,7 +16,7 @@ interface FollowUpSchedulingProps {
   onPrevious: () => void;
 }
 
-export const FollowUpScheduling: React.FC<FollowUpSchedulingProps> = ({ 
+const FollowUpScheduling: React.FC<FollowUpSchedulingProps> = ({
   patientName, 
   patientId, 
   onNext, 
@@ -274,3 +274,5 @@ export const FollowUpScheduling: React.FC<FollowUpSchedulingProps> = ({
     </div>
   );
 };
+
+export default FollowUpScheduling;

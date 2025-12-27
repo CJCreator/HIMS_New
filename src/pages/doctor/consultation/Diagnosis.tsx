@@ -10,7 +10,7 @@ interface DiagnosisProps {
   onSave: () => void;
 }
 
-export function Diagnosis({ onNext, onPrevious, onSave }: DiagnosisProps) {
+function Diagnosis({ onNext, onPrevious, onSave }: DiagnosisProps) {
   const [primaryDiagnosis, setPrimaryDiagnosis] = useState('');
   const [secondaryDiagnoses, setSecondaryDiagnoses] = useState<string[]>(['']);
   const [icdCode, setIcdCode] = useState('');
@@ -171,3 +171,5 @@ export function Diagnosis({ onNext, onPrevious, onSave }: DiagnosisProps) {
     </ConsultationLayout>
   );
 }
+
+export default Diagnosis;

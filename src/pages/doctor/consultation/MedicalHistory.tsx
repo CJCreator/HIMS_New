@@ -7,7 +7,7 @@ interface MedicalHistoryProps {
   onSave: () => void;
 }
 
-export function MedicalHistory({ onNext, onPrevious, onSave }: MedicalHistoryProps) {
+function MedicalHistory({ onNext, onPrevious, onSave }: MedicalHistoryProps) {
   return (
     <ConsultationLayout
       currentStep={2}
@@ -98,3 +98,5 @@ export function MedicalHistory({ onNext, onPrevious, onSave }: MedicalHistoryPro
     </ConsultationLayout>
   );
 }
+
+export default MedicalHistory;

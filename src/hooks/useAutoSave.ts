@@ -25,7 +25,7 @@ export function useAutoSave({ key, data, delay = 2000, onSave }: AutoSaveOptions
     }
 
     timeoutRef.current = setTimeout(() => {
-      cache.setLocal(key, data);
+      cache.setLocal(key, { data, timestamp: Date.now() });
       onSave?.(data);
       previousDataRef.current = currentData;
     }, delay);

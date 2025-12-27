@@ -1,6 +1,6 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
 import { format } from 'date-fns';
-import { LabResult } from '@/store/labResultsSlice';
+import type { LabResult } from '@/store/labResultsSlice';
 
 interface LabTrendChartProps {
   results: LabResult[];
