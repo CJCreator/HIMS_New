@@ -1,47 +1,39 @@
+// Animation presets for consistent motion across the app
 export const animations = {
-  fadeIn: 'animate-fadeIn',
-  fadeOut: 'animate-fadeOut',
-  slideUp: 'animate-slideUp',
-  slideDown: 'animate-slideDown',
-  scaleIn: 'animate-scaleIn',
-  checkmark: 'animate-checkmark'
+  fadeIn: {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 },
+    transition: { duration: 0.2 }
+  },
+  
+  slideUp: {
+    initial: { y: 20, opacity: 0 },
+    animate: { y: 0, opacity: 1 },
+    exit: { y: -20, opacity: 0 },
+    transition: { duration: 0.3 }
+  },
+  
+  scaleIn: {
+    initial: { scale: 0.9, opacity: 0 },
+    animate: { scale: 1, opacity: 1 },
+    exit: { scale: 0.9, opacity: 0 },
+    transition: { duration: 0.2 }
+  },
+  
+  slideInRight: {
+    initial: { x: 100, opacity: 0 },
+    animate: { x: 0, opacity: 1 },
+    exit: { x: -100, opacity: 0 },
+    transition: { duration: 0.3 }
+  }
 };
 
-export const animationClasses = `
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
+export const buttonVariants = {
+  hover: { scale: 1.02 },
+  tap: { scale: 0.98 }
+};
 
-@keyframes fadeOut {
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes slideDown {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes scaleIn {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes checkmark {
-  0% { stroke-dashoffset: 100; }
-  100% { stroke-dashoffset: 0; }
-}
-
-.animate-fadeIn { animation: fadeIn 0.3s ease-out; }
-.animate-fadeOut { animation: fadeOut 0.3s ease-out; }
-.animate-slideUp { animation: slideUp 0.3s ease-out; }
-.animate-slideDown { animation: slideDown 0.3s ease-out; }
-.animate-scaleIn { animation: scaleIn 0.3s ease-out; }
-.animate-checkmark { animation: checkmark 0.5s ease-out; }
-`;
+export const cardVariants = {
+  hover: { y: -4, boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }
+};

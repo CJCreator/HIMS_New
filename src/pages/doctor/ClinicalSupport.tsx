@@ -4,10 +4,7 @@ import { DosageCalculator } from '../../components/DosageCalculator';
 import { ICD10Search } from '../../components/ICD10Search';
 import { ClinicalGuidelines } from '../../components/ClinicalGuidelines';
 
-const Stethoscope = ({ className }: { className?: string }) => <span className={className}>🩺</span>;
-const Calculator = ({ className }: { className?: string }) => <span className={className}>🧮</span>;
-const Search = ({ className }: { className?: string }) => <span className={className}>🔍</span>;
-const BookOpen = ({ className }: { className?: string }) => <span className={className}>📖</span>;
+import { Stethoscope, Calculator, Search, BookOpen } from 'lucide-react';
 
 export const ClinicalSupport: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'diagnosis' | 'dosage' | 'icd10' | 'guidelines'>('diagnosis');

@@ -2,6 +2,19 @@ import { Card, Button } from '@/components';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { 
+  FaUserTie, 
+  FaUserMd, 
+  FaUserNurse, 
+  FaPills, 
+  FaClipboardList, 
+  FaMicroscope, 
+  FaUser,
+  FaCalendarAlt,
+  FaChartLine,
+  FaChartBar,
+  FaBolt
+} from 'react-icons/fa';
 
 export function QuickAccessGuide() {
   const navigate = useNavigate();
@@ -16,13 +29,13 @@ export function QuickAccessGuide() {
   };
 
   const roles = [
-    { name: 'Admin', path: '/signin', icon: '👨💼', color: 'bg-purple-100' },
-    { name: 'Doctor', path: '/signin', icon: '👨⚕️', color: 'bg-blue-100' },
-    { name: 'Nurse', path: '/signin', icon: '👩⚕️', color: 'bg-green-100' },
-    { name: 'Pharmacist', path: '/signin', icon: '💊', color: 'bg-orange-100' },
-    { name: 'Receptionist', path: '/signin', icon: '📋', color: 'bg-pink-100' },
-    { name: 'Lab Technician', path: '/signin', icon: '🔬', color: 'bg-cyan-100' },
-    { name: 'Patient', path: '/patient-login', icon: '🧑🦱', color: 'bg-teal-100' }
+    { name: 'Admin', path: '/signin', icon: FaUserTie, color: 'bg-purple-100 hover:bg-purple-200' },
+    { name: 'Doctor', path: '/signin', icon: FaUserMd, color: 'bg-blue-100 hover:bg-blue-200' },
+    { name: 'Nurse', path: '/signin', icon: FaUserNurse, color: 'bg-green-100 hover:bg-green-200' },
+    { name: 'Pharmacist', path: '/signin', icon: FaPills, color: 'bg-orange-100 hover:bg-orange-200' },
+    { name: 'Receptionist', path: '/signin', icon: FaClipboardList, color: 'bg-pink-100 hover:bg-pink-200' },
+    { name: 'Lab Technician', path: '/signin', icon: FaMicroscope, color: 'bg-cyan-100 hover:bg-cyan-200' },
+    { name: 'Patient', path: '/patient-login', icon: FaUser, color: 'bg-teal-100 hover:bg-teal-200' }
   ];
 
   return (
@@ -38,51 +51,65 @@ export function QuickAccessGuide() {
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mb-8">
-          {roles.map(role => (
-            <button
-              key={role.name}
-              onClick={() => navigate(role.path)}
-              className={`${role.color} p-6 rounded-lg hover:shadow-lg transition-all text-center`}
-            >
-              <div className="text-5xl mb-3">{role.icon}</div>
-              <p className="text-body font-medium text-neutral-900">{role.name}</p>
-              <p className="text-body-sm text-neutral-600 mt-1">
-                {role.name === 'Patient' ? 'Patient Portal' : 'Staff Login'}
-              </p>
-            </button>
-          ))}
+          {roles.map(role => {
+            const IconComponent = role.icon;
+            return (
+              <button
+                key={role.name}
+                onClick={() => navigate(role.path)}
+                className={`${role.color} p-6 rounded-lg hover:shadow-lg transition-all duration-200 text-center group`}
+                aria-label={`Login as ${role.name}`}
+              >
+                <div className="flex justify-center mb-3">
+                  <IconComponent 
+                    className="text-neutral-700 group-hover:scale-110 transition-transform duration-200" 
+                    size={48}
+                    aria-hidden="true"
+                  />
+                </div>
+                <p className="text-body font-semibold text-neutral-900">{role.name}</p>
+                <p className="text-body-sm text-neutral-600 mt-1">
+                  {role.name === 'Patient' ? 'Patient Portal' : 'Staff Login'}
+                </p>
+              </button>
+            );
+          })}
         </div>
 
         <div className="border-t border-neutral-200 pt-6">
-          <h3 className="text-h4 text-neutral-900 mb-3">Quick Links</h3>
+          <h3 className="text-h4 text-neutral-900 mb-3 font-semibold">Quick Links</h3>
           <div className="grid grid-cols-2 gap-3">
             <Button 
               variant="secondary" 
               onClick={() => handleNavigation('/book-appointment', false)}
               className="justify-start"
             >
-              📅 Book Appointment
+              <FaCalendarAlt className="mr-2" size={16} aria-hidden="true" />
+              Book Appointment
             </Button>
             <Button 
               variant="secondary" 
               onClick={() => handleNavigation('/admin/implementation-progress')}
               className="justify-start"
             >
-              📊 View Progress
+              <FaChartBar className="mr-2" size={16} aria-hidden="true" />
+              View Progress
             </Button>
             <Button 
               variant="secondary" 
               onClick={() => handleNavigation('/admin/system-comparison')}
               className="justify-start"
             >
-              📈 System Comparison
+              <FaChartLine className="mr-2" size={16} aria-hidden="true" />
+              System Comparison
             </Button>
             <Button 
               variant="secondary" 
               onClick={() => handleNavigation('/doctor/consultation')}
               className="justify-start"
             >
-              ⚡ Enhanced Consultation
+              <FaBolt className="mr-2" size={16} aria-hidden="true" />
+              Enhanced Consultation
             </Button>
           </div>
         </div>

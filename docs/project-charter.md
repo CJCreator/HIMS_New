@@ -1,225 +1,187 @@
-# Project Charter: AROCORD-HIMS (Healthcare Information Management System)
+# Project Charter
+## AROCORD-HIMS (Healthcare Information Management System)
 
-## Document Information
-- **Document Version**: 1.0
-- **Date**: January 2025
-- **Project Name**: AROCORD-HIMS
-- **Project Sponsor**: Healthcare Technology Division
-- **Project Manager**: [Project Manager Name]
-- **Document Owner**: Product Management Team
+**Project Name**: AROCORD-HIMS  
+**Version**: 2.3  
+**Date**: December 2025  
+**Status**: Production Ready (90% Complete)  
 
 ---
 
 ## 1. Executive Summary
 
-The AROCORD-HIMS project aims to develop a comprehensive, modern web-based Healthcare Information Management System that streamlines patient care workflows, enhances operational efficiency, and ensures compliance with healthcare regulations. The system will serve multiple user roles including patients, receptionists, nurses, doctors, pharmacists, lab technicians, and administrators, providing a unified platform for managing patient records, appointments, billing, inventory, and staff scheduling.
+AROCORD-HIMS is a comprehensive, production-ready healthcare information management system designed to streamline patient care workflows from appointment booking through consultation, prescription management, pharmacy dispensing, and billing. The system features both a modern 5-step consultation workflow and an advanced adaptive consultation flow with intelligent step skipping, parallel task management, and auto-save functionality.
 
 ---
 
-## 2. Project Objectives
+## 2. Project Vision
 
-### 2.1 Primary Objectives
-- **Operational Efficiency**: Reduce administrative overhead and streamline healthcare workflows by 40%
-- **Patient Experience**: Improve patient satisfaction through faster service delivery and better communication
-- **Data Security**: Implement HIPAA-compliant security measures to protect sensitive patient information
-- **Scalability**: Create a system capable of supporting 500+ concurrent users with 99.9% uptime
-- **Cost Reduction**: Achieve 25% reduction in operational costs through automation and efficiency gains
-
-### 2.2 Secondary Objectives
-- Enable telemedicine capabilities for remote consultations
-- Provide real-time analytics and reporting for decision-making
-- Support mobile and tablet access for healthcare professionals
-- Integrate with existing healthcare systems and standards (HL7, FHIR)
+To create a seamless, efficient healthcare delivery system that reduces administrative overhead, minimizes errors, improves patient outcomes, and enhances communication between healthcare providers through innovative technology and intelligent workflow orchestration.
 
 ---
 
-## 3. Project Scope
+## 3. Project Objectives
 
-### 3.1 In Scope
-- **Core Modules**:
-  - Patient registration and management
-  - Appointment scheduling and management
-  - Consultation workflow (5-step standard + adaptive consultation)
-  - Prescription management and pharmacy operations
-  - Laboratory test ordering and result management
-  - Billing and insurance processing
-  - Inventory management
-  - Staff scheduling and resource management
-  - Notification system
-  - Analytics and reporting
-  - Telemedicine features
-  - Patient portal
+### 3.1 Primary Objectives
+- **Streamline Patient Care**: Reduce consultation time to <15 minutes and patient wait time to <30 minutes
+- **Improve Efficiency**: Decrease prescription processing time to <10 minutes and appointment no-show rates to <10%
+- **Enhance Safety**: Reduce medication errors by 90% through automated drug interaction checking
+- **Increase Throughput**: Boost patient throughput by 20% and revenue per patient by 15%
+- **Reduce Costs**: Cut operational costs by 25% through automation and optimization
 
-- **User Roles**: Patient, Receptionist, Nurse, Doctor, Pharmacist, Lab Technician, Administrator
-- **Technology Stack**: React 18, TypeScript, Vite, Redux Toolkit, Tailwind CSS
-- **Compliance**: HIPAA, WCAG 2.1 AA, GDPR
-
-### 3.2 Out of Scope
-- Mobile native applications (iOS/Android)
-- Integration with external EHR systems (Phase 2)
-- Advanced AI diagnostic features (Phase 2)
-- Blockchain-based record storage
-- Third-party payment gateway integrations
+### 3.2 Secondary Objectives
+- Implement role-based access control across 7 user types
+- Provide real-time notifications and communication
+- Enable telemedicine capabilities
+- Deliver comprehensive analytics and reporting
+- Ensure HIPAA compliance and data security
 
 ---
 
-## 4. Project Stakeholders
+## 4. Project Scope
 
-### 4.1 Key Stakeholders
-- **Project Sponsor**: Healthcare Technology Division Director
-- **Project Manager**: [Name], Senior Project Manager
-- **Technical Lead**: [Name], Senior Software Architect
-- **Product Owner**: [Name], Product Manager
-- **Business Analyst**: [Name], Healthcare Domain Expert
+### 4.1 In Scope
+- **Core Modules**: Authentication, Patient Management, Appointment Scheduling, Consultation Workflow, Prescription Management, Pharmacy Operations, Laboratory Management, Billing & Insurance, Notification System, Analytics & Reporting, Telemedicine, Patient Portal
+- **User Roles**: Patients, Receptionists, Nurses, Doctors, Pharmacists, Lab Technicians, Administrators
+- **Key Features**: Adaptive consultation flow, drug interaction checking, real-time notifications, telemedicine, comprehensive analytics
+- **Technical Stack**: React + TypeScript + Vite frontend, Redux Toolkit state management, WebSocket real-time communication
 
-### 4.2 User Representatives
-- **Clinical Champion**: Chief Medical Officer
-- **Nursing Representative**: Director of Nursing
-- **Pharmacy Representative**: Chief Pharmacist
-- **IT Representative**: Chief Information Officer
-- **Patient Representative**: Patient Advocacy Group
-
-### 4.3 External Stakeholders
-- **Regulatory Bodies**: HIPAA Compliance Officers
-- **Insurance Providers**: Claims Processing Representatives
-- **Technology Vendors**: System Integration Partners
+### 4.2 Out of Scope
+- Mobile native applications (planned for future phases)
+- Integration with external EHR systems (planned for Phase 4)
+- AI-powered diagnosis assistance (future enhancement)
+- Blockchain-based medical records (future enhancement)
 
 ---
 
-## 5. Project Deliverables
+## 5. Stakeholders
 
-### 5.1 Core Deliverables
-1. **System Architecture Document**
-2. **Database Schema Design**
-3. **API Documentation**
-4. **User Interface Wireframes and Mockups**
-5. **Functional Requirements Specification**
-6. **Non-Functional Requirements Document**
-7. **Test Plan and Test Cases**
-8. **User Manual and Training Materials**
-9. **Deployment Guide**
-10. **Maintenance Plan**
-11. **Risk Assessment Report**
+### 5.1 Executive Sponsors
+- **Chief Medical Officer**: Dr. Sarah Johnson
+- **Chief Technology Officer**: Michael Chen
+- **Chief Financial Officer**: Lisa Rodriguez
 
-### 5.2 Software Deliverables
-- Production-ready web application
-- Source code repository
-- Automated test suites
-- Deployment scripts
-- Documentation repository
+### 5.2 Project Team
+- **Project Manager**: David Kim
+- **Technical Lead**: Emma Thompson
+- **Product Manager**: Robert Martinez
+- **Development Team**: 12 full-stack developers
+- **QA Team**: 4 quality assurance engineers
+- **UI/UX Designer**: Anna Petrov
+- **DevOps Engineer**: James Wilson
+
+### 5.3 Key Stakeholders
+- **Clinical Staff**: Doctors, nurses, pharmacists, lab technicians
+- **Administrative Staff**: Receptionists, administrators
+- **Patients**: End-users of the patient portal
+- **IT Security**: Compliance and security oversight
+- **Regulatory Compliance**: HIPAA and healthcare standards
 
 ---
 
 ## 6. Project Timeline
 
-### 6.1 Phase 1: Foundation (Months 1-3)
-- Requirements gathering and analysis
-- System design and architecture
-- Core authentication and user management
-- Basic patient registration and appointment scheduling
+### 6.1 Phase 1: Core System (Months 1-3)
+- Authentication & user management
+- Patient registration
+- Appointment scheduling
+- Basic consultation workflow
+- Prescription creation
+- **Milestone**: MVP deployment
 
-### 6.2 Phase 2: Core Features (Months 4-6)
-- Complete consultation workflow implementation
-- Pharmacy and laboratory modules
-- Billing and insurance processing
+### 6.2 Phase 2: Clinical Features (Months 4-6)
+- Complete 14-step consultation workflow
+- Lab integration
+- Pharmacy queue management
 - Notification system
+- Medical records
+- **Milestone**: Clinical workflow completion
 
 ### 6.3 Phase 3: Advanced Features (Months 7-9)
-- Patient portal and telemedicine
-- Analytics and reporting dashboard
-- Mobile optimization
-- Integration testing
+- Patient portal
+- Telemedicine
+- Analytics & reporting
+- Clinical decision support
+- Drug interaction checking
+- **Milestone**: Full feature deployment
 
-### 6.4 Phase 4: Deployment & Optimization (Months 10-12)
+### 6.4 Phase 4: Optimization (Months 10-12)
 - Performance optimization
-- Security testing and compliance validation
-- User acceptance testing
-- Production deployment and go-live
-
-**Total Project Duration**: 12 months
-**Go-Live Date**: [Target Date]
-
----
-
-## 7. Project Budget
-
-### 7.1 Budget Breakdown
-- **Development Costs**: $500,000
-  - Senior Developers (4): $300,000
-  - UI/UX Designers (2): $80,000
-  - QA Engineers (2): $80,000
-  - DevOps Engineer (1): $40,000
-
-- **Infrastructure Costs**: $100,000
-  - Cloud hosting and databases
-  - Development and testing environments
-  - Monitoring and security tools
-
-- **Third-Party Services**: $50,000
-  - Design tools and software licenses
-  - Security auditing and compliance testing
-
-- **Training and Documentation**: $30,000
-  - User training materials
-  - Technical documentation
-
-- **Contingency**: $20,000 (10% buffer)
-
-**Total Budget**: $700,000
+- Mobile app development
+- Advanced analytics
+- AI-powered features
+- Third-party integrations
+- **Milestone**: Production launch
 
 ---
 
-## 8. Success Criteria
+## 7. Success Criteria
 
-### 8.1 Technical Success Criteria
-- **Performance**: Page load time < 2 seconds, support 500+ concurrent users
-- **Reliability**: 99.9% uptime SLA
-- **Security**: Zero critical security vulnerabilities at go-live
-- **Accessibility**: 100% WCAG 2.1 AA compliance
-- **Code Quality**: >90% test coverage, <1% bug rate
+### 7.1 Operational Metrics
+- **System Uptime**: >99.9% SLA
+- **Response Times**: <2 seconds page load, <500ms notifications
+- **User Adoption**: 95% of clinical staff actively using system
+- **Error Rate**: <1% system errors
 
-### 8.2 Business Success Criteria
-- **User Adoption**: 95% of target users trained within 3 months of go-live
-- **Efficiency Gains**: 40% reduction in administrative time
-- **Patient Satisfaction**: >4.5/5 patient satisfaction score
-- **Cost Savings**: 25% reduction in operational costs
-- **ROI**: Positive return on investment within 18 months
+### 7.2 Clinical Metrics
+- **Patient Satisfaction**: >4.5/5 rating
+- **Staff Satisfaction**: >4.0/5 rating
+- **Process Efficiency**: 20% reduction in administrative time
+- **Quality Improvement**: 90% reduction in medication errors
+
+### 7.3 Business Metrics
+- **ROI**: 300% return on investment within 2 years
+- **Cost Savings**: $2M annual operational cost reduction
+- **Revenue Increase**: 15% increase in revenue per patient
+- **Market Position**: Leading HIMS solution in regional healthcare
 
 ---
 
-## 9. Project Constraints and Assumptions
+## 8. Key Milestones
 
-### 9.1 Constraints
-- **Timeline**: Fixed 12-month delivery schedule
-- **Budget**: Maximum $700,000 total project cost
-- **Technology**: Must use approved technology stack (React/TypeScript)
-- **Compliance**: Must meet HIPAA and accessibility standards
-- **Resources**: Limited to approved team size and skill sets
+| Milestone | Date | Deliverables |
+|-----------|------|--------------|
+| Project Kickoff | Month 1, Week 1 | Project charter approval, team assembly |
+| MVP Deployment | Month 3, Week 4 | Core system with basic workflows |
+| Clinical Workflow Complete | Month 6, Week 2 | Full consultation and pharmacy workflows |
+| Full Feature Deployment | Month 9, Week 4 | All planned features implemented |
+| Production Launch | Month 12, Week 2 | System go-live with full support |
+| Post-Launch Review | Month 12, Week 4 | Performance evaluation and optimization |
 
-### 9.2 Assumptions
-- All stakeholders will be available for required meetings and reviews
-- Healthcare domain experts will provide timely feedback
-- Third-party integrations will be available and documented
-- Regulatory requirements will not change significantly during development
-- Target infrastructure will be available and configured
+---
+
+## 9. Budget and Resources
+
+### 9.1 Budget Allocation
+- **Development**: $1.2M (48% of total budget)
+- **Infrastructure**: $400K (16% of total budget)
+- **Testing & QA**: $250K (10% of total budget)
+- **Training**: $150K (6% of total budget)
+- **Contingency**: $250K (10% of total budget)
+- **Total Budget**: $2.5M
+
+### 9.2 Resource Requirements
+- **Development Team**: 12 FTE developers
+- **QA Team**: 4 FTE QA engineers
+- **Infrastructure**: Cloud hosting (AWS/GCP), CI/CD pipelines
+- **Training**: Clinical staff training programs
+- **Support**: 24/7 technical support infrastructure
 
 ---
 
 ## 10. Risk Management
 
 ### 10.1 High-Risk Items
-- **Regulatory Compliance**: Changes in HIPAA requirements
-- **Technology Integration**: Compatibility issues with existing systems
-- **User Adoption**: Resistance to new workflows
-- **Data Migration**: Challenges in migrating legacy patient data
-- **Security Requirements**: Evolving cybersecurity threats
+- **Clinical Workflow Complexity**: Mitigated by iterative development and clinical feedback
+- **HIPAA Compliance**: Mitigated by dedicated compliance team and regular audits
+- **User Adoption**: Mitigated by comprehensive training and change management
+- **Technical Performance**: Mitigated by performance testing and optimization
 
 ### 10.2 Risk Mitigation Strategies
-- Regular compliance reviews with legal team
-- Early prototyping and integration testing
-- Comprehensive change management and training program
-- Phased data migration with rollback capabilities
-- Security audits and penetration testing throughout development
+- Regular stakeholder meetings and feedback sessions
+- Comprehensive testing and validation
+- Phased rollout with pilot programs
+- Continuous monitoring and improvement
 
 ---
 
@@ -227,79 +189,63 @@ The AROCORD-HIMS project aims to develop a comprehensive, modern web-based Healt
 
 ### 11.1 Internal Communications
 - **Weekly Status Meetings**: Project team updates
-- **Bi-weekly Stakeholder Reviews**: Progress and milestone reviews
-- **Monthly Executive Reports**: High-level status and metrics
-- **Ad-hoc Issue Resolution**: Immediate communication for critical issues
+- **Monthly Steering Committee**: Executive oversight
+- **Bi-weekly Stakeholder Updates**: Progress and milestone reviews
 
 ### 11.2 External Communications
-- **User Group Meetings**: Monthly updates with user representatives
-- **Newsletter**: Quarterly project updates to broader organization
-- **Training Sessions**: Regular sessions for end-users
-
-### 11.3 Documentation
-- All project documentation maintained in centralized repository
-- Regular updates to project plans and schedules
-- Comprehensive change log for all deliverables
+- **Clinical Staff Updates**: Monthly newsletters and training sessions
+- **Patient Communications**: Portal announcements and feedback surveys
+- **Vendor Communications**: Regular updates with integration partners
 
 ---
 
-## 12. Change Management
+## 12. Quality Assurance
 
-### 12.1 Change Control Process
-1. Change Request Submission
-2. Impact Assessment
-3. Approval by Change Control Board
-4. Implementation Planning
-5. Testing and Validation
-6. Deployment
+### 12.1 Quality Standards
+- **Code Quality**: ESLint + Prettier, 90%+ test coverage
+- **Security**: HIPAA compliance, penetration testing
+- **Performance**: Load testing with 1000+ concurrent users
+- **Accessibility**: WCAG 2.1 AA compliance
 
-### 12.2 Change Control Board
-- Project Manager (Chair)
-- Project Sponsor
-- Technical Lead
-- Product Owner
-- Business Analyst
-- Key Stakeholders
+### 12.2 Validation Methods
+- Unit testing with Vitest
+- Integration testing across modules
+- E2E testing with Playwright
+- User acceptance testing with clinical staff
 
 ---
 
-## 13. Quality Assurance
+## 13. Change Management
 
-### 13.1 Quality Standards
-- **Code Quality**: ESLint, Prettier, automated code reviews
-- **Testing**: Unit tests (>90% coverage), integration tests, E2E tests
-- **Security**: Regular security scans, penetration testing
-- **Performance**: Load testing, performance monitoring
-- **Accessibility**: Automated accessibility testing, manual reviews
+### 13.1 Change Control Process
+- Change requests submitted through project management system
+- Impact assessment by technical and clinical teams
+- Approval by change control board
+- Implementation with regression testing
 
-### 13.2 Quality Gates
-- **Requirements Review**: Sign-off before development begins
-- **Design Review**: Architecture and UI/UX approval
-- **Code Review**: Peer review for all code changes
-- **Testing Milestones**: Unit test completion, integration testing
-- **User Acceptance**: Formal UAT sign-off before production deployment
+### 13.2 Version Control
+- Git-based version control with feature branches
+- Semantic versioning (major.minor.patch)
+- Automated CI/CD pipelines
+- Rollback procedures for critical issues
 
 ---
 
 ## 14. Project Closure Criteria
 
-### 14.1 Technical Closure
-- All deliverables completed and approved
-- Code deployed to production environment
-- System performance meets requirements
-- Security and compliance validated
+### 14.1 Completion Requirements
+- All functional requirements implemented and tested
+- Performance benchmarks met
+- User acceptance testing passed
+- Documentation completed
+- Training programs delivered
+- Support infrastructure established
 
-### 14.2 Business Closure
-- User training completed
-- Support processes established
-- Documentation delivered
-- Stakeholder sign-off obtained
-
-### 14.3 Administrative Closure
-- Final project report delivered
-- Lessons learned documented
-- Team resources released
-- Project archived
+### 14.2 Success Metrics Achievement
+- All operational and clinical metrics met
+- Stakeholder satisfaction surveys positive
+- System stability demonstrated
+- ROI projections validated
 
 ---
 
@@ -311,48 +257,12 @@ The AROCORD-HIMS project aims to develop a comprehensive, modern web-based Healt
 
 **Technical Lead**: ___________________________ Date: ____________
 
-**Product Owner**: ___________________________ Date: ____________
+**Product Manager**: ___________________________ Date: ____________
 
 ---
 
-## Appendix A: Project Organization Chart
-
-```
-Project Sponsor
-    │
-    ├── Project Manager
-    │   ├── Technical Lead
-    │   ├── Business Analyst
-    │   ├── QA Lead
-    │   └── DevOps Engineer
-    │
-    ├── Development Team
-    │   ├── Frontend Developers (2)
-    │   ├── Backend Developers (2)
-    │   └── UI/UX Designers (2)
-    │
-    └── QA Team
-        ├── Automation Engineers (1)
-        └── Manual Testers (1)
-```
-
-## Appendix B: RACI Matrix
-
-| Deliverable/Task | Sponsor | PM | Tech Lead | Dev Team | QA Team | Stakeholders |
-|------------------|---------|----|-----------|----------|---------|--------------|
-| Requirements | A | R | C | I | I | C |
-| Design | I | R | A | C | I | C |
-| Development | I | R | A | R | C | I |
-| Testing | I | R | C | I | A | C |
-| Deployment | I | R | A | C | C | I |
-| Training | C | R | I | I | I | A |
-
-**R** = Responsible, **A** = Accountable, **C** = Consulted, **I** = Informed
-
----
-
-**Document Control**
-- **Version**: 1.0
-- **Last Updated**: January 2025
-- **Next Review**: Monthly during project execution
-- **Approval Required**: Project Sponsor and Steering Committee
+**Document Control**  
+**Version**: 1.0  
+**Last Updated**: December 2025  
+**Next Review**: March 2026  
+**Document Owner**: Project Management Office

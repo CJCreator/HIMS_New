@@ -6,9 +6,7 @@ import { addNotification } from '../../../store/notificationSlice';
 import { Button } from '../../../components/Button';
 import { Card } from '../../../components/Card';
 
-const Search = ({ className }: { className?: string }) => <span className={className}>🔍</span>;
-const Plus = ({ className }: { className?: string }) => <span className={className}>➕</span>;
-const Minus = ({ className }: { className?: string }) => <span className={className}>➖</span>;
+import { Search, Plus, Minus } from 'lucide-react';
 
 interface LabTestOrdersProps {
   patientName: string;

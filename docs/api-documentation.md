@@ -1,136 +1,107 @@
 # API Documentation
-## AROCORD-HIMS Healthcare Information Management System
+## AROCORD-HIMS (Healthcare Information Management System)
 
-## Document Information
-- **API Version**: v1.0
-- **Base URL**: `https://api.hims.arocord.com/v1`
-- **Documentation Version**: 1.0
-- **Last Updated**: January 2025
-- **Format**: RESTful API with JSON responses
+**Project Name**: AROCORD-HIMS  
+**Version**: 2.3  
+**Date**: December 2025  
+**Status**: Production Ready (90% Complete)  
 
 ---
 
-## 1. Overview
+## 1. Introduction
 
-### 1.1 Introduction
-The AROCORD-HIMS API provides programmatic access to healthcare management functionality, enabling integration with external systems, mobile applications, and third-party healthcare providers.
+### 1.1 Overview
+This API documentation provides comprehensive information about the AROCORD-HIMS RESTful APIs, including endpoints, request/response formats, authentication methods, and usage examples.
 
-### 1.2 API Principles
-- **RESTful Design**: Resource-based URLs with standard HTTP methods
-- **JSON Format**: All requests and responses use JSON
-- **Versioning**: API versioning through URL paths
-- **Stateless**: No server-side session state
-- **Idempotent**: Safe retry of operations
-
-### 1.3 Base URL
+### 1.2 Base URL
 ```
 Production: https://api.hims.arocord.com/v1
-Staging:    https://api-staging.hims.arocord.com/v1
+Staging: https://api-staging.hims.arocord.com/v1
 Development: https://api-dev.hims.arocord.com/v1
 ```
 
+### 1.3 Authentication
+All API requests require authentication using JWT tokens.
+
+**Header**: `Authorization: Bearer <jwt_token>`
+
 ---
 
-## 2. Authentication
+## 2. Authentication APIs
 
-### 2.1 Authentication Methods
-
-#### 2.1.1 JWT Bearer Token Authentication
-```http
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
-```
-
-#### 2.1.2 API Key Authentication (for system integrations)
-```http
-X-API-Key: your-api-key-here
-Authorization: Bearer your-jwt-token
-```
-
-### 2.2 Authentication Endpoints
-
-#### POST /auth/login
+### 2.1 Login
 Authenticate user and receive JWT token.
 
-**Request:**
+**Endpoint**: `POST /auth/login`
+
+**Request Body**:
 ```json
 {
-  "email": "doctor@example.com",
-  "password": "securepassword",
-  "remember_me": false
+  "username": "dr.smith",
+  "password": "secure_password",
+  "mfa_code": "123456"
 }
 ```
 
-**Response:**
+**Response**:
 ```json
 {
   "success": true,
   "data": {
     "user": {
       "id": "uuid",
-      "email": "doctor@example.com",
-      "first_name": "Sarah",
-      "last_name": "Smith",
-      "role": "doctor"
+      "username": "dr.smith",
+      "email": "dr.smith@hims.com",
+      "role": "doctor",
+      "first_name": "Dr.",
+      "last_name": "Smith"
     },
     "tokens": {
-      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-      "expires_in": 3600,
-      "token_type": "Bearer"
+      "access_token": "eyJhbGciOiJIUzI1NiIs...",
+      "refresh_token": "eyJhbGciOiJIUzI1NiIs...",
+      "expires_in": 3600
     }
   }
 }
 ```
 
-#### POST /auth/refresh
+**Error Responses**:
+- `401 Unauthorized`: Invalid credentials
+- `429 Too Many Requests`: Rate limit exceeded
+
+### 2.2 Refresh Token
 Refresh expired access token.
 
-**Request:**
+**Endpoint**: `POST /auth/refresh`
+
+**Request Body**:
 ```json
 {
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "refresh_token": "eyJhbGciOiJIUzI1NiIs..."
 }
 ```
 
-#### POST /auth/logout
+### 2.3 Logout
 Invalidate current session.
 
-**Request:**
-```json
-{
-  "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-}
-```
-
-### 2.3 Role-Based Access Control
-
-| Role | Permissions |
-|------|-------------|
-| patient | Read own records, book appointments, view bills |
-| receptionist | CRUD patients, appointments, billing |
-| nurse | Read/update assigned patients, record vitals |
-| doctor | Full clinical access, prescribe medications |
-| pharmacist | Process prescriptions, manage inventory |
-| lab_technician | Process lab orders, enter results |
-| administrator | Full system access |
+**Endpoint**: `POST /auth/logout`
 
 ---
 
-## 3. API Endpoints
+## 3. Patient Management APIs
 
-### 3.1 Patient Management
-
-#### GET /patients
+### 3.1 Get Patient List
 Retrieve paginated list of patients.
 
-**Query Parameters:**
-- `page` (integer, default: 1): Page number
-- `limit` (integer, default: 20): Items per page
-- `search` (string): Search term for name, email, phone
-- `sort_by` (string): Field to sort by (name, dob, created_at)
-- `sort_order` (string): Sort order (asc, desc)
+**Endpoint**: `GET /patients`
 
-**Response:**
+**Query Parameters**:
+- `page`: Page number (default: 1)
+- `limit`: Items per page (default: 20, max: 100)
+- `search`: Search term for name or MRN
+- `status`: Filter by active status
+
+**Response**:
 ```json
 {
   "success": true,
@@ -138,273 +109,228 @@ Retrieve paginated list of patients.
     "patients": [
       {
         "id": "uuid",
-        "mrn": "123456",
+        "mrn": "MRN001",
         "first_name": "John",
         "last_name": "Doe",
-        "date_of_birth": "1985-03-15",
-        "gender": "male",
-        "phone_primary": "(555) 123-4567",
+        "date_of_birth": "1980-05-15",
+        "phone": "+1-555-0123",
         "email": "john.doe@email.com",
-        "status": "active",
-        "created_at": "2024-01-01T00:00:00Z"
+        "is_active": true
       }
     ],
     "pagination": {
       "page": 1,
       "limit": 20,
-      "total": 1250,
-      "total_pages": 63
+      "total": 150,
+      "pages": 8
     }
   }
 }
 ```
 
-#### POST /patients
-Create a new patient record.
+### 3.2 Get Patient Details
+Retrieve complete patient information.
 
-**Request:**
-```json
-{
-  "first_name": "John",
-  "last_name": "Doe",
-  "date_of_birth": "1985-03-15",
-  "gender": "male",
-  "phone_primary": "(555) 123-4567",
-  "email": "john.doe@email.com",
-  "address_line_1": "123 Main St",
-  "city": "Anytown",
-  "state": "CA",
-  "postal_code": "12345",
-  "emergency_contact_name": "Jane Doe",
-  "emergency_contact_phone": "(555) 987-6543"
-}
-```
+**Endpoint**: `GET /patients/{id}`
 
-#### GET /patients/{id}
-Retrieve detailed patient information.
-
-**Response:**
+**Response**:
 ```json
 {
   "success": true,
   "data": {
     "patient": {
       "id": "uuid",
-      "mrn": "123456",
-      "first_name": "John",
-      "last_name": "Doe",
-      "date_of_birth": "1985-03-15",
-      "gender": "male",
-      "phone_primary": "(555) 123-4567",
-      "email": "john.doe@email.com",
-      "address": {
-        "line_1": "123 Main St",
-        "city": "Anytown",
-        "state": "CA",
-        "postal_code": "12345"
+      "mrn": "MRN001",
+      "demographics": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "date_of_birth": "1980-05-15",
+        "gender": "male"
+      },
+      "contact": {
+        "phone": "+1-555-0123",
+        "email": "john.doe@email.com",
+        "address": {
+          "street": "123 Main St",
+          "city": "Anytown",
+          "state": "CA",
+          "zip": "12345"
+        }
       },
       "emergency_contact": {
         "name": "Jane Doe",
         "relationship": "spouse",
-        "phone": "(555) 987-6543"
+        "phone": "+1-555-0124"
       },
       "insurance": {
-        "primary": {
-          "provider": "Blue Cross",
-          "policy_number": "BC123456",
-          "group_number": "GRP001"
-        }
-      },
-      "allergies": [
-        {
-          "id": "uuid",
-          "allergen": "Penicillin",
-          "severity": "severe",
-          "reaction": "Anaphylaxis"
-        }
-      ],
-      "medications": [
-        {
-          "id": "uuid",
-          "name": "Lisinopril",
-          "dosage": "10mg",
-          "frequency": "Once daily"
-        }
-      ],
-      "status": "active",
-      "created_at": "2024-01-01T00:00:00Z",
-      "updated_at": "2024-01-15T10:30:00Z"
-    }
-  }
-}
-```
-
-#### PUT /patients/{id}
-Update patient information.
-
-#### DELETE /patients/{id}
-Deactivate patient record (soft delete).
-
-### 3.2 Appointment Management
-
-#### GET /appointments
-Retrieve appointments with filtering.
-
-**Query Parameters:**
-- `patient_id` (uuid): Filter by patient
-- `provider_id` (uuid): Filter by provider
-- `date_from` (date): Start date filter
-- `date_to` (date): End date filter
-- `status` (string): Appointment status
-- `department_id` (uuid): Department filter
-
-#### POST /appointments
-Schedule a new appointment.
-
-**Request:**
-```json
-{
-  "patient_id": "uuid",
-  "provider_id": "uuid",
-  "department_id": "uuid",
-  "appointment_type": "General Consultation",
-  "scheduled_date": "2024-01-20",
-  "scheduled_time": "14:30:00",
-  "duration_minutes": 30,
-  "reason_for_visit": "Annual physical examination",
-  "priority": "normal",
-  "insurance_verified": true
-}
-```
-
-#### PUT /appointments/{id}
-Update appointment details.
-
-#### PUT /appointments/{id}/status
-Update appointment status.
-
-**Request:**
-```json
-{
-  "status": "checked_in",
-  "notes": "Patient arrived 5 minutes early"
-}
-```
-
-#### DELETE /appointments/{id}
-Cancel appointment.
-
-### 3.3 Consultation Management
-
-#### GET /consultations
-Retrieve consultations.
-
-**Query Parameters:**
-- `patient_id` (uuid): Filter by patient
-- `provider_id` (uuid): Filter by provider
-- `status` (string): Consultation status
-- `date_from` (date): Start date
-- `date_to` (date): End date
-
-#### POST /consultations
-Start a new consultation.
-
-**Request:**
-```json
-{
-  "appointment_id": "uuid",
-  "patient_id": "uuid",
-  "provider_id": "uuid",
-  "consultation_type": "standard",
-  "chief_complaint": "Headache for 3 days",
-  "workflow_type": "adaptive"
-}
-```
-
-#### GET /consultations/{id}
-Retrieve consultation details with all steps.
-
-**Response:**
-```json
-{
-  "success": true,
-  "data": {
-    "consultation": {
-      "id": "uuid",
-      "appointment_id": "uuid",
-      "patient_id": "uuid",
-      "provider_id": "uuid",
-      "status": "in_progress",
-      "current_step": 2,
-      "started_at": "2024-01-15T14:30:00Z",
-      "chief_complaint": "Headache for 3 days",
-      "patient_overview": {
-        "vitals": {
-          "blood_pressure": "120/80",
-          "heart_rate": 72,
-          "temperature": 98.6
-        },
-        "allergies": ["Penicillin"],
-        "current_medications": ["Lisinopril 10mg daily"]
-      },
-      "clinical_assessment": {
-        "symptoms": [
-          {
-            "name": "headache",
-            "severity": 7,
-            "duration": "3 days",
-            "description": "Frontal headache, worse with light"
-          }
-        ],
-        "physical_exam": {
-          "neurological": "Cranial nerves II-XII intact",
-          "cardiovascular": "Regular rate and rhythm"
-        }
-      },
-      "treatment_plan": {
-        "diagnosis": [
-          {
-            "icd10_code": "R51",
-            "description": "Headache",
-            "primary": true
-          }
-        ],
-        "plan": "Prescribe sumatriptan for acute relief, schedule follow-up"
-      },
-      "final_review": {
-        "prescriptions": [
-          {
-            "medication_id": "uuid",
-            "dosage": "50mg",
-            "frequency": "As needed",
-            "duration": "30 days"
-          }
-        ],
-        "lab_orders": [
-          {
-            "test_code": "CBC",
-            "priority": "routine"
-          }
-        ]
+        "provider": "Blue Cross",
+        "policy_number": "BC123456",
+        "group_number": "GRP001"
       }
     }
   }
 }
 ```
 
-#### PUT /consultations/{id}/step
-Update consultation step data.
+### 3.3 Create Patient
+Register new patient.
 
-**Request:**
+**Endpoint**: `POST /patients`
+
+**Request Body**:
+```json
+{
+  "mrn": "MRN002",
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "date_of_birth": "1985-03-20",
+  "gender": "female",
+  "phone": "+1-555-0125",
+  "email": "jane.smith@email.com",
+  "address": {
+    "street": "456 Oak Ave",
+    "city": "Anytown",
+    "state": "CA",
+    "zip": "12345"
+  },
+  "emergency_contact": {
+    "name": "John Smith",
+    "relationship": "spouse",
+    "phone": "+1-555-0126"
+  }
+}
+```
+
+### 3.4 Update Patient
+Modify patient information.
+
+**Endpoint**: `PUT /patients/{id}`
+
+**Request Body**: Same as create, partial updates allowed.
+
+### 3.5 Get Patient Medical History
+Retrieve patient's medical records.
+
+**Endpoint**: `GET /patients/{id}/medical-history`
+
+**Query Parameters**:
+- `type`: Filter by record type (allergy, medication, diagnosis, etc.)
+- `limit`: Number of records to return
+- `offset`: Pagination offset
+
+---
+
+## 4. Appointment Management APIs
+
+### 4.1 Get Appointments
+Retrieve appointments with filtering.
+
+**Endpoint**: `GET /appointments`
+
+**Query Parameters**:
+- `patient_id`: Filter by patient
+- `doctor_id`: Filter by doctor
+- `date_from`: Start date filter
+- `date_to`: End date filter
+- `status`: Appointment status filter
+
+### 4.2 Create Appointment
+Schedule new appointment.
+
+**Endpoint**: `POST /appointments`
+
+**Request Body**:
+```json
+{
+  "patient_id": "uuid",
+  "doctor_id": "uuid",
+  "appointment_type": "consultation",
+  "scheduled_time": "2025-01-15T10:00:00Z",
+  "duration_minutes": 15,
+  "notes": "Follow-up visit"
+}
+```
+
+### 4.3 Update Appointment
+Modify appointment details.
+
+**Endpoint**: `PUT /appointments/{id}`
+
+### 4.4 Cancel Appointment
+Cancel an appointment.
+
+**Endpoint**: `DELETE /appointments/{id}`
+
+**Request Body**:
+```json
+{
+  "cancellation_reason": "Patient requested cancellation",
+  "notify_patient": true
+}
+```
+
+---
+
+## 5. Consultation APIs
+
+### 5.1 Start Consultation
+Initialize consultation workflow.
+
+**Endpoint**: `POST /consultations`
+
+**Request Body**:
+```json
+{
+  "patient_id": "uuid",
+  "appointment_id": "uuid",
+  "workflow_type": "adaptive"
+}
+```
+
+### 5.2 Get Consultation State
+Retrieve current consultation progress.
+
+**Endpoint**: `GET /consultations/{id}`
+
+**Response**:
+```json
+{
+  "success": true,
+  "data": {
+    "consultation": {
+      "id": "uuid",
+      "patient_id": "uuid",
+      "doctor_id": "uuid",
+      "workflow_type": "adaptive",
+      "current_step": 2,
+      "total_steps": 11,
+      "status": "in_progress",
+      "step_data": {
+        "patient_overview": { "completed": true },
+        "vitals": { "completed": true, "data": { "bp": "120/80" } },
+        "symptoms": { "in_progress": true }
+      },
+      "started_at": "2025-01-15T10:00:00Z"
+    }
+  }
+}
+```
+
+### 5.3 Update Consultation Step
+Save progress for current step.
+
+**Endpoint**: `PUT /consultations/{id}/step`
+
+**Request Body**:
 ```json
 {
   "step_number": 2,
   "step_data": {
+    "chief_complaint": "Headache and fatigue",
     "symptoms": [
       {
-        "name": "headache",
-        "severity": 7,
-        "location": "frontal",
+        "description": "Headache",
+        "severity": "moderate",
         "duration": "3 days"
       }
     ]
@@ -412,669 +338,634 @@ Update consultation step data.
 }
 ```
 
-#### POST /consultations/{id}/complete
-Complete consultation and trigger handoffs.
+### 5.4 Complete Consultation
+Finalize consultation and trigger notifications.
 
-### 3.4 Prescription Management
+**Endpoint**: `POST /consultations/{id}/complete`
 
-#### GET /prescriptions
-Retrieve prescriptions.
+---
 
-**Query Parameters:**
-- `patient_id` (uuid): Filter by patient
-- `provider_id` (uuid): Filter by provider
-- `status` (string): Prescription status
-- `priority` (string): Priority level
+## 6. Prescription APIs
 
-#### POST /prescriptions
-Create a new prescription.
+### 6.1 Create Prescription
+Generate new prescription.
 
-**Request:**
+**Endpoint**: `POST /prescriptions`
+
+**Request Body**:
 ```json
 {
-  "consultation_id": "uuid",
   "patient_id": "uuid",
-  "provider_id": "uuid",
+  "doctor_id": "uuid",
+  "consultation_id": "uuid",
   "medications": [
     {
-      "medication_id": "uuid",
-      "dosage": "500mg",
-      "route": "oral",
-      "frequency": "three_times_daily",
-      "duration_days": 10,
-      "quantity": 30,
+      "drug_id": "uuid",
+      "name": "Lisinopril",
+      "dosage": "10mg",
+      "frequency": "once daily",
+      "duration": "30 days",
       "instructions": "Take with food",
-      "refills": 0
+      "quantity": 30,
+      "refills": 3
     }
   ],
-  "priority": "normal",
-  "notes": "Patient allergic to penicillin"
+  "priority": "medium"
 }
 ```
 
-#### PUT /prescriptions/{id}/status
-Update prescription status (pharmacy workflow).
+### 6.2 Get Prescription Queue
+Retrieve prescriptions for pharmacy processing.
 
-**Request:**
+**Endpoint**: `GET /pharmacy/prescriptions`
+
+**Query Parameters**:
+- `status`: Filter by status (pending, processing, ready)
+- `priority`: Filter by priority
+- `limit`: Number of prescriptions to return
+
+### 6.3 Process Prescription
+Update prescription status in pharmacy.
+
+**Endpoint**: `PUT /pharmacy/prescriptions/{id}/process`
+
+**Request Body**:
 ```json
 {
-  "status": "dispensed",
-  "pharmacist_id": "uuid",
-  "dispensed_at": "2024-01-15T15:30:00Z",
+  "status": "ready",
+  "notes": "Medication prepared and labeled",
+  "ready_at": "2025-01-15T11:30:00Z"
+}
+```
+
+### 6.4 Dispense Prescription
+Mark prescription as dispensed.
+
+**Endpoint**: `POST /pharmacy/prescriptions/{id}/dispense`
+
+**Request Body**:
+```json
+{
+  "dispensed_by": "uuid",
   "counseling_provided": true,
-  "notes": "Patient educated on proper usage"
+  "counseling_notes": "Patient educated on medication usage"
 }
 ```
 
-### 3.5 Laboratory Management
+---
 
-#### GET /lab-orders
-Retrieve laboratory orders.
+## 7. Laboratory APIs
 
-#### POST /lab-orders
-Create laboratory order.
+### 7.1 Create Lab Order
+Order laboratory tests.
 
-**Request:**
+**Endpoint**: `POST /lab/orders`
+
+**Request Body**:
 ```json
 {
-  "consultation_id": "uuid",
   "patient_id": "uuid",
-  "provider_id": "uuid",
+  "doctor_id": "uuid",
+  "consultation_id": "uuid",
   "tests": [
     {
+      "test_type": "Complete Blood Count",
       "test_code": "CBC",
-      "test_name": "Complete Blood Count",
       "priority": "routine",
-      "clinical_notes": "Patient reports fatigue"
-    },
-    {
-      "test_code": "CMP",
-      "test_name": "Comprehensive Metabolic Panel",
-      "priority": "routine"
+      "specimen_type": "blood",
+      "collection_instructions": "Fasting required"
     }
   ]
 }
 ```
 
-#### GET /lab-results
-Retrieve laboratory results.
+### 7.2 Get Lab Orders
+Retrieve lab orders for processing.
 
-#### POST /lab-results
-Enter laboratory results.
+**Endpoint**: `GET /lab/orders`
 
-**Request:**
+**Query Parameters**:
+- `status`: Filter by status
+- `priority`: Filter by priority
+- `technician_id`: Filter by assigned technician
+
+### 7.3 Enter Lab Results
+Record test results.
+
+**Endpoint**: `PUT /lab/orders/{id}/results`
+
+**Request Body**:
 ```json
 {
-  "lab_order_id": "uuid",
-  "test_code": "CBC",
   "results": [
     {
-      "component_code": "WBC",
-      "component_name": "White Blood Cell Count",
-      "value": "8.5",
+      "test_code": "WBC",
+      "value": "7.2",
       "unit": "K/uL",
       "reference_range": "4.0-11.0",
-      "flag": "normal",
-      "notes": ""
+      "flag": "normal"
     },
     {
-      "component_code": "HGB",
-      "component_name": "Hemoglobin",
-      "value": "14.2",
+      "test_code": "HGB",
+      "value": "14.1",
       "unit": "g/dL",
       "reference_range": "12.0-16.0",
       "flag": "normal"
     }
   ],
-  "performed_by": "uuid",
-  "performed_at": "2024-01-15T16:00:00Z",
-  "status": "completed"
+  "interpretation": "All values within normal range",
+  "technician_id": "uuid",
+  "completed_at": "2025-01-15T14:30:00Z"
 }
 ```
 
-### 3.6 Billing and Insurance
+---
 
-#### GET /billing/records
-Retrieve billing records.
+## 8. Billing APIs
 
-#### POST /billing/records
-Create billing record.
+### 8.1 Create Invoice
+Generate billing invoice.
 
-**Request:**
+**Endpoint**: `POST /billing/invoices`
+
+**Request Body**:
 ```json
 {
-  "consultation_id": "uuid",
   "patient_id": "uuid",
-  "services": [
+  "consultation_id": "uuid",
+  "charges": [
     {
-      "cpt_code": "99201",
-      "description": "Office visit, new patient",
+      "description": "Office Visit - Level 3",
+      "cpt_code": "99213",
       "quantity": 1,
       "unit_price": 150.00,
-      "modifiers": []
+      "total": 150.00
+    },
+    {
+      "description": "CBC with Differential",
+      "cpt_code": "85025",
+      "quantity": 1,
+      "unit_price": 25.00,
+      "total": 25.00
     }
   ],
-  "diagnoses": [
-    {
-      "icd10_code": "R51",
-      "description": "Headache",
-      "primary": true
-    }
-  ]
+  "due_date": "2025-02-15"
 }
 ```
 
-#### POST /billing/submit-claim
-Submit insurance claim.
+### 8.2 Process Payment
+Record payment against invoice.
 
-**Request:**
+**Endpoint**: `POST /billing/payments`
+
+**Request Body**:
 ```json
 {
-  "billing_record_id": "uuid",
-  "insurance_policy_id": "uuid",
-  "claim_type": "professional",
-  "date_of_service": "2024-01-15",
-  "total_charges": 150.00,
-  "diagnosis_codes": ["R51"],
-  "procedure_codes": ["99201"]
+  "invoice_id": "uuid",
+  "payment_method": "credit_card",
+  "amount": 175.00,
+  "payment_details": {
+    "card_type": "visa",
+    "last_four": "1234",
+    "transaction_id": "txn_123456"
+  }
 }
 ```
 
-### 3.7 Notification System
+### 8.3 Submit Insurance Claim
+Submit claim to insurance provider.
 
-#### GET /notifications
+**Endpoint**: `POST /billing/insurance-claims`
+
+**Request Body**:
+```json
+{
+  "invoice_id": "uuid",
+  "insurance_provider": "Blue Cross",
+  "policy_number": "BC123456",
+  "diagnosis_codes": ["I10"],
+  "procedure_codes": ["99213", "85025"]
+}
+```
+
+---
+
+## 9. Notification APIs
+
+### 9.1 Get Notifications
 Retrieve user notifications.
 
-**Query Parameters:**
-- `status` (string): read, unread, all
-- `type` (string): appointment, medication, lab_result, etc.
-- `limit` (integer): Number of notifications
+**Endpoint**: `GET /notifications`
 
-#### PUT /notifications/{id}/read
-Mark notification as read.
+**Query Parameters**:
+- `status`: Filter by read/unread
+- `priority`: Filter by priority level
+- `category`: Filter by notification category
+- `limit`: Number of notifications to return
 
-#### POST /notifications
-Send notification (admin/system use).
-
-**Request:**
+**Response**:
 ```json
 {
-  "type": "appointment_reminder",
-  "title": "Appointment Reminder",
-  "message": "You have an appointment with Dr. Smith tomorrow at 2:00 PM",
-  "recipients": ["uuid"],
-  "channels": ["in_app", "email", "sms"],
-  "priority": "normal",
-  "action_url": "/appointments/uuid",
-  "expires_at": "2024-01-16T14:00:00Z"
+  "success": true,
+  "data": {
+    "notifications": [
+      {
+        "id": "uuid",
+        "type": "info",
+        "title": "Lab Results Available",
+        "message": "CBC results for John Doe are ready for review",
+        "priority": "medium",
+        "category": "lab",
+        "is_read": false,
+        "created_at": "2025-01-15T14:30:00Z",
+        "action_url": "/lab/results/123"
+      }
+    ],
+    "unread_count": 5
+  }
 }
 ```
 
-### 3.8 Analytics and Reporting
+### 9.2 Mark Notification Read
+Mark notification as read.
 
-#### GET /analytics/dashboard
-Retrieve dashboard metrics.
+**Endpoint**: `PUT /notifications/{id}/read`
 
-**Query Parameters:**
-- `date_from` (date): Start date
-- `date_to` (date): End date
-- `department_id` (uuid): Department filter
+### 9.3 Send Notification
+Create and send notification (Admin only).
 
-**Response:**
+**Endpoint**: `POST /notifications`
+
+**Request Body**:
+```json
+{
+  "recipient_ids": ["uuid1", "uuid2"],
+  "type": "warning",
+  "title": "System Maintenance",
+  "message": "System will be unavailable from 2-4 AM",
+  "priority": "high",
+  "category": "system",
+  "action_url": "/maintenance-schedule"
+}
+```
+
+---
+
+## 10. Analytics APIs
+
+### 10.1 Get Dashboard Metrics
+Retrieve KPI data for dashboards.
+
+**Endpoint**: `GET /analytics/dashboard`
+
+**Query Parameters**:
+- `date_from`: Start date for metrics
+- `date_to`: End date for metrics
+- `role`: User role for role-specific metrics
+
+**Response**:
 ```json
 {
   "success": true,
   "data": {
     "metrics": {
       "total_patients": 1250,
-      "active_patients": 1100,
-      "appointments_today": 45,
-      "average_wait_time": 12.5,
-      "consultations_completed": 38,
-      "prescriptions_dispensed": 67,
-      "revenue_today": 8750.00
+      "active_appointments_today": 45,
+      "average_wait_time": 15,
+      "consultation_completion_rate": 92,
+      "prescription_accuracy": 98,
+      "patient_satisfaction": 4.6
     },
-    "charts": {
-      "appointment_trends": [
-        {"date": "2024-01-15", "scheduled": 45, "completed": 38}
-      ],
-      "department_utilization": [
-        {"department": "Internal Medicine", "utilization": 85}
+    "trends": {
+      "patient_volume": [
+        { "date": "2025-01-01", "count": 38 },
+        { "date": "2025-01-02", "count": 42 }
       ]
     }
   }
 }
 ```
 
-#### GET /reports/{report_type}
-Generate specific reports.
+### 10.2 Get Performance Reports
+Generate detailed performance reports.
 
-**Supported Report Types:**
-- `patient_demographics`
-- `appointment_utilization`
-- `provider_productivity`
-- `revenue_analysis`
-- `inventory_status`
-- `quality_metrics`
+**Endpoint**: `GET /analytics/reports/{report_type}`
 
-### 3.9 User Management (Admin Only)
+**Supported Report Types**:
+- `appointment-utilization`
+- `doctor-performance`
+- `revenue-analysis`
+- `patient-demographics`
+- `queue-analytics`
 
-#### GET /admin/users
-Retrieve system users.
+**Query Parameters**:
+- `date_from`: Report start date
+- `date_to`: Report end date
+- `group_by`: Grouping dimension (day, week, month)
+- `filters`: Additional filters as JSON
 
-#### POST /admin/users
-Create new user account.
+### 10.3 Export Analytics Data
+Export analytics data in various formats.
 
-**Request:**
-```json
-{
-  "email": "nurse@example.com",
-  "first_name": "Emily",
-  "last_name": "Johnson",
-  "role": "nurse",
-  "department_id": "uuid",
-  "phone": "(555) 123-4567",
-  "send_invitation": true
-}
-```
+**Endpoint**: `GET /analytics/export`
 
-#### PUT /admin/users/{id}/permissions
-Update user permissions.
-
-#### POST /admin/users/{id}/reset-password
-Reset user password.
+**Query Parameters**:
+- `report_type`: Type of data to export
+- `format`: Export format (csv, excel, pdf)
+- `date_from`: Start date
+- `date_to`: End date
 
 ---
 
-## 4. Error Handling
+## 11. Patient Portal APIs
 
-### 4.1 HTTP Status Codes
+### 11.1 Patient Login
+Authenticate patient portal user.
 
-| Status Code | Meaning | Description |
-|-------------|---------|-------------|
-| 200 | OK | Request successful |
-| 201 | Created | Resource created successfully |
-| 204 | No Content | Request successful, no content returned |
-| 400 | Bad Request | Invalid request parameters |
-| 401 | Unauthorized | Authentication required |
-| 403 | Forbidden | Insufficient permissions |
-| 404 | Not Found | Resource not found |
-| 409 | Conflict | Resource conflict (e.g., duplicate) |
-| 422 | Unprocessable Entity | Validation errors |
-| 429 | Too Many Requests | Rate limit exceeded |
-| 500 | Internal Server Error | Server error |
-| 503 | Service Unavailable | Service temporarily unavailable |
+**Endpoint**: `POST /patient-portal/login`
 
-### 4.2 Error Response Format
+**Request Body**:
+```json
+{
+  "email": "patient@email.com",
+  "password": "secure_password"
+}
+```
+
+### 11.2 Get Patient Appointments
+Retrieve patient's appointments.
+
+**Endpoint**: `GET /patient-portal/appointments`
+
+### 11.3 Book Appointment
+Allow patient to book appointment.
+
+**Endpoint**: `POST /patient-portal/appointments`
+
+**Request Body**:
+```json
+{
+  "doctor_id": "uuid",
+  "appointment_type": "consultation",
+  "preferred_date": "2025-01-20",
+  "preferred_time": "10:00",
+  "reason": "Follow-up visit"
+}
+```
+
+### 11.4 Get Medical Records
+Retrieve patient's medical history.
+
+**Endpoint**: `GET /patient-portal/medical-records`
+
+**Query Parameters**:
+- `type`: Filter by record type
+- `date_from`: Start date filter
+- `date_to`: End date filter
+
+### 11.5 Download Health Records
+Generate downloadable health summary.
+
+**Endpoint**: `GET /patient-portal/health-summary`
+
+**Query Parameters**:
+- `format`: Output format (pdf, json)
+- `include_sensitive`: Include sensitive information
+
+---
+
+## 12. Error Handling
+
+### 12.1 Standard Error Response
+All API errors follow this format:
 
 ```json
 {
   "success": false,
   "error": {
     "code": "VALIDATION_ERROR",
-    "message": "The request contains validation errors",
+    "message": "Invalid input data",
     "details": {
-      "field_errors": {
-        "email": ["Email address is required"],
-        "phone": ["Phone number must be valid"]
-      }
+      "field": "email",
+      "issue": "Invalid email format"
     },
-    "request_id": "req_123456789",
-    "timestamp": "2024-01-15T10:30:00Z"
+    "timestamp": "2025-01-15T10:30:00Z",
+    "request_id": "req_123456"
   }
 }
 ```
 
-### 4.3 Common Error Codes
+### 12.2 Common Error Codes
 
-| Error Code | HTTP Status | Description |
-|------------|-------------|-------------|
-| `VALIDATION_ERROR` | 422 | Request validation failed |
-| `AUTHENTICATION_FAILED` | 401 | Invalid credentials |
-| `AUTHORIZATION_FAILED` | 403 | Insufficient permissions |
-| `RESOURCE_NOT_FOUND` | 404 | Requested resource doesn't exist |
-| `RESOURCE_CONFLICT` | 409 | Resource already exists or conflict |
-| `RATE_LIMIT_EXCEEDED` | 429 | Too many requests |
-| `SERVICE_UNAVAILABLE` | 503 | External service unavailable |
-| `INTERNAL_ERROR` | 500 | Unexpected server error |
+| Code | HTTP Status | Description |
+|------|-------------|-------------|
+| `VALIDATION_ERROR` | 400 | Invalid request data |
+| `AUTHENTICATION_ERROR` | 401 | Invalid or missing credentials |
+| `AUTHORIZATION_ERROR` | 403 | Insufficient permissions |
+| `NOT_FOUND` | 404 | Resource not found |
+| `CONFLICT` | 409 | Resource conflict |
+| `RATE_LIMITED` | 429 | Too many requests |
+| `INTERNAL_ERROR` | 500 | Server error |
 
 ---
 
-## 5. Rate Limiting
+## 13. Rate Limiting
 
-### 5.1 Rate Limits by Endpoint Type
+### 13.1 Rate Limits by Endpoint Type
 
 | Endpoint Type | Limit | Window |
 |---------------|-------|--------|
-| Authentication | 5 requests | 15 minutes |
-| Patient CRUD | 100 requests | 1 minute |
-| Appointment CRUD | 50 requests | 1 minute |
-| Consultation updates | 30 requests | 1 minute |
-| Search operations | 20 requests | 1 minute |
-| Report generation | 5 requests | 1 hour |
+| Authentication | 5 requests | per minute |
+| Patient Search | 100 requests | per minute |
+| Data Retrieval | 500 requests | per minute |
+| Data Modification | 200 requests | per minute |
+| Analytics | 50 requests | per minute |
 
-### 5.2 Rate Limit Headers
+### 13.2 Rate Limit Headers
 
-```http
+```
 X-RateLimit-Limit: 100
 X-RateLimit-Remaining: 95
 X-RateLimit-Reset: 1640995200
 X-RateLimit-Retry-After: 60
 ```
 
-### 5.3 Rate Limit Exceeded Response
-
-```json
-{
-  "success": false,
-  "error": {
-    "code": "RATE_LIMIT_EXCEEDED",
-    "message": "Too many requests",
-    "details": {
-      "retry_after": 60,
-      "limit": 100,
-      "window": "1 minute"
-    }
-  }
-}
-```
-
 ---
 
-## 6. Pagination
+## 14. Webhooks
 
-### 6.1 Standard Pagination
+### 14.1 Webhook Configuration
+Configure webhook endpoints for real-time notifications.
 
-All list endpoints support pagination with the following parameters:
-- `page` (integer, default: 1): Page number (1-based)
-- `limit` (integer, default: 20, max: 100): Items per page
+**Endpoint**: `POST /webhooks`
 
-### 6.2 Pagination Response Format
-
+**Request Body**:
 ```json
 {
-  "success": true,
-  "data": {
-    "items": [...],
-    "pagination": {
-      "page": 1,
-      "limit": 20,
-      "total": 1250,
-      "total_pages": 63,
-      "has_next": true,
-      "has_prev": false,
-      "next_page": 2,
-      "prev_page": null
-    }
-  }
-}
-```
-
----
-
-## 7. Filtering and Sorting
-
-### 7.1 Common Filter Parameters
-
-| Parameter | Type | Description | Example |
-|-----------|------|-------------|---------|
-| `search` | string | Full-text search | `search=headache` |
-| `status` | string | Status filter | `status=active` |
-| `date_from` | date | Start date filter | `date_from=2024-01-01` |
-| `date_to` | date | End date filter | `date_to=2024-01-31` |
-| `priority` | string | Priority filter | `priority=high` |
-
-### 7.2 Sorting Parameters
-
-| Parameter | Type | Description | Example |
-|-----------|------|-------------|---------|
-| `sort_by` | string | Field to sort by | `sort_by=created_at` |
-| `sort_order` | string | Sort direction | `sort_order=desc` |
-
-Supported sort fields vary by endpoint and are documented in each endpoint's reference.
-
----
-
-## 8. Webhooks
-
-### 8.1 Webhook Configuration
-
-#### POST /webhooks
-Register webhook endpoint.
-
-**Request:**
-```json
-{
-  "url": "https://example.com/webhook",
-  "events": ["appointment.created", "prescription.ready"],
+  "url": "https://app.example.com/webhooks/hims",
+  "events": ["appointment.created", "prescription.ready", "lab.results"],
   "secret": "webhook_secret_key",
   "active": true
 }
 ```
 
-### 8.2 Supported Events
+### 14.2 Supported Events
 
 | Event | Description | Payload |
 |-------|-------------|---------|
-| `patient.created` | New patient registered | Patient data |
-| `appointment.scheduled` | Appointment booked | Appointment data |
-| `consultation.completed` | Consultation finished | Consultation summary |
+| `appointment.created` | New appointment scheduled | Appointment data |
+| `appointment.updated` | Appointment modified | Updated appointment data |
 | `prescription.ready` | Prescription ready for pickup | Prescription data |
-| `lab_result.ready` | Lab results available | Result data |
-| `billing.invoice_ready` | Invoice generated | Billing data |
+| `lab.results` | Lab results available | Lab results data |
+| `billing.invoice` | Invoice generated | Invoice data |
 
-### 8.3 Webhook Payload Format
+### 14.3 Webhook Payload
 
 ```json
 {
-  "event": "appointment.scheduled",
-  "timestamp": "2024-01-15T14:30:00Z",
+  "event": "appointment.created",
+  "timestamp": "2025-01-15T10:00:00Z",
   "data": {
     "appointment": {
       "id": "uuid",
       "patient_id": "uuid",
-      "provider_id": "uuid",
-      "scheduled_date": "2024-01-20",
-      "scheduled_time": "14:30:00"
+      "doctor_id": "uuid",
+      "scheduled_time": "2025-01-15T10:00:00Z"
     }
   },
-  "signature": "sha256=signature_here"
+  "signature": "sha256=..."
 }
 ```
 
 ---
 
-## 9. API Versioning
+## 15. SDKs and Libraries
 
-### 9.1 Version Strategy
-- **URL Path Versioning**: `/v1/resource`
-- **Backward Compatibility**: New versions are additive
-- **Deprecation Policy**: 12-month deprecation notice
-- **Sunset Policy**: 24-month support after deprecation
+### 15.1 Official SDKs
 
-### 9.2 Version Headers
-
-```http
-Accept: application/json; version=1.0
-X-API-Version: 1.0
-```
-
----
-
-## 10. SDKs and Libraries
-
-### 10.1 Official SDKs
-
-#### JavaScript/TypeScript SDK
+**JavaScript/TypeScript SDK**:
 ```javascript
 import { HIMSClient } from '@arocord/hims-sdk';
 
 const client = new HIMSClient({
-  baseURL: 'https://api.hims.arocord.com/v1',
-  apiKey: 'your-api-key'
+  apiKey: 'your_api_key',
+  baseUrl: 'https://api.hims.arocord.com/v1'
 });
 
-// Authenticate
-const tokens = await client.auth.login('user@example.com', 'password');
+// Get patient list
+const patients = await client.patients.list({ limit: 20 });
 
-// Get patients
-const patients = await client.patients.list({ search: 'John' });
+// Create appointment
+const appointment = await client.appointments.create({
+  patient_id: 'uuid',
+  doctor_id: 'uuid',
+  scheduled_time: '2025-01-15T10:00:00Z'
+});
 ```
 
-#### Python SDK
+**Python SDK**:
 ```python
 from hims_sdk import HIMSClient
 
-client = HIMSClient(
-    base_url='https://api.hims.arocord.com/v1',
-    api_key='your-api-key'
-)
+client = HIMSClient(api_key='your_api_key')
 
-# Authenticate
-tokens = client.auth.login('user@example.com', 'password')
+# Get patient details
+patient = client.patients.get('patient_id')
 
-# Get appointments
-appointments = client.appointments.list(date_from='2024-01-01')
+# Create prescription
+prescription = client.prescriptions.create({
+    'patient_id': 'uuid',
+    'medications': [...]
+})
 ```
 
-### 10.2 Third-Party Libraries
-- **Postman Collection**: Pre-built API requests
-- **OpenAPI Specification**: Import into API clients
-- **Insomnia Workspace**: Pre-configured requests
+### 15.2 Community Libraries
+
+- **Go SDK**: `github.com/arocord/hims-go`
+- **Java SDK**: `com.arocord:hims-java-sdk`
+- **PHP SDK**: `arocord/hims-php-sdk`
 
 ---
 
-## 11. Testing
+## 16. Versioning and Deprecation
 
-### 11.1 Sandbox Environment
-- **URL**: `https://api-sandbox.hims.arocord.com/v1`
-- **Data**: Pre-populated with test data
-- **Rate Limits**: Relaxed for testing
-- **Notifications**: Disabled by default
+### 16.1 API Versioning
+API versions are indicated in the URL path: `/v1/`, `/v2/`, etc.
 
-### 11.2 Test Data
-```json
-{
-  "test_patient": {
-    "id": "test-patient-uuid",
-    "mrn": "TEST001",
-    "first_name": "Test",
-    "last_name": "Patient"
-  },
-  "test_provider": {
-    "id": "test-provider-uuid",
-    "email": "test.doctor@example.com",
-    "role": "doctor"
-  }
-}
+### 16.2 Deprecation Policy
+
+1. **Announcement**: Deprecations announced 6 months in advance
+2. **Sunset Period**: Deprecated endpoints remain functional for 12 months
+3. **Migration Support**: Migration guides and support provided
+4. **Breaking Changes**: Only in major version updates
+
+### 16.3 Version Headers
+
+```
+X-API-Version: v1
+X-API-Deprecated: This endpoint will be removed in v2.0
+X-API-Sunset: 2026-06-01
 ```
 
 ---
 
-## Appendix A: OpenAPI Specification
+## 17. Testing and Sandbox
 
-### Complete OpenAPI 3.0 Definition
-```yaml
-openapi: 3.0.3
-info:
-  title: AROCORD-HIMS API
-  version: 1.0.0
-  description: Healthcare Information Management System API
+### 17.1 Sandbox Environment
+Test API integrations in the sandbox environment:
 
-servers:
-  - url: https://api.hims.arocord.com/v1
-    description: Production server
-  - url: https://api-staging.hims.arocord.com/v1
-    description: Staging server
+**Base URL**: `https://api-sandbox.hims.arocord.com/v1`
 
-security:
-  - bearerAuth: []
+**Features**:
+- Sample data pre-loaded
+- No real patient data
+- Rate limits relaxed
+- Error simulation capabilities
 
-components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
+### 17.2 Test Data
 
-  schemas:
-    Patient:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        mrn:
-          type: string
-        first_name:
-          type: string
-        last_name:
-          type: string
-        date_of_birth:
-          type: string
-          format: date
-        gender:
-          type: string
-          enum: [male, female, other, unknown]
-        # ... additional properties
+**Sample Patient IDs**:
+- `patient_001`: Adult male, comprehensive history
+- `patient_002`: Pediatric patient
+- `patient_003`: Geriatric patient with complex conditions
 
-    Error:
-      type: object
-      properties:
-        success:
-          type: boolean
-          example: false
-        error:
-          type: object
-          properties:
-            code:
-              type: string
-            message:
-              type: string
-            details:
-              type: object
-
-# Paths would be defined here...
-```
-
-## Appendix B: API Rate Limits by Plan
-
-| Plan | Requests/Minute | Requests/Hour | Requests/Day |
-|------|-----------------|----------------|--------------|
-| Free | 60 | 1,000 | 5,000 |
-| Basic | 300 | 10,000 | 50,000 |
-| Professional | 1,000 | 50,000 | 200,000 |
-| Enterprise | 5,000 | 250,000 | 1,000,000 |
-
-## Appendix C: Changelog
-
-### Version 1.0.0 (January 2025)
-- Initial API release
-- Core patient, appointment, and consultation endpoints
-- Authentication and authorization
-- Basic reporting and analytics
-
-### Planned Features
-- **v1.1.0**: Telemedicine endpoints, advanced analytics
-- **v1.2.0**: FHIR R5 compliance, bulk operations
-- **v2.0.0**: GraphQL support, real-time subscriptions
+**Sample Doctor IDs**:
+- `doctor_001`: Family medicine
+- `doctor_002`: Cardiology
+- `doctor_003`: Pediatrics
 
 ---
 
-## Document Control
+## 18. Support and Resources
 
-- **Version**: 1.0
-- **Last Updated**: January 2025
-- **API Version**: v1.0
-- **Review Cycle**: Monthly with API updates
-- **Document Owner**: API Development Team
+### 18.1 Developer Portal
+- **Documentation**: `https://developers.hims.arocord.com`
+- **API Explorer**: Interactive API testing
+- **Code Examples**: Sample implementations
+- **Changelog**: API updates and changes
+
+### 18.2 Support Channels
+
+**Technical Support**:
+- **Email**: api-support@arocord.com
+- **Forum**: `https://community.hims.arocord.com`
+- **Status Page**: `https://status.hims.arocord.com`
+
+**Business Hours**:
+- Monday - Friday: 9:00 AM - 6:00 PM EST
+- Emergency Support: 24/7 for critical issues
+
+### 18.3 Service Level Agreement (SLA)
+
+**API Availability**: 99.9% uptime
+**Response Time**: < 500ms for 95% of requests
+**Support Response**: < 4 hours for critical issues
+**Incident Resolution**: < 24 hours for high-priority issues
 
 ---
 
-**Approval Sign-off**
-
-**API Architect**: ___________________________ Date: ____________
-
-**Technical Lead**: ___________________________ Date: ____________
-
-**Product Owner**: ___________________________ Date: ____________
+**Document Control**  
+**Version**: 1.0  
+**Last Updated**: December 2025  
+**Next Review**: March 2026  
+**Document Owner**: API Development Team

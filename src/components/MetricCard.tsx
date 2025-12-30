@@ -1,7 +1,8 @@
 import { Card } from './Card';
+import { ReactNode } from 'react';
 
 interface MetricCardProps {
-  icon: string;
+  icon: ReactNode;
   value: string | number;
   label: string;
   trend?: string;

@@ -3,7 +3,17 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from '@/store';
 import { Card, Button } from '@/components';
-import { Calendar, FileText, Pill, CreditCard, MessageSquare } from 'lucide-react';
+import { 
+  FaCalendarAlt, 
+  FaFileAlt, 
+  FaPills, 
+  FaCreditCard, 
+  FaComments,
+  FaMicroscope,
+  FaHeartbeat,
+  FaStethoscope,
+  FaCommentDots
+} from 'react-icons/fa';
 
 export const PatientDashboard = () => {
   const navigate = useNavigate();
@@ -30,11 +40,11 @@ export const PatientDashboard = () => {
   );
 
   const quickActions = [
-    { icon: Calendar, label: 'Book Appointment', path: '/patient-portal/appointments' },
-    { icon: Pill, label: 'My Prescriptions', path: '/patient-portal/prescriptions' },
-    { icon: FileText, label: 'Medical Records', path: '/patient-portal/records' },
-    { icon: CreditCard, label: 'Bills & Payments', path: '/patient-portal/bills' },
-    { icon: MessageSquare, label: 'Messages', path: '/patient-portal/messages' }
+    { icon: FaCalendarAlt, label: 'Book Appointment', path: '/patient-portal/appointments', color: 'text-blue-600' },
+    { icon: FaPills, label: 'My Prescriptions', path: '/patient-portal/prescriptions', color: 'text-orange-600' },
+    { icon: FaFileAlt, label: 'Medical Records', path: '/patient-portal/records', color: 'text-green-600' },
+    { icon: FaCreditCard, label: 'Bills & Payments', path: '/patient-portal/bills', color: 'text-purple-600' },
+    { icon: FaComments, label: 'Messages', path: '/patient-portal/messages', color: 'text-pink-600' }
   ];
 
   return (
@@ -53,7 +63,7 @@ export const PatientDashboard = () => {
             className="p-4 text-center hover:shadow-md transition-shadow cursor-pointer"
             onClick={() => navigate(action.path)}
           >
-            <action.icon className="w-8 h-8 mx-auto mb-2 text-blue-600" />
+            <action.icon className={`w-8 h-8 mx-auto mb-2 ${action.color}`} />
             <p className="text-sm font-medium text-gray-900">{action.label}</p>
           </Card>
         ))}
@@ -114,15 +124,19 @@ export const PatientDashboard = () => {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Links</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Button variant="secondary" onClick={() => navigate('/patient-portal/lab-results')}>
+            <FaMicroscope className="mr-2" size={16} aria-hidden="true" />
             Lab Results
           </Button>
           <Button variant="secondary" onClick={() => navigate('/patient-portal/health-summary')}>
+            <FaHeartbeat className="mr-2" size={16} aria-hidden="true" />
             Health Summary
           </Button>
           <Button variant="secondary" onClick={() => navigate('/patient-portal/symptom-checker')}>
+            <FaStethoscope className="mr-2" size={16} aria-hidden="true" />
             Symptom Checker
           </Button>
           <Button variant="secondary" onClick={() => navigate('/patient-portal/feedback')}>
+            <FaCommentDots className="mr-2" size={16} aria-hidden="true" />
             Feedback
           </Button>
         </div>

@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { sanitizer } from '@/utils/sanitizer';
+import { FaChartBar, FaDownload, FaCalendarAlt, FaUsers, FaChartLine } from 'react-icons/fa';
 
-const BarChart = ({ className }: { className?: string }) => <span className={className}>📊</span>;
-const Download = ({ className }: { className?: string }) => <span className={className}>⬇️</span>;
-const Calendar = ({ className }: { className?: string }) => <span className={className}>📅</span>;
-const Users = ({ className }: { className?: string }) => <span className={className}>👥</span>;
-const Activity = ({ className }: { className?: string }) => <span className={className}>📈</span>;
+const BarChart = FaChartBar;
+const Download = FaDownload;
+const Calendar = FaCalendarAlt;
+const Users = FaUsers;
+const Activity = FaChartLine;
 
 export const Reports: React.FC = () => {
   const [dateRange, setDateRange] = useState('7days');

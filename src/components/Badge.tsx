@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { clsx } from 'clsx';
+import { motion } from 'framer-motion';
 import { BadgeStatus, BadgeSize } from '@/types';
 import { AlertTriangle, Clock, Zap, AlertCircle } from 'lucide-react';
 
@@ -78,14 +79,19 @@ export function Badge({
   };
 
   return (
-    <span className={clsx(
-      'inline-flex items-center gap-1 rounded-small font-medium',
-      sizeClasses[size],
-      getClasses(),
-      className
-    )}>
+    <motion.span
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.2 }}
+      className={clsx(
+        'inline-flex items-center gap-1 rounded-small font-medium',
+        sizeClasses[size],
+        getClasses(),
+        className
+      )}
+    >
       {getIcon()}
       {children}
-    </span>
+    </motion.span>
   );
 }

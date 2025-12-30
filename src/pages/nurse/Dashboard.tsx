@@ -7,12 +7,16 @@ import { updateAppointmentStatus } from '@/store/appointmentSlice';
 import { addNotification, addRoleNotification, markAsRead } from '@/store/notificationSlice';
 import { useState, useMemo } from 'react';
 import { toast } from 'sonner';
-
-const __patientQueue = [
-  { id: 'P001', name: 'John Smith', appointment: '10:00 AM', doctor: 'Dr. Wilson', status: 'waiting', vitalsComplete: false },
-  { id: 'P002', name: 'Sarah Johnson', appointment: '10:30 AM', doctor: 'Dr. Brown', status: 'in-progress', vitalsComplete: true },
-  { id: 'P003', name: 'Mike Davis', appointment: '11:00 AM', doctor: 'Dr. Wilson', status: 'ready', vitalsComplete: true },
-];
+import { 
+  FaUsers, 
+  FaCheckCircle, 
+  FaClock, 
+  FaInfoCircle,
+  FaBell,
+  FaChartLine,
+  FaPills,
+  FaClipboardList
+} from 'react-icons/fa';
 
 export function NurseDashboard() {
   const navigate = useNavigate();
@@ -89,11 +93,13 @@ export function NurseDashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">Nurse Dashboard</h1>
       </div>
       <div className="space-y-6">
-        {/* Smart Notifications */}
         {nurseNotifications.length > 0 && (
           <Card className="p-4 bg-blue-50 border-2 border-blue-200">
             <div className="flex justify-between items-center mb-3">
-              <h3 className="text-base font-semibold text-neutral-900">🔔 Notifications</h3>
+              <h3 className="text-base font-semibold text-neutral-900 flex items-center gap-2">
+                <FaBell className="text-blue-600" size={18} aria-hidden="true" />
+                Notifications
+              </h3>
               <Badge status="error">{nurseNotifications.length} New</Badge>
             </div>
             <div className="space-y-2">
@@ -123,21 +129,49 @@ export function NurseDashboard() {
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="text-center">
-            <div className="text-h2 text-nurse">{stats.total}</div>
-            <div className="text-body text-neutral-600">Patients Today</div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-semibold text-nurse">{stats.total}</div>
+                <div className="text-sm text-neutral-600 mt-1">Patients Today</div>
+              </div>
+              <div className="w-12 h-12 bg-nurse/10 rounded-lg flex items-center justify-center">
+                <FaUsers className="text-nurse" size={24} aria-hidden="true" />
+              </div>
+            </div>
           </Card>
-          <Card className="text-center">
-            <div className="text-h2 text-success">{stats.vitalsComplete}</div>
-            <div className="text-body text-neutral-600">Vitals Complete</div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-semibold text-success">{stats.vitalsComplete}</div>
+                <div className="text-sm text-neutral-600 mt-1">Vitals Complete</div>
+              </div>
+              <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                <FaCheckCircle className="text-success" size={24} aria-hidden="true" />
+              </div>
+            </div>
           </Card>
-          <Card className="text-center">
-            <div className="text-h2 text-warning">{stats.pending}</div>
-            <div className="text-body text-neutral-600">Pending Vitals</div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-semibold text-warning">{stats.pending}</div>
+                <div className="text-sm text-neutral-600 mt-1">Pending Vitals</div>
+              </div>
+              <div className="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
+                <FaClock className="text-warning" size={24} aria-hidden="true" />
+              </div>
+            </div>
           </Card>
-          <Card className="text-center">
-            <div className="text-h2 text-info">{stats.ready}</div>
-            <div className="text-body text-neutral-600">Ready for Doctor</div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-semibold text-info">{stats.ready}</div>
+                <div className="text-sm text-neutral-600 mt-1">Ready for Doctor</div>
+              </div>
+              <div className="w-12 h-12 bg-info/10 rounded-lg flex items-center justify-center">
+                <FaInfoCircle className="text-info" size={24} aria-hidden="true" />
+              </div>
+            </div>
           </Card>
         </div>
 
@@ -198,20 +232,24 @@ export function NurseDashboard() {
             <h3 className="text-h4 text-neutral-900 mb-4">Quick Actions</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/vitals')}>
-                📊 Record Vitals
+                <FaChartLine className="mr-2" size={16} aria-hidden="true" />
+                Record Vitals
               </Button>
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/patients')}>
-                👥 View Patients
+                <FaUsers className="mr-2" size={16} aria-hidden="true" />
+                View Patients
               </Button>
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/nurse/medication-requests')}>
-                💊 Medication Requests
+                <FaPills className="mr-2" size={16} aria-hidden="true" />
+                Medication Requests
               </Button>
               <Button
                 variant="secondary"
                 className="justify-start"
                 onClick={() => navigate('/nurse/shift-handover')}
               >
-                📝 Shift Handover
+                <FaClipboardList className="mr-2" size={16} aria-hidden="true" />
+                Shift Handover
               </Button>
             </div>
           </Card>
@@ -236,7 +274,6 @@ export function NurseDashboard() {
         </div>
       </div>
 
-      {/* Notification Detail Modal */}
       {selectedNotification && (
         <NotificationDetailModal
           isOpen={showNotificationModal}

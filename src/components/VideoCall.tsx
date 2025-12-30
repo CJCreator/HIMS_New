@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
+import { FaVideo, FaVideoSlash, FaMicrophone, FaMicrophoneSlash, FaPhone, FaDesktop } from 'react-icons/fa';
 
-const Video = ({ className }: { className?: string }) => <span className={className}>📹</span>;
-const VideoOff = ({ className }: { className?: string }) => <span className={className}>📹❌</span>;
-const Mic = ({ className }: { className?: string }) => <span className={className}>🎤</span>;
-const MicOff = ({ className }: { className?: string }) => <span className={className}>🎤❌</span>;
-const Phone = ({ className }: { className?: string }) => <span className={className}>📞</span>;
-const Monitor = ({ className }: { className?: string }) => <span className={className}>🖥️</span>;
+const Video = FaVideo;
+const VideoOff = FaVideoSlash;
+const Mic = FaMicrophone;
+const MicOff = FaMicrophoneSlash;
+const Phone = FaPhone;
+const Monitor = FaDesktop;
 
 interface VideoCallProps {
   patientName: string;

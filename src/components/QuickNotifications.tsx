@@ -2,10 +2,11 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { addRoleNotification } from '../store/notificationSlice';
 import { Button } from './Button';
+import { FaExclamationTriangle, FaHeartbeat, FaBolt } from 'react-icons/fa';
 
-const AlertTriangle = ({ className }: { className?: string }) => <span className={className}>⚠️</span>;
-const Heart = ({ className }: { className?: string }) => <span className={className}>❤️</span>;
-const Zap = ({ className }: { className?: string }) => <span className={className}>⚡</span>;
+const AlertTriangle = FaExclamationTriangle;
+const Heart = FaHeartbeat;
+const Zap = FaBolt;
 
 interface QuickNotificationsProps {
   userRole: 'nurse' | 'doctor' | 'pharmacy' | 'receptionist';

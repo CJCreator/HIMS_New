@@ -4,10 +4,7 @@ import { addNotification } from '../../../store/notificationSlice';
 import { Button } from '../../../components/Button';
 import { Card } from '../../../components/Card';
 
-const CheckCircle = ({ className }: { className?: string }) => <span className={className}>✅</span>;
-const AlertTriangle = ({ className }: { className?: string }) => <span className={className}>⚠️</span>;
-const FileText = ({ className }: { className?: string }) => <span className={className}>📄</span>;
-const Signature = ({ className }: { className?: string }) => <span className={className}>✍️</span>;
+import { CheckCircle, AlertTriangle, FileText, PenTool } from 'lucide-react';
 
 interface ReviewConfirmProps {
   patientName: string;
@@ -265,7 +262,7 @@ export const ReviewConfirm: React.FC<ReviewConfirmProps> = ({
             <div className="space-y-3">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  <Signature className="inline w-4 h-4 mr-1" />
+                  <PenTool className="inline w-4 h-4 mr-1" />
                   Type your full name
                 </label>
                 <input

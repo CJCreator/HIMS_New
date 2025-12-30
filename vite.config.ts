@@ -1,10 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import path from 'path'
+import { securityHeaders } from './src/middleware/security.middleware'
 
 export default defineConfig({
   plugins: [react()],
   base: process.env.NODE_ENV === 'production' ? '/HIMS_New/' : '/',
+  server: {
+    headers: securityHeaders
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -64,7 +68,7 @@ export default defineConfig({
         },
       },
     },
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 500,
     sourcemap: false, // Disable for production to reduce bundle size
     reportCompressedSize: true, // Report bundle sizes
   },

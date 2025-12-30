@@ -5,18 +5,25 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { Toaster } from 'sonner'
 import App from './App.tsx'
 import { queryClient } from './lib/queryClient'
-import { performanceMonitor } from './utils/performance'
+import { initSentry } from './utils/sentry'
+import { trackWebVitals } from './utils/performance'
+import { ErrorBoundary } from './components/ErrorBoundary'
 import './index.css'
 
+// Initialize Sentry
+initSentry();
+
 // Initialize performance monitoring
-performanceMonitor;
+trackWebVitals();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Toaster position="top-right" richColors closeButton />
-      <App />
-      {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <Toaster position="top-right" richColors closeButton />
+        <App />
+        {import.meta.env.DEV && <ReactQueryDevtools initialIsOpen={false} />}
+      </QueryClientProvider>
+    </ErrorBoundary>
   </React.StrictMode>,
 )

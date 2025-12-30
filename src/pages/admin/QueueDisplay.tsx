@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/Card';
+import { FaClock, FaCircle } from 'react-icons/fa';
 
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
+const Clock = FaClock;
 
 
 interface QueueItem {
@@ -56,7 +57,9 @@ export const QueueDisplay: React.FC = () => {
 
 
   const getPriorityIcon = (priority: string) => {
-    return priority === 'urgent' ? '🔴' : '🟢';
+    return priority === 'urgent' ? 
+      <FaCircle className="text-red-500" /> : 
+      <FaCircle className="text-green-500" />;
   };
 
   return (
@@ -141,8 +144,8 @@ export const QueueDisplay: React.FC = () => {
         <Card className="p-6 mt-6 bg-yellow-50 border-yellow-200">
           <h3 className="text-lg font-semibold text-yellow-900 mb-2">Instructions</h3>
           <ul className="text-yellow-800 space-y-1">
-            <li>🔴 Urgent cases will be prioritized</li>
-            <li>🟢 Regular appointments in order</li>
+            <li><FaCircle className="inline text-red-500 mr-2" />Urgent cases will be prioritized</li>
+            <li><FaCircle className="inline text-green-500 mr-2" />Regular appointments in order</li>
             <li>📱 You will receive an SMS when your turn approaches</li>
             <li>🏥 Please stay in the waiting area</li>
           </ul>

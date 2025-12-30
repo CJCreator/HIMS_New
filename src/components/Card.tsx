@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { clsx } from 'clsx';
+import { motion } from 'framer-motion';
 
 interface CardProps {
   children: ReactNode;
@@ -30,17 +31,21 @@ export function Card({
   };
 
   return (
-    <div 
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      whileHover={onClick ? { y: -4, boxShadow: '0 10px 25px rgba(0,0,0,0.1)' } : {}}
       className={clsx(
         'bg-white rounded-small border border-neutral-200',
         paddingClasses[padding],
         shadowClasses[shadow],
-        onClick && 'cursor-pointer hover:shadow-lg transition-shadow',
+        onClick && 'cursor-pointer transition-shadow',
         className
       )}
       onClick={onClick}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }

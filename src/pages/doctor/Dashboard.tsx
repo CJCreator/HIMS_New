@@ -6,6 +6,18 @@ import { useMemo, memo, useState } from 'react';
 import { RootState } from '@/store';
 import { updateAppointmentStatus } from '@/store/appointmentSlice';
 import { markAsRead } from '@/store/notificationSlice';
+import { 
+  FaUsers, 
+  FaCheckCircle, 
+  FaClock, 
+  FaStar, 
+  FaBell, 
+  FaUserMd,
+  FaGraduationCap,
+  FaClipboardList,
+  FaBriefcase,
+  FaCalendarAlt
+} from 'react-icons/fa';
 
 const weekSchedule = [
   { day: 'Mon', slots: ['10:00 AM - 01:00 PM', '05:00 PM - 08:00 PM'], isToday: false },
@@ -81,7 +93,7 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
               <p className="text-3xl font-semibold text-doctor">{todayStats.total}</p>
             </div>
             <div className="w-12 h-12 bg-doctor/10 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">👥</span>
+              <FaUsers className="text-doctor" size={24} aria-hidden="true" />
             </div>
           </div>
         </Card>
@@ -93,7 +105,7 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
               <p className="text-3xl font-semibold text-success">{todayStats.completed}</p>
             </div>
             <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">✓</span>
+              <FaCheckCircle className="text-success" size={24} aria-hidden="true" />
             </div>
           </div>
         </Card>
@@ -105,7 +117,7 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
               <p className="text-3xl font-semibold text-warning">{todayStats.pending}</p>
             </div>
             <div className="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">⏱</span>
+              <FaClock className="text-warning" size={24} aria-hidden="true" />
             </div>
           </div>
         </Card>
@@ -117,7 +129,7 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
               <p className="text-3xl font-semibold text-neutral-900">{todayStats.rating}</p>
             </div>
             <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <span className="text-2xl">⭐</span>
+              <FaStar className="text-yellow-500" size={24} aria-hidden="true" />
             </div>
           </div>
         </Card>
@@ -127,7 +139,10 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
       {unreadNotifications.length > 0 && (
         <Card className="p-4 bg-blue-50 border-2 border-blue-200">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-base font-semibold text-neutral-900">🔔 Smart Notifications</h3>
+            <h3 className="text-base font-semibold text-neutral-900 flex items-center gap-2">
+              <FaBell className="text-blue-600" size={18} aria-hidden="true" />
+              Smart Notifications
+            </h3>
             <Badge status="error">{unreadNotifications.length} New</Badge>
           </div>
           <div className="space-y-2">
@@ -185,7 +200,7 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
 
           {myAppointments.length === 0 ? (
             <EmptyState
-              icon="📅"
+              icon={<FaCalendarAlt size={48} className="text-neutral-400" />}
               title="No appointments today"
               description="You have no scheduled appointments for today. Check back later or view your full schedule."
               action={{ label: 'View All Appointments', onClick: () => navigate('/doctor/appointments') }}
@@ -238,7 +253,7 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
         <Card className="p-6">
           <div className="text-center mb-6">
             <div className="w-20 h-20 bg-doctor/10 rounded-full flex items-center justify-center mx-auto mb-3">
-              <span className="text-3xl">👨‍⚕️</span>
+              <FaUserMd className="text-doctor" size={40} aria-hidden="true" />
             </div>
             <h2 className="text-lg font-semibold text-neutral-900">Dr. Sarah Wilson</h2>
             <p className="text-sm text-neutral-600">Cardiologist</p>
@@ -246,28 +261,28 @@ export const DoctorDashboard = memo(function DoctorDashboard() {
 
           <div className="space-y-3 mb-6">
             <div className="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg">
-              <span className="text-lg">🎓</span>
+              <FaGraduationCap className="text-neutral-600 mt-0.5" size={20} aria-hidden="true" />
               <div className="flex-1">
                 <p className="text-xs text-neutral-600">Qualifications</p>
                 <p className="text-sm font-medium text-neutral-900">MBBS, MD</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg">
-              <span className="text-lg">📋</span>
+              <FaClipboardList className="text-neutral-600 mt-0.5" size={20} aria-hidden="true" />
               <div className="flex-1">
                 <p className="text-xs text-neutral-600">Registration</p>
                 <p className="text-sm font-medium text-neutral-900">TNMC1234</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg">
-              <span className="text-lg">💼</span>
+              <FaBriefcase className="text-neutral-600 mt-0.5" size={20} aria-hidden="true" />
               <div className="flex-1">
                 <p className="text-xs text-neutral-600">Experience</p>
                 <p className="text-sm font-medium text-neutral-900">3 Years</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-3 bg-neutral-50 rounded-lg">
-              <span className="text-lg">👥</span>
+              <FaUsers className="text-neutral-600 mt-0.5" size={20} aria-hidden="true" />
               <div className="flex-1">
                 <p className="text-xs text-neutral-600">Total Patients</p>
                 <p className="text-sm font-medium text-neutral-900">60</p>

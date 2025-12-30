@@ -5,6 +5,18 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+  FaCalendarAlt, 
+  FaUsers, 
+  FaPills, 
+  FaExclamationTriangle,
+  FaCheckCircle,
+  FaClock,
+  FaUsersCog,
+  FaBed,
+  FaChartBar,
+  FaCog
+} from 'react-icons/fa';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
@@ -16,11 +28,10 @@ export function AdminDashboard() {
   
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   
-  // Real-time update timer
   useEffect(() => {
     const interval = setInterval(() => {
       setLastUpdated(new Date());
-    }, 60000); // Update every minute
+    }, 60000);
     return () => clearInterval(interval);
   }, []);
   
@@ -35,7 +46,6 @@ export function AdminDashboard() {
   const criticalAlerts = alerts.filter(a => a.severity === 'critical');
   const pendingMedRequests = requests.filter(r => r.status === 'request' || r.status === 'pending');
   
-  // Mock trend data for demonstration
   const trends = {
     appointments: { value: -12, label: 'vs yesterday' },
     patients: { value: 5, label: 'vs last week' },
@@ -56,6 +66,7 @@ export function AdminDashboard() {
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
   };
+
   return (
     <div className="space-y-6">
       <Breadcrumbs />
@@ -78,7 +89,7 @@ export function AdminDashboard() {
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <MetricCard
-              icon="📅"
+              icon={<FaCalendarAlt size={24} className="text-blue-600" />}
               value={scheduledToday}
               label="Scheduled Today"
               trend={`${completedToday} completed | ${inProgressToday} in progress`}
@@ -86,7 +97,7 @@ export function AdminDashboard() {
               trendIndicator={trends.appointments}
             />
             <MetricCard
-              icon="👥"
+              icon={<FaUsers size={24} className="text-green-600" />}
               value={patients.length}
               label="Total Active Patients"
               trend="Currently registered"
@@ -94,7 +105,7 @@ export function AdminDashboard() {
               trendIndicator={trends.patients}
             />
             <MetricCard
-              icon="💊"
+              icon={<FaPills size={24} className="text-orange-600" />}
               value={pendingPrescriptions.length}
               label="Pending Prescriptions"
               trend={`${dispensedPrescriptions.length} dispensed | ${prescriptions.length} total`}
@@ -102,7 +113,7 @@ export function AdminDashboard() {
               trendIndicator={trends.prescriptions}
             />
             <MetricCard
-              icon="⚠️"
+              icon={<FaExclamationTriangle size={24} className="text-red-600" />}
               value={criticalAlerts.length}
               label="Critical Alerts"
               trend="Requires immediate attention"
@@ -116,7 +127,7 @@ export function AdminDashboard() {
               <h3 className="text-h4 text-neutral-900 mb-4">System Overview</h3>
               <div className="grid grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-success/10 rounded-small">
-                  <div className="text-2xl mb-2">✅</div>
+                  <FaCheckCircle className="text-success mx-auto mb-2" size={32} />
                   <div className="text-body font-medium">Completed Today</div>
                   <div className="text-body-sm text-success">{completedToday} appointments</div>
                   <div className="text-xs text-neutral-500 mt-1">
@@ -124,20 +135,19 @@ export function AdminDashboard() {
                   </div>
                 </div>
                 <div className="text-center p-4 bg-warning/10 rounded-small">
-                  <div className="text-2xl mb-2">⏳</div>
+                  <FaClock className="text-warning mx-auto mb-2" size={32} />
                   <div className="text-body font-medium">In Progress</div>
                   <div className="text-body-sm text-warning">{inProgressToday} appointments</div>
                   <div className="text-xs text-neutral-500 mt-1">Currently being served</div>
                 </div>
                 <div className="text-center p-4 bg-info/10 rounded-small">
-                  <div className="text-2xl mb-2">💊</div>
+                  <FaPills className="text-info mx-auto mb-2" size={32} />
                   <div className="text-body font-medium">Med Requests</div>
                   <div className="text-body-sm text-info">{pendingMedRequests.length} pending</div>
                   <div className="text-xs text-neutral-500 mt-1">Awaiting approval</div>
                 </div>
               </div>
               
-              {/* Additional Metrics Row */}
               <div className="mt-6 pt-4 border-t border-neutral-200">
                 <h4 className="text-sm font-medium text-neutral-700 mb-3">Key Performance Indicators</h4>
                 <div className="grid grid-cols-2 gap-4">
@@ -165,20 +175,23 @@ export function AdminDashboard() {
               <h3 className="text-h4 text-neutral-900 mb-4">Quick Actions</h3>
               <div className="space-y-3">
                 <Button variant="primary" className="w-full justify-start" onClick={() => navigate('/admin/users')}>
-                  👥 Manage Users
+                  <FaUsersCog className="mr-2" size={16} />
+                  Manage Users
                 </Button>
                 <Button variant="secondary" className="w-full justify-start" onClick={() => navigate('/admin/beds')}>
-                  🛏️ Bed Management
+                  <FaBed className="mr-2" size={16} />
+                  Bed Management
                 </Button>
                 <Button variant="secondary" className="w-full justify-start" onClick={() => navigate('/admin/analytics')}>
-                  📊 View Reports
+                  <FaChartBar className="mr-2" size={16} />
+                  View Reports
                 </Button>
                 <Button variant="secondary" className="w-full justify-start" onClick={() => navigate('/admin/settings')}>
-                  ⚙️ Settings
+                  <FaCog className="mr-2" size={16} />
+                  Settings
                 </Button>
               </div>
               
-              {/* Critical Alerts Summary */}
               <div className="mt-6 pt-4 border-t border-neutral-200">
                 <h4 className="text-sm font-medium text-neutral-700 mb-3">Critical Alerts</h4>
                 <div className="space-y-2">

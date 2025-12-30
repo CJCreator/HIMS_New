@@ -1,16 +1,17 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../store';
-// Icons as simple components
-const Package = ({ className }: { className?: string }) => <span className={className}>📦</span>;
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
-const CheckCircle = ({ className }: { className?: string }) => <span className={className}>✅</span>;
-const AlertTriangle = ({ className }: { className?: string }) => <span className={className}>⚠️</span>;
-const Users = ({ className }: { className?: string }) => <span className={className}>👥</span>;
-const TrendingUp = ({ className }: { className?: string }) => <span className={className}>📈</span>;
-const Pill = ({ className }: { className?: string }) => <span className={className}>💊</span>;
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
+import { 
+  FaClock, 
+  FaCheckCircle, 
+  FaExclamationTriangle, 
+  FaUsers, 
+  FaChartLine, 
+  FaPills,
+  FaBoxes
+} from 'react-icons/fa';
 
 interface MetricCard {
   title: string;
@@ -71,7 +72,7 @@ export const PharmacyDashboard: React.FC = () => {
       value: pendingPrescriptionsCount.toString(),
       change: '+3 from yesterday',
       trend: 'up',
-      icon: <Clock className="w-6 h-6" />,
+      icon: <FaClock className="w-6 h-6" />,
       color: 'text-orange-600'
     },
     {
@@ -79,7 +80,7 @@ export const PharmacyDashboard: React.FC = () => {
       value: pendingMedicationRequests.toString(),
       change: 'From nurses',
       trend: 'up',
-      icon: <Pill className="w-6 h-6" />,
+      icon: <FaPills className="w-6 h-6" />,
       color: 'text-blue-600'
     },
     {
@@ -87,7 +88,7 @@ export const PharmacyDashboard: React.FC = () => {
       value: completedToday.toString(),
       change: '+12% from yesterday',
       trend: 'up',
-      icon: <CheckCircle className="w-6 h-6" />,
+      icon: <FaCheckCircle className="w-6 h-6" />,
       color: 'text-green-600'
     },
     {
@@ -95,7 +96,7 @@ export const PharmacyDashboard: React.FC = () => {
       value: '8',
       change: '2 critical',
       trend: 'down',
-      icon: <AlertTriangle className="w-6 h-6" />,
+      icon: <FaExclamationTriangle className="w-6 h-6" />,
       color: 'text-red-600'
     }
   ];
@@ -113,7 +114,6 @@ export const PharmacyDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Metrics Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {metrics.map((metric, index) => (
           <Card key={index} className="p-6">
@@ -121,7 +121,7 @@ export const PharmacyDashboard: React.FC = () => {
               <div className={metric.color}>
                 {metric.icon}
               </div>
-              <TrendingUp className={`w-4 h-4 ${metric.trend === 'up' ? 'text-green-500' : 'text-red-500'}`} />
+              <FaChartLine className={`w-4 h-4 ${metric.trend === 'up' ? 'text-green-500' : 'text-red-500'}`} />
             </div>
             <div className="mt-4">
               <h3 className="text-2xl font-bold text-gray-900">{metric.value}</h3>
@@ -133,7 +133,6 @@ export const PharmacyDashboard: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Pending Prescriptions */}
         <div className="lg:col-span-2">
           <Card className="p-6">
             <div className="flex justify-between items-center mb-6">
@@ -168,29 +167,28 @@ export const PharmacyDashboard: React.FC = () => {
           </Card>
         </div>
 
-        {/* Quick Actions & Alerts */}
         <div className="space-y-6">
           <Card className="p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
             <div className="space-y-3">
               <Button variant="secondary" className="w-full justify-start">
-                <Package className="w-4 h-4 mr-3" />
+                <FaBoxes className="w-4 h-4 mr-3" />
                 Check Inventory
               </Button>
               <Button variant="secondary" className="w-full justify-start">
-                <Clock className="w-4 h-4 mr-3" />
+                <FaClock className="w-4 h-4 mr-3" />
                 Prescription Queue
               </Button>
               <Button variant="secondary" className="w-full justify-start">
-                <Pill className="w-4 h-4 mr-3" />
+                <FaPills className="w-4 h-4 mr-3" />
                 Medication Requests
               </Button>
               <Button variant="secondary" className="w-full justify-start">
-                <Users className="w-4 h-4 mr-3" />
+                <FaUsers className="w-4 h-4 mr-3" />
                 Patient Records
               </Button>
               <Button variant="secondary" className="w-full justify-start">
-                <AlertTriangle className="w-4 h-4 mr-3" />
+                <FaExclamationTriangle className="w-4 h-4 mr-3" />
                 Stock Alerts
               </Button>
             </div>

@@ -4,6 +4,7 @@ import { RootState } from '@/store';
 import { updateSettings, updateTemplate, ReminderTemplate } from '@/store/reminderSlice';
 import { Card, Button, Input, Modal } from '@/components';
 import { ReminderNotification } from '@/components/ReminderNotification';
+import { FaComments, FaEnvelope, FaBell } from 'react-icons/fa';
 
 export function ReminderSettings() {
   const dispatch = useDispatch();
@@ -185,7 +186,7 @@ export function ReminderSettings() {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-2">
                   <span className="text-lg">
-                    {template.type === 'sms' ? '💬' : template.type === 'email' ? '📧' : '🔔'}
+                    {template.type === 'sms' ? <FaComments className="inline" /> : template.type === 'email' ? <FaEnvelope className="inline" /> : <FaBell className="inline" />}
                   </span>
                   <p className="text-sm font-medium text-neutral-900 capitalize">{template.type}</p>
                 </div>

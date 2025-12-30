@@ -3,7 +3,16 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { RootState } from '@/store';
 import { Card, Button, NotificationDetailModal } from '@/components';
-import { TestTube, Clock, CheckCircle, AlertTriangle } from 'lucide-react';
+import { 
+  FaMicroscope, 
+  FaClock, 
+  FaCheckCircle, 
+  FaExclamationTriangle,
+  FaClipboardList,
+  FaEdit,
+  FaCheck,
+  FaChartBar
+} from 'react-icons/fa';
 import type { Notification } from '@/types';
 
 export const LabDashboard = () => {
@@ -30,41 +39,49 @@ export const LabDashboard = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="p-6">
-          <div className="flex items-center">
-            <Clock className="w-8 h-8 text-yellow-600 mr-3" />
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
-              <p className="text-sm text-gray-600">Pending Orders</p>
+              <p className="text-sm text-gray-600 mt-1">Pending Orders</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <FaClock className="text-yellow-600" size={24} aria-hidden="true" />
             </div>
           </div>
         </Card>
         
         <Card className="p-6">
-          <div className="flex items-center">
-            <TestTube className="w-8 h-8 text-blue-600 mr-3" />
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.inProgress}</p>
-              <p className="text-sm text-gray-600">In Progress</p>
+              <p className="text-sm text-gray-600 mt-1">In Progress</p>
+            </div>
+            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+              <FaMicroscope className="text-blue-600" size={24} aria-hidden="true" />
             </div>
           </div>
         </Card>
         
         <Card className="p-6">
-          <div className="flex items-center">
-            <CheckCircle className="w-8 h-8 text-green-600 mr-3" />
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.completed}</p>
-              <p className="text-sm text-gray-600">Completed Today</p>
+              <p className="text-sm text-gray-600 mt-1">Completed Today</p>
+            </div>
+            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+              <FaCheckCircle className="text-green-600" size={24} aria-hidden="true" />
             </div>
           </div>
         </Card>
         
         <Card className="p-6">
-          <div className="flex items-center">
-            <AlertTriangle className="w-8 h-8 text-red-600 mr-3" />
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.critical}</p>
-              <p className="text-sm text-gray-600">Critical Results</p>
+              <p className="text-sm text-gray-600 mt-1">Critical Results</p>
+            </div>
+            <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+              <FaExclamationTriangle className="text-red-600" size={24} aria-hidden="true" />
             </div>
           </div>
         </Card>
@@ -120,16 +137,20 @@ export const LabDashboard = () => {
         <h3 className="text-h4 text-neutral-900 mb-4">Quick Actions</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           <Button variant="secondary" className="justify-start" onClick={() => navigate('/lab/orders')}>
-            📋 Order Queue
+            <FaClipboardList className="mr-2" size={16} aria-hidden="true" />
+            Order Queue
           </Button>
           <Button variant="secondary" className="justify-start" onClick={() => navigate('/lab/results')}>
-            ✍️ Enter Results
+            <FaEdit className="mr-2" size={16} aria-hidden="true" />
+            Enter Results
           </Button>
           <Button variant="secondary" className="justify-start" onClick={() => navigate('/lab/verification')}>
-            ✅ Verify Results
+            <FaCheck className="mr-2" size={16} aria-hidden="true" />
+            Verify Results
           </Button>
           <Button variant="secondary" className="justify-start" onClick={() => navigate('/lab/reports')}>
-            📊 Reports
+            <FaChartBar className="mr-2" size={16} aria-hidden="true" />
+            Reports
           </Button>
         </div>
       </Card>

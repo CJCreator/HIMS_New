@@ -11,9 +11,7 @@ import { Input } from '../../components/Input';
 import { Modal } from '../../components/Modal';
 import { toast } from 'sonner';
 
-const Calendar = ({ className }: { className?: string }) => <span className={className}>📅</span>;
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
-const User = ({ className }: { className?: string }) => <span className={className}>👤</span>;
+import { Calendar, Clock, User } from 'lucide-react';
 
 export const DoctorAppointments: React.FC = () => {
   const dispatch = useDispatch();

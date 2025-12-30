@@ -1,8 +1,11 @@
-import { ButtonHTMLAttributes, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { clsx } from 'clsx';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import { ButtonVariant, ButtonSize } from '@/types';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+// Button component with framer-motion animations
+
+interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   variant?: ButtonVariant;
   size?: ButtonSize;
   loading?: boolean;
@@ -20,7 +23,7 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseClasses = 'inline-flex items-center justify-center font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-small';
+  const baseClasses = 'inline-flex items-center justify-center font-medium transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed rounded-small';
   
   const variantClasses = {
     primary: 'bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500',
@@ -38,7 +41,10 @@ export function Button({
   };
 
   return (
-    <button
+    <motion.button
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.15 }}
       className={clsx(
         baseClasses,
         variantClasses[variant],
@@ -62,6 +68,6 @@ export function Button({
         </svg>
       )}
       {children}
-    </button>
+    </motion.button>
   );
 }

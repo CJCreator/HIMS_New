@@ -6,8 +6,7 @@ import { Button } from '../../../components/Button';
 import { Card } from '../../../components/Card';
 import { Calendar } from '../../../components/Calendar';
 
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
-const CalendarIcon = ({ className }: { className?: string }) => <span className={className}>📅</span>;
+import { Clock, Calendar as CalendarIcon } from 'lucide-react';
 
 interface FollowUpSchedulingProps {
   patientName: string;

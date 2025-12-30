@@ -6,11 +6,7 @@ import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { WeeklyScheduleEditor } from '../../components/WeeklyScheduleEditor';
 
-const User = ({ className }: { className?: string }) => <span className={className}>👤</span>;
-const Edit = ({ className }: { className?: string }) => <span className={className}>✏️</span>;
-const Save = ({ className }: { className?: string }) => <span className={className}>💾</span>;
-const Award = ({ className }: { className?: string }) => <span className={className}>🏆</span>;
-const Calendar = ({ className }: { className?: string }) => <span className={className}>📅</span>;
+import { User, Edit, Save, Trophy, Calendar } from 'lucide-react';
 
 export const DoctorProfile: React.FC = () => {
   const dispatch = useDispatch();
@@ -200,7 +196,7 @@ export const DoctorProfile: React.FC = () => {
         {/* Achievements */}
         <Card className="p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-            <Award className="w-5 h-5 mr-2" />
+            <Trophy className="w-5 h-5 mr-2" />
             Achievements & Awards
           </h3>
           <div className="space-y-3">

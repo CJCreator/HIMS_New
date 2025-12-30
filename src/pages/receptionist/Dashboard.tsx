@@ -7,6 +7,15 @@ import { RootState } from '@/store';
 import { updateAppointmentStatus } from '@/store/appointmentSlice';
 import { addNotification, addRoleNotification } from '@/store/notificationSlice';
 import type { Notification } from '@/types';
+import { 
+  FaCalendarAlt, 
+  FaUser, 
+  FaMoneyBillWave, 
+  FaClipboardList,
+  FaCheckCircle,
+  FaExclamationCircle,
+  FaTimesCircle
+} from 'react-icons/fa';
 
 export function ReceptionistDashboard() {
   const navigate = useNavigate();
@@ -60,21 +69,49 @@ export function ReceptionistDashboard() {
       </div>
       <div className="space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card className="text-center">
-            <div className="text-h2 text-receptionist">{stats.total}</div>
-            <div className="text-body text-neutral-600">Today's Appointments</div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-semibold text-receptionist">{stats.total}</div>
+                <div className="text-sm text-neutral-600 mt-1">Today's Appointments</div>
+              </div>
+              <div className="w-12 h-12 bg-receptionist/10 rounded-lg flex items-center justify-center">
+                <FaCalendarAlt className="text-receptionist" size={24} aria-hidden="true" />
+              </div>
+            </div>
           </Card>
-          <Card className="text-center">
-            <div className="text-h2 text-success">{stats.confirmed}</div>
-            <div className="text-body text-neutral-600">Confirmed</div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-semibold text-success">{stats.confirmed}</div>
+                <div className="text-sm text-neutral-600 mt-1">Confirmed</div>
+              </div>
+              <div className="w-12 h-12 bg-success/10 rounded-lg flex items-center justify-center">
+                <FaCheckCircle className="text-success" size={24} aria-hidden="true" />
+              </div>
+            </div>
           </Card>
-          <Card className="text-center">
-            <div className="text-h2 text-warning">{stats.pending}</div>
-            <div className="text-body text-neutral-600">Pending</div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-semibold text-warning">{stats.pending}</div>
+                <div className="text-sm text-neutral-600 mt-1">Pending</div>
+              </div>
+              <div className="w-12 h-12 bg-warning/10 rounded-lg flex items-center justify-center">
+                <FaExclamationCircle className="text-warning" size={24} aria-hidden="true" />
+              </div>
+            </div>
           </Card>
-          <Card className="text-center">
-            <div className="text-h2 text-neutral-700">{stats.cancelled}</div>
-            <div className="text-body text-neutral-600">Cancelled</div>
+          <Card className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-3xl font-semibold text-neutral-700">{stats.cancelled}</div>
+                <div className="text-sm text-neutral-600 mt-1">Cancelled</div>
+              </div>
+              <div className="w-12 h-12 bg-neutral-100 rounded-lg flex items-center justify-center">
+                <FaTimesCircle className="text-neutral-600" size={24} aria-hidden="true" />
+              </div>
+            </div>
           </Card>
         </div>
 
@@ -112,20 +149,24 @@ export function ReceptionistDashboard() {
             <h3 className="text-h4 text-neutral-900 mb-4">Quick Actions</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/receptionist/appointments')}>
-                📅 Book Appointment
+                <FaCalendarAlt className="mr-2" size={16} aria-hidden="true" />
+                Book Appointment
               </Button>
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/receptionist/patients/register')}>
-                👤 Register Patient
+                <FaUser className="mr-2" size={16} aria-hidden="true" />
+                Register Patient
               </Button>
               <Button variant="secondary" className="justify-start" onClick={() => navigate('/receptionist/billing')}>
-                💰 Process Payment
+                <FaMoneyBillWave className="mr-2" size={16} aria-hidden="true" />
+                Process Payment
               </Button>
               <Button
                 variant="secondary"
                 className="justify-start"
                 onClick={() => navigate('/receptionist/patients')}
               >
-                📋 Patient Records
+                <FaClipboardList className="mr-2" size={16} aria-hidden="true" />
+                Patient Records
               </Button>
             </div>
           </Card>

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from './Button';
+import { FaDesktop, FaSquare } from 'react-icons/fa';
 
-const Monitor = ({ className }: { className?: string }) => <span className={className}>🖥️</span>;
-const Square = ({ className }: { className?: string }) => <span className={className}>⬜</span>;
+const Monitor = FaDesktop;
+const Square = FaSquare;
 
 interface ScreenShareProps {
   isSharing: boolean;

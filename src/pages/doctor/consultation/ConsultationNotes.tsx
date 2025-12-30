@@ -4,9 +4,7 @@ import { addNotification } from '../../../store/notificationSlice';
 import { Button } from '../../../components/Button';
 import { Card } from '../../../components/Card';
 
-const Save = ({ className }: { className?: string }) => <span className={className}>💾</span>;
-const Mic = ({ className }: { className?: string }) => <span className={className}>🎤</span>;
-const FileText = ({ className }: { className?: string }) => <span className={className}>📄</span>;
+import { Save, Mic, FileText } from 'lucide-react';
 
 interface ConsultationNotesProps {
   patientName: string;

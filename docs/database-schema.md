@@ -1,555 +1,505 @@
-# Database Schema Design
+# Database Schema Document
 ## AROCORD-HIMS (Healthcare Information Management System)
 
-## Document Information
-- **Document Version**: 1.0
-- **Date**: January 2025
-- **Project Name**: AROCORD-HIMS
-- **Database**: PostgreSQL 15.x
-- **Document Owner**: Database Architecture Team
+**Project Name**: AROCORD-HIMS  
+**Version**: 2.3  
+**Date**: December 2025  
+**Status**: Production Ready (90% Complete)  
 
 ---
 
 ## 1. Introduction
 
 ### 1.1 Purpose
-This Database Schema Design document provides a comprehensive overview of the AROCORD-HIMS database structure, including entity relationships, table definitions, indexes, constraints, and data integrity rules.
+This Database Schema Document provides a comprehensive overview of the AROCORD-HIMS database design, including entity-relationship diagrams, table structures, relationships, and data integrity constraints.
 
-### 1.2 Scope
-This document covers:
-- Entity-Relationship Diagrams (ERD)
-- Table schemas and definitions
-- Primary and foreign key relationships
-- Indexes and performance optimization
-- Data types and constraints
-- Partitioning strategies
-- Security considerations
-
-### 1.3 Database Design Principles
-
-#### 1.3.1 Normalization
-- **3NF (Third Normal Form)**: Eliminates transitive dependencies
-- **Data Integrity**: Referential integrity enforced through foreign keys
-- **Consistency**: ACID properties maintained for transactional data
-
-#### 1.3.2 Performance Optimization
-- **Indexing Strategy**: Strategic indexes for query performance
-- **Partitioning**: Time-based partitioning for large tables
-- **Caching**: Redis integration for frequently accessed data
-
-#### 1.3.3 Security
-- **Data Encryption**: Sensitive data encrypted at rest
-- **Access Control**: Row-level security (RLS) implementation
-- **Audit Logging**: Comprehensive audit trails
-
-#### 1.3.4 Scalability
-- **Horizontal Scaling**: Read replicas for query distribution
-- **Sharding**: Database sharding for large datasets
-- **Archiving**: Automated archiving for historical data
+### 1.2 Database Technology
+- **Primary Database**: PostgreSQL 15+
+- **Document Store**: MongoDB for unstructured data
+- **Cache**: Redis for session and application caching
+- **Search**: Elasticsearch for advanced search capabilities
 
 ---
 
 ## 2. Entity-Relationship Diagram
 
-```mermaid
-erDiagram
-    USERS ||--o{ USER_ROLES : has
-    USERS ||--o{ USER_SESSIONS : creates
-    USERS ||--o{ AUDIT_LOGS : generates
+### 2.1 Core Entities Overview
 
-    USERS ||--o{ PATIENTS : manages
-    PATIENTS ||--o{ PATIENT_ALLERGIES : has
-    PATIENTS ||--o{ PATIENT_MEDICATIONS : takes
-    PATIENTS ||--o{ MEDICAL_HISTORY : owns
-    PATIENTS ||--o{ EMERGENCY_CONTACTS : has
-    PATIENTS ||--o{ INSURANCE_POLICIES : holds
-
-    PATIENTS ||--o{ APPOINTMENTS : schedules
-    APPOINTMENTS ||--o{ APPOINTMENT_NOTES : contains
-    APPOINTMENTS ||--|| CONSULTATIONS : results_in
-
-    CONSULTATIONS ||--o{ CONSULTATION_STEPS : consists_of
-    CONSULTATIONS ||--o{ VITAL_SIGNS : records
-    CONSULTATIONS ||--o{ SYMPTOMS : documents
-    CONSULTATIONS ||--o{ DIAGNOSES : identifies
-    CONSULTATIONS ||--o{ TREATMENTS : prescribes
-    CONSULTATIONS ||--o{ PRESCRIPTIONS : generates
-    CONSULTATIONS ||--o{ LAB_ORDERS : requests
-    CONSULTATIONS ||--o{ BILLING_RECORDS : creates
-
-    PRESCRIPTIONS ||--o{ PRESCRIPTION_ITEMS : contains
-    PRESCRIPTION_ITEMS ||--o{ MEDICATIONS : references
-    MEDICATIONS ||--o{ DRUG_INTERACTIONS : has
-    MEDICATIONS ||--o{ MEDICATION_INVENTORY : tracked_in
-
-    LAB_ORDERS ||--o{ LAB_RESULTS : produces
-    LAB_RESULTS ||--o{ LAB_RESULT_COMPONENTS : contains
-
-    BILLING_RECORDS ||--o{ BILLING_ITEMS : includes
-    BILLING_RECORDS ||--o{ INSURANCE_CLAIMS : generates
-    INSURANCE_CLAIMS ||--o{ CLAIM_PAYMENTS : receives
-
-    USERS ||--o{ NOTIFICATIONS : sends
-    NOTIFICATIONS ||--o{ NOTIFICATION_RECIPIENTS : delivered_to
-
-    DEPARTMENTS ||--o{ USERS : contains
-    DEPARTMENTS ||--o{ ROOMS : has
-    ROOMS ||--o{ APPOINTMENTS : hosts
-
-    INVENTORY_ITEMS ||--o{ INVENTORY_TRANSACTIONS : tracked_by
-    SUPPLIERS ||--o{ INVENTORY_TRANSACTIONS : supplies
-
-    REPORTS ||--o{ REPORT_SCHEDULES : has
-    REPORTS ||--o{ REPORT_EXECUTIONS : generates
+```
+┌─────────────────┐       ┌─────────────────┐
+│     Users       │       │    Patients     │
+│                 │       │                 │
+│ - id            │◄─────►│ - id            │
+│ - username      │       │ - mrn           │
+│ - email         │       │ - demographics  │
+│ - role          │       │ - insurance     │
+│ - status        │       │ - emergency_ct  │
+└─────────────────┘       └─────────────────┘
+         │                       │
+         │                       │
+         ▼                       ▼
+┌─────────────────┐       ┌─────────────────┐
+│  Appointments   │       │Medical Records  │
+│                 │       │                 │
+│ - id            │       │ - id            │
+│ - patient_id    │◄─────►│ - patient_id    │
+│ - doctor_id     │       │ - record_type   │
+│ - scheduled_time│       │ - data          │
+│ - status        │       │ - recorded_by   │
+└─────────────────┘       └─────────────────┘
+         │                       │
+         │                       │
+         ▼                       ▼
+┌─────────────────┐       ┌─────────────────┐
+│ Consultations   │       │ Prescriptions   │
+│                 │       │                 │
+│ - id            │       │ - id            │
+│ - patient_id    │◄─────►│ - patient_id    │
+│ - doctor_id     │       │ - doctor_id     │
+│ - workflow_type │       │ - medications   │
+│ - current_step  │       │ - priority      │
+└─────────────────┘       └─────────────────┘
+         │                       │
+         │                       │
+         ▼                       ▼
+┌─────────────────┐       ┌─────────────────┐
+│ Lab Orders      │       │   Billing       │
+│                 │       │                 │
+│ - id            │       │ - id            │
+│ - patient_id    │◄─────►│ - patient_id    │
+│ - test_type     │       │ - charges       │
+│ - priority      │       │ - payments      │
+│ - status        │       │ - insurance     │
+└─────────────────┘       └─────────────────┘
 ```
 
 ---
 
 ## 3. Core Tables
 
-### 3.1 User Management Tables
+### 3.1 Users Table
 
-#### users
+**Purpose**: Stores user accounts for all system roles
+
 ```sql
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
-    first_name VARCHAR(100) NOT NULL,
-    last_name VARCHAR(100) NOT NULL,
-    phone VARCHAR(20),
+    role VARCHAR(20) NOT NULL CHECK (role IN ('admin', 'doctor', 'receptionist', 'nurse', 'pharmacist', 'lab', 'patient')),
+    first_name VARCHAR(100),
+    last_name VARCHAR(100),
     avatar_url VARCHAR(500),
-    role_id UUID NOT NULL REFERENCES user_roles(id),
-    department_id UUID REFERENCES departments(id),
     is_active BOOLEAN DEFAULT true,
-    is_email_verified BOOLEAN DEFAULT false,
-    last_login_at TIMESTAMP WITH TIME ZONE,
-    password_changed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id)
+    last_login_at TIMESTAMP,
+    password_changed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    mfa_enabled BOOLEAN DEFAULT false,
+    mfa_secret VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    -- Indexes
+    INDEX idx_users_email (email),
+    INDEX idx_users_role (role),
+    INDEX idx_users_active (is_active),
+
+    -- Constraints
+    CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    CHECK (char_length(password_hash) >= 60)
 );
-
--- Indexes
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_users_role ON users(role_id);
-CREATE INDEX idx_users_department ON users(department_id);
-CREATE INDEX idx_users_active ON users(is_active);
-CREATE INDEX idx_users_last_login ON users(last_login_at);
-
--- Row Level Security
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ```
 
-#### user_roles
-```sql
-CREATE TABLE user_roles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(50) UNIQUE NOT NULL,
-    display_name VARCHAR(100) NOT NULL,
-    description TEXT,
-    permissions JSONB NOT NULL DEFAULT '{}',
-    is_system_role BOOLEAN DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+**Relationships**:
+- One-to-many with appointments (doctor_id, created_by)
+- One-to-many with consultations (doctor_id)
+- One-to-many with prescriptions (doctor_id, pharmacist_id)
+- One-to-many with medical_records (recorded_by)
 
--- Insert default roles
-INSERT INTO user_roles (name, display_name, description, permissions) VALUES
-('patient', 'Patient', 'Self-service patient access', '{"read": ["own_records"], "update": ["own_profile"]}'),
-('receptionist', 'Receptionist', 'Front desk operations', '{"create": ["patients", "appointments"], "read": ["all_patients", "all_appointments"], "update": ["patient_demographics", "appointment_status"]}'),
-('nurse', 'Nurse', 'Clinical support staff', '{"create": ["vital_signs", "patient_notes"], "read": ["assigned_patients"], "update": ["patient_status", "vital_signs"]}'),
-('doctor', 'Doctor', 'Medical practitioner', '{"create": ["consultations", "prescriptions", "lab_orders"], "read": ["all_patients"], "update": ["consultation_status", "treatment_plans"]}'),
-('pharmacist', 'Pharmacist', 'Medication dispensing', '{"create": ["medication_dispensing"], "read": ["prescriptions", "inventory"], "update": ["prescription_status", "inventory_levels"]}'),
-('lab_technician', 'Lab Technician', 'Laboratory operations', '{"create": ["lab_results"], "read": ["lab_orders"], "update": ["lab_order_status", "result_status"]}'),
-('administrator', 'Administrator', 'System administration', '{"create": ["users", "departments"], "read": ["all_data"], "update": ["system_settings", "user_permissions"], "delete": ["users", "records"]}');
-```
+### 3.2 Patients Table
 
-### 3.2 Patient Management Tables
+**Purpose**: Stores patient demographic and contact information
 
-#### patients
 ```sql
 CREATE TABLE patients (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    mrn VARCHAR(20) UNIQUE NOT NULL, -- Medical Record Number
+    mrn VARCHAR(20) UNIQUE NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
     middle_name VARCHAR(100),
     date_of_birth DATE NOT NULL,
-    gender VARCHAR(20) CHECK (gender IN ('male', 'female', 'other', 'unknown')),
+    gender VARCHAR(20) CHECK (gender IN ('male', 'female', 'other', 'prefer_not_to_say')),
     ssn VARCHAR(11), -- Encrypted
+    phone VARCHAR(20),
     email VARCHAR(255),
-    phone_primary VARCHAR(20),
-    phone_secondary VARCHAR(20),
-    address_line_1 VARCHAR(255),
-    address_line_2 VARCHAR(255),
-    city VARCHAR(100),
-    state VARCHAR(50),
-    postal_code VARCHAR(20),
-    country VARCHAR(50) DEFAULT 'US',
-    marital_status VARCHAR(20),
-    occupation VARCHAR(100),
-    emergency_contact_name VARCHAR(200),
-    emergency_contact_relationship VARCHAR(50),
-    emergency_contact_phone VARCHAR(20),
-    preferred_language VARCHAR(50) DEFAULT 'en',
-    ethnicity VARCHAR(50),
-    race VARCHAR(50),
-    blood_type VARCHAR(10),
-    organ_donor BOOLEAN DEFAULT false,
-    advance_directive BOOLEAN DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id)
-);
-
--- Indexes
-CREATE INDEX idx_patients_mrn ON patients(mrn);
-CREATE INDEX idx_patients_name ON patients(last_name, first_name);
-CREATE INDEX idx_patients_dob ON patients(date_of_birth);
-CREATE INDEX idx_patients_phone ON patients(phone_primary);
-CREATE INDEX idx_patients_email ON patients(email);
-
--- Partitioning (by year of creation for large datasets)
--- CREATE TABLE patients_y2024 PARTITION OF patients FOR VALUES FROM ('2024-01-01') TO ('2025-01-01');
-```
-
-#### patient_allergies
-```sql
-CREATE TABLE patient_allergies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-    allergen_type VARCHAR(50) NOT NULL, -- drug, food, environmental, etc.
-    allergen_name VARCHAR(200) NOT NULL,
-    severity VARCHAR(20) CHECK (severity IN ('mild', 'moderate', 'severe', 'life_threatening')),
-    reaction_description TEXT,
-    onset_date DATE,
-    reported_by UUID REFERENCES users(id),
+    address JSONB, -- Structured address data
+    emergency_contact JSONB, -- Contact person details
+    insurance_info JSONB, -- Insurance provider details
+    preferred_language VARCHAR(10) DEFAULT 'en',
     is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+    created_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
--- Indexes
-CREATE INDEX idx_patient_allergies_patient ON patient_allergies(patient_id);
-CREATE INDEX idx_patient_allergies_allergen ON patient_allergies(allergen_name);
-CREATE INDEX idx_patient_allergies_active ON patient_allergies(is_active);
+    -- Indexes
+    INDEX idx_patients_mrn (mrn),
+    INDEX idx_patients_name (first_name, last_name),
+    INDEX idx_patients_dob (date_of_birth),
+    INDEX idx_patients_phone (phone),
+    INDEX idx_patients_email (email),
+    INDEX idx_patients_active (is_active),
+
+    -- Full-text search
+    INDEX idx_patients_search ON patients USING gin(to_tsvector('english', first_name || ' ' || last_name || ' ' || mrn)),
+
+    -- Constraints
+    CHECK (date_of_birth <= CURRENT_DATE),
+    CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
+);
 ```
 
-### 3.3 Appointment and Scheduling Tables
+**Relationships**:
+- One-to-many with appointments
+- One-to-many with consultations
+- One-to-many with prescriptions
+- One-to-many with medical_records
+- One-to-many with lab_orders
+- One-to-many with billing_records
 
-#### appointments
+### 3.3 Appointments Table
+
+**Purpose**: Manages appointment scheduling and status
+
 ```sql
 CREATE TABLE appointments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    patient_id UUID NOT NULL REFERENCES patients(id),
-    provider_id UUID NOT NULL REFERENCES users(id),
-    department_id UUID REFERENCES departments(id),
-    room_id UUID REFERENCES rooms(id),
+    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    doctor_id UUID NOT NULL REFERENCES users(id),
+    receptionist_id UUID REFERENCES users(id), -- Who scheduled
     appointment_type VARCHAR(50) NOT NULL,
-    scheduled_date DATE NOT NULL,
-    scheduled_time TIME NOT NULL,
-    duration_minutes INTEGER NOT NULL DEFAULT 15,
-    status VARCHAR(30) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'confirmed', 'checked_in', 'in_progress', 'completed', 'cancelled', 'no_show')),
-    priority VARCHAR(20) DEFAULT 'normal' CHECK (priority IN ('low', 'normal', 'high', 'urgent', 'emergency')),
-    reason_for_visit TEXT,
-    special_instructions TEXT,
-    insurance_verified BOOLEAN DEFAULT false,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id),
-    cancelled_at TIMESTAMP WITH TIME ZONE,
-    cancelled_by UUID REFERENCES users(id),
-    cancellation_reason TEXT
+    scheduled_time TIMESTAMP NOT NULL,
+    duration_minutes INTEGER DEFAULT 15,
+    status VARCHAR(20) DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'confirmed', 'checked_in', 'in_progress', 'completed', 'cancelled', 'no_show')),
+    check_in_time TIMESTAMP,
+    start_time TIMESTAMP,
+    end_time TIMESTAMP,
+    room_number VARCHAR(10),
+    notes TEXT,
+    cancellation_reason TEXT,
+    reminder_sent BOOLEAN DEFAULT false,
+    follow_up_required BOOLEAN DEFAULT false,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    -- Indexes
+    INDEX idx_appointments_patient (patient_id),
+    INDEX idx_appointments_doctor (doctor_id),
+    INDEX idx_appointments_time (scheduled_time),
+    INDEX idx_appointments_status (status),
+    INDEX idx_appointments_type (appointment_type),
+
+    -- Composite indexes
+    INDEX idx_appointments_doctor_time (doctor_id, scheduled_time),
+    INDEX idx_appointments_patient_time (patient_id, scheduled_time),
+
+    -- Constraints
+    CHECK (scheduled_time > CURRENT_TIMESTAMP),
+    CHECK (duration_minutes BETWEEN 5 AND 480),
+    EXCLUDE (doctor_id WITH =) WHERE (status NOT IN ('cancelled', 'completed'))
+        USING gist (tstzrange(scheduled_time, scheduled_time + (duration_minutes || ' minutes')::interval))
 );
-
--- Indexes
-CREATE INDEX idx_appointments_patient ON appointments(patient_id);
-CREATE INDEX idx_appointments_provider ON appointments(provider_id);
-CREATE INDEX idx_appointments_date ON appointments(scheduled_date);
-CREATE INDEX idx_appointments_datetime ON appointments(scheduled_date, scheduled_time);
-CREATE INDEX idx_appointments_status ON appointments(status);
-CREATE INDEX idx_appointments_department ON appointments(department_id);
-
--- Constraints
-ALTER TABLE appointments ADD CONSTRAINT chk_appointment_duration CHECK (duration_minutes > 0 AND duration_minutes <= 480);
-ALTER TABLE appointments ADD CONSTRAINT chk_no_double_booking EXCLUDE (provider_id WITH =, scheduled_date WITH =, tstzrange(scheduled_time, scheduled_time + (duration_minutes || ' minutes')::INTERVAL) WITH &&) WHERE (status NOT IN ('cancelled', 'no_show'));
 ```
 
-### 3.4 Consultation and Clinical Tables
+**Relationships**:
+- Many-to-one with patients
+- Many-to-one with users (doctor, receptionist)
+- One-to-one with consultations
 
-#### consultations
+### 3.4 Consultations Table
+
+**Purpose**: Tracks consultation workflow and progress
+
 ```sql
 CREATE TABLE consultations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    doctor_id UUID NOT NULL REFERENCES users(id),
     appointment_id UUID REFERENCES appointments(id),
-    patient_id UUID NOT NULL REFERENCES patients(id),
-    provider_id UUID NOT NULL REFERENCES users(id),
-    consultation_type VARCHAR(50) DEFAULT 'standard',
     workflow_type VARCHAR(20) DEFAULT 'standard' CHECK (workflow_type IN ('standard', 'adaptive')),
+    current_step INTEGER DEFAULT 1,
+    total_steps INTEGER DEFAULT 5,
+    step_data JSONB, -- Current step data
+    workflow_state JSONB, -- Complete workflow state
     chief_complaint TEXT,
-    history_of_present_illness TEXT,
-    review_of_systems JSONB,
-    physical_examination JSONB,
-    assessment TEXT,
-    plan TEXT,
-    status VARCHAR(30) DEFAULT 'in_progress' CHECK (status IN ('scheduled', 'in_progress', 'completed', 'cancelled')),
-    started_at TIMESTAMP WITH TIME ZONE,
-    completed_at TIMESTAMP WITH TIME ZONE,
-    total_duration_minutes INTEGER,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id)
-);
+    started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'in_progress' CHECK (status IN ('in_progress', 'completed', 'cancelled')),
+    duration_minutes INTEGER,
+    notes TEXT,
+    ai_summary TEXT, -- AI-generated summary
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
--- Indexes
-CREATE INDEX idx_consultations_patient ON consultations(patient_id);
-CREATE INDEX idx_consultations_provider ON consultations(provider_id);
-CREATE INDEX idx_consultations_appointment ON consultations(appointment_id);
-CREATE INDEX idx_consultations_status ON consultations(status);
-CREATE INDEX idx_consultations_date ON consultations(started_at);
+    -- Indexes
+    INDEX idx_consultations_patient (patient_id),
+    INDEX idx_consultations_doctor (doctor_id),
+    INDEX idx_consultations_status (status),
+    INDEX idx_consultations_started (started_at),
+    INDEX idx_consultations_completed (completed_at),
+
+    -- Constraints
+    CHECK (current_step BETWEEN 1 AND total_steps),
+    CHECK (completed_at IS NULL OR completed_at >= started_at)
+);
 ```
 
-#### vital_signs
-```sql
-CREATE TABLE vital_signs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    consultation_id UUID REFERENCES consultations(id),
-    patient_id UUID NOT NULL REFERENCES patients(id),
-    recorded_by UUID NOT NULL REFERENCES users(id),
-    recorded_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    blood_pressure_systolic INTEGER,
-    blood_pressure_diastolic INTEGER,
-    heart_rate INTEGER,
-    respiratory_rate INTEGER,
-    temperature DECIMAL(4,1),
-    temperature_unit VARCHAR(5) DEFAULT 'F' CHECK (temperature_unit IN ('F', 'C')),
-    oxygen_saturation INTEGER,
-    oxygen_supplement BOOLEAN DEFAULT false,
-    oxygen_flow_rate DECIMAL(3,1),
-    weight_kg DECIMAL(5,2),
-    height_cm DECIMAL(5,2),
-    bmi DECIMAL(4,1) GENERATED ALWAYS AS (
-        CASE
-            WHEN weight_kg > 0 AND height_cm > 0
-            THEN ROUND((weight_kg / POWER(height_cm / 100, 2))::NUMERIC, 1)
-            ELSE NULL
-        END
-    ) STORED,
-    pain_scale INTEGER CHECK (pain_scale >= 0 AND pain_scale <= 10),
-    notes TEXT
-);
+**Relationships**:
+- Many-to-one with patients
+- Many-to-one with users (doctor)
+- One-to-one with appointments
+- One-to-many with prescriptions
+- One-to-many with lab_orders
 
--- Indexes
-CREATE INDEX idx_vital_signs_patient ON vital_signs(patient_id);
-CREATE INDEX idx_vital_signs_consultation ON vital_signs(consultation_id);
-CREATE INDEX idx_vital_signs_recorded_at ON vital_signs(recorded_at);
-```
+### 3.5 Prescriptions Table
 
-### 3.5 Prescription and Medication Tables
+**Purpose**: Manages medication prescriptions and dispensing
 
-#### prescriptions
 ```sql
 CREATE TABLE prescriptions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    doctor_id UUID NOT NULL REFERENCES users(id),
+    pharmacist_id UUID REFERENCES users(id),
     consultation_id UUID REFERENCES consultations(id),
-    patient_id UUID NOT NULL REFERENCES patients(id),
-    provider_id UUID NOT NULL REFERENCES users(id),
-    prescription_number VARCHAR(50) UNIQUE,
-    status VARCHAR(30) DEFAULT 'pending' CHECK (status IN ('pending', 'sent_to_pharmacy', 'ready', 'dispensed', 'cancelled')),
-    priority VARCHAR(20) DEFAULT 'normal' CHECK (priority IN ('low', 'normal', 'high', 'urgent')),
+    medications JSONB NOT NULL, -- Array of medication objects
+    priority VARCHAR(10) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'sent_to_pharmacy', 'processing', 'ready', 'dispensed', 'cancelled')),
+    pharmacy_id UUID, -- External pharmacy reference
+    pickup_deadline TIMESTAMP,
     notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id)
-);
+    drug_interactions JSONB, -- Detected interactions
+    allergy_alerts JSONB, -- Patient allergy conflicts
+    dispensed_at TIMESTAMP,
+    dispensed_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
--- Indexes
-CREATE INDEX idx_prescriptions_patient ON prescriptions(patient_id);
-CREATE INDEX idx_prescriptions_provider ON prescriptions(provider_id);
-CREATE INDEX idx_prescriptions_consultation ON prescriptions(consultation_id);
-CREATE INDEX idx_prescriptions_status ON prescriptions(status);
-CREATE INDEX idx_prescriptions_number ON prescriptions(prescription_number);
+    -- Indexes
+    INDEX idx_prescriptions_patient (patient_id),
+    INDEX idx_prescriptions_doctor (doctor_id),
+    INDEX idx_prescriptions_status (status),
+    INDEX idx_prescriptions_priority (priority),
+    INDEX idx_prescriptions_created (created_at),
+
+    -- Constraints
+    CHECK (pickup_deadline > created_at),
+    CHECK (dispensed_at IS NULL OR dispensed_at >= created_at)
+);
 ```
 
-#### medications
+**Medication JSONB Structure**:
+```json
+{
+  "medications": [
+    {
+      "drug_id": "uuid",
+      "name": "Lisinopril",
+      "dosage": "10mg",
+      "frequency": "once daily",
+      "duration": "30 days",
+      "instructions": "Take with food in the morning",
+      "quantity": 30,
+      "refills": 3
+    }
+  ]
+}
+```
+
+### 3.6 Medical Records Table
+
+**Purpose**: Stores all patient medical information
+
 ```sql
-CREATE TABLE medications (
+CREATE TABLE medical_records (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(200) NOT NULL,
-    generic_name VARCHAR(200),
-    brand_name VARCHAR(200),
-    strength VARCHAR(50),
-    form VARCHAR(50), -- tablet, capsule, liquid, etc.
-    route VARCHAR(50), -- oral, iv, topical, etc.
-    drug_class VARCHAR(100),
-    controlled_substance BOOLEAN DEFAULT false,
-    dea_schedule VARCHAR(5),
-    requires_prescription BOOLEAN DEFAULT true,
+    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    record_type VARCHAR(50) NOT NULL CHECK (record_type IN ('allergy', 'medication', 'diagnosis', 'procedure', 'vital_signs', 'lab_result', 'imaging', 'note')),
+    record_subtype VARCHAR(50), -- Specific type within category
+    data JSONB NOT NULL, -- Flexible data structure
+    recorded_by UUID NOT NULL REFERENCES users(id),
+    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    effective_date TIMESTAMP, -- When the event occurred
     is_active BOOLEAN DEFAULT true,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+    is_confidential BOOLEAN DEFAULT false,
+    source_system VARCHAR(50), -- Where the data came from
+    external_id VARCHAR(100), -- ID from external system
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
--- Indexes
-CREATE INDEX idx_medications_name ON medications(name);
-CREATE INDEX idx_medications_generic ON medications(generic_name);
-CREATE INDEX idx_medications_class ON medications(drug_class);
-CREATE INDEX idx_medications_active ON medications(is_active);
+    -- Indexes
+    INDEX idx_medical_records_patient (patient_id),
+    INDEX idx_medical_records_type (record_type),
+    INDEX idx_medical_records_recorded (recorded_at),
+    INDEX idx_medical_records_active (is_active),
+
+    -- Partial indexes
+    INDEX idx_medical_records_allergies ON medical_records(patient_id) WHERE record_type = 'allergy' AND is_active = true,
+    INDEX idx_medical_records_medications ON medical_records(patient_id) WHERE record_type = 'medication' AND is_active = true,
+
+    -- Constraints
+    CHECK (effective_date <= CURRENT_TIMESTAMP)
+);
 ```
 
-### 3.6 Laboratory Tables
+**Data Structure Examples**:
 
-#### lab_orders
+**Allergy Record**:
+```json
+{
+  "allergen": "Penicillin",
+  "reaction": "Rash",
+  "severity": "moderate",
+  "onset": "childhood",
+  "notes": "Avoid all beta-lactam antibiotics"
+}
+```
+
+**Vital Signs Record**:
+```json
+{
+  "blood_pressure": "120/80",
+  "heart_rate": 72,
+  "temperature": 98.6,
+  "temperature_unit": "F",
+  "oxygen_saturation": 98,
+  "respiratory_rate": 16,
+  "weight": 150,
+  "weight_unit": "lbs",
+  "height": 68,
+  "height_unit": "inches",
+  "bmi": 22.8
+}
+```
+
+### 3.7 Lab Orders Table
+
+**Purpose**: Manages laboratory test orders and results
+
 ```sql
 CREATE TABLE lab_orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    doctor_id UUID NOT NULL REFERENCES users(id),
     consultation_id UUID REFERENCES consultations(id),
-    patient_id UUID NOT NULL REFERENCES patients(id),
-    provider_id UUID NOT NULL REFERENCES users(id),
-    order_number VARCHAR(50) UNIQUE,
-    status VARCHAR(30) DEFAULT 'ordered' CHECK (status IN ('ordered', 'collected', 'in_progress', 'completed', 'cancelled')),
-    priority VARCHAR(20) DEFAULT 'normal' CHECK (priority IN ('low', 'normal', 'high', 'urgent', 'stat')),
-    collection_date DATE,
-    collection_time TIME,
+    lab_technician_id UUID REFERENCES users(id),
+    test_type VARCHAR(100) NOT NULL,
+    test_code VARCHAR(20), -- LOINC code
+    priority VARCHAR(10) DEFAULT 'routine' CHECK (priority IN ('routine', 'urgent', 'stat')),
+    status VARCHAR(20) DEFAULT 'ordered' CHECK (status IN ('ordered', 'collected', 'processing', 'completed', 'cancelled')),
+    specimen_type VARCHAR(50),
+    collection_instructions TEXT,
+    ordered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    collected_at TIMESTAMP,
     collected_by UUID REFERENCES users(id),
-    collected_at TIMESTAMP WITH TIME ZONE,
+    received_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    results JSONB, -- Test results
+    interpretation TEXT,
+    critical_values JSONB, -- Any critical findings
     notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id)
-);
+    external_lab_id VARCHAR(50), -- Reference to external lab system
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
--- Indexes
-CREATE INDEX idx_lab_orders_patient ON lab_orders(patient_id);
-CREATE INDEX idx_lab_orders_provider ON lab_orders(provider_id);
-CREATE INDEX idx_lab_orders_consultation ON lab_orders(consultation_id);
-CREATE INDEX idx_lab_orders_status ON lab_orders(status);
-CREATE INDEX idx_lab_orders_priority ON lab_orders(priority);
-CREATE INDEX idx_lab_orders_number ON lab_orders(order_number);
+    -- Indexes
+    INDEX idx_lab_orders_patient (patient_id),
+    INDEX idx_lab_orders_doctor (doctor_id),
+    INDEX idx_lab_orders_status (status),
+    INDEX idx_lab_orders_priority (priority),
+    INDEX idx_lab_orders_ordered (ordered_at),
+
+    -- Constraints
+    CHECK (collected_at IS NULL OR collected_at >= ordered_at),
+    CHECK (completed_at IS NULL OR completed_at >= collected_at)
+);
 ```
 
-#### lab_results
-```sql
-CREATE TABLE lab_results (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    lab_order_id UUID NOT NULL REFERENCES lab_orders(id),
-    test_code VARCHAR(20) NOT NULL,
-    test_name VARCHAR(200) NOT NULL,
-    status VARCHAR(30) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed', 'reviewed', 'critical')),
-    result_value VARCHAR(100),
-    result_unit VARCHAR(20),
-    reference_range VARCHAR(100),
-    flag VARCHAR(20) CHECK (flag IN ('normal', 'low', 'high', 'critical_low', 'critical_high')),
-    performed_by UUID REFERENCES users(id),
-    performed_at TIMESTAMP WITH TIME ZONE,
-    reviewed_by UUID REFERENCES users(id),
-    reviewed_at TIMESTAMP WITH TIME ZONE,
-    notes TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+### 3.8 Billing Records Table
 
--- Indexes
-CREATE INDEX idx_lab_results_order ON lab_results(lab_order_id);
-CREATE INDEX idx_lab_results_test ON lab_results(test_code);
-CREATE INDEX idx_lab_results_status ON lab_results(status);
-CREATE INDEX idx_lab_results_flag ON lab_results(flag);
-CREATE INDEX idx_lab_results_performed_at ON lab_results(performed_at);
-```
+**Purpose**: Manages billing, charges, and payments
 
-### 3.7 Billing and Insurance Tables
-
-#### billing_records
 ```sql
 CREATE TABLE billing_records (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    patient_id UUID NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
     consultation_id UUID REFERENCES consultations(id),
-    patient_id UUID NOT NULL REFERENCES patients(id),
-    invoice_number VARCHAR(50) UNIQUE,
-    status VARCHAR(30) DEFAULT 'pending' CHECK (status IN ('pending', 'billed', 'paid', 'partially_paid', 'cancelled', 'written_off')),
-    total_amount DECIMAL(10,2) NOT NULL,
-    tax_amount DECIMAL(10,2) DEFAULT 0,
-    discount_amount DECIMAL(10,2) DEFAULT 0,
-    paid_amount DECIMAL(10,2) DEFAULT 0,
-    balance_amount DECIMAL(10,2) GENERATED ALWAYS AS (total_amount + tax_amount - discount_amount - paid_amount) STORED,
+    invoice_number VARCHAR(20) UNIQUE NOT NULL,
+    bill_date DATE DEFAULT CURRENT_DATE,
     due_date DATE,
-    billed_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'paid', 'overdue', 'cancelled')),
+    charges JSONB NOT NULL, -- Detailed charge breakdown
+    adjustments JSONB, -- Insurance adjustments, discounts
+    payments JSONB, -- Payment history
+    insurance_claims JSONB, -- Insurance processing details
+    total_amount DECIMAL(10,2) NOT NULL,
+    paid_amount DECIMAL(10,2) DEFAULT 0,
+    balance DECIMAL(10,2),
+    payment_plan_id UUID,
     created_by UUID REFERENCES users(id),
-    updated_by UUID REFERENCES users(id)
-);
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
--- Indexes
-CREATE INDEX idx_billing_records_patient ON billing_records(patient_id);
-CREATE INDEX idx_billing_records_consultation ON billing_records(consultation_id);
-CREATE INDEX idx_billing_records_status ON billing_records(status);
-CREATE INDEX idx_billing_records_invoice ON billing_records(invoice_number);
-CREATE INDEX idx_billing_records_due_date ON billing_records(due_date);
+    -- Indexes
+    INDEX idx_billing_patient (patient_id),
+    INDEX idx_billing_status (status),
+    INDEX idx_billing_due_date (due_date),
+    INDEX idx_billing_invoice (invoice_number),
+
+    -- Constraints
+    CHECK (due_date >= bill_date),
+    CHECK (paid_amount <= total_amount),
+    CHECK (balance = total_amount - paid_amount)
+);
 ```
 
-### 3.8 Notification and Communication Tables
+---
 
-#### notifications
+## 4. Supporting Tables
+
+### 4.1 Notifications Table
+
 ```sql
 CREATE TABLE notifications (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    type VARCHAR(50) NOT NULL, -- appointment, medication, lab_result, system, etc.
-    priority VARCHAR(20) DEFAULT 'normal' CHECK (priority IN ('low', 'normal', 'high', 'urgent')),
-    title VARCHAR(200) NOT NULL,
-    message TEXT NOT NULL,
-    action_url VARCHAR(500),
-    action_label VARCHAR(100),
-    expires_at TIMESTAMP WITH TIME ZONE,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    created_by UUID REFERENCES users(id)
-);
-
--- Indexes
-CREATE INDEX idx_notifications_type ON notifications(type);
-CREATE INDEX idx_notifications_priority ON notifications(priority);
-CREATE INDEX idx_notifications_created_at ON notifications(created_at);
-CREATE INDEX idx_notifications_expires_at ON notifications(expires_at);
-```
-
-#### notification_recipients
-```sql
-CREATE TABLE notification_recipients (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    notification_id UUID NOT NULL REFERENCES notifications(id) ON DELETE CASCADE,
     recipient_id UUID NOT NULL REFERENCES users(id),
-    channel VARCHAR(20) NOT NULL CHECK (channel IN ('in_app', 'email', 'sms', 'push')),
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'sent', 'delivered', 'read', 'failed')),
-    sent_at TIMESTAMP WITH TIME ZONE,
-    delivered_at TIMESTAMP WITH TIME ZONE,
-    read_at TIMESTAMP WITH TIME ZONE,
-    failed_at TIMESTAMP WITH TIME ZONE,
-    failure_reason TEXT,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
+    sender_id UUID REFERENCES users(id),
+    notification_type VARCHAR(50) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    message TEXT,
+    priority VARCHAR(10) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high', 'urgent')),
+    category VARCHAR(30) CHECK (category IN ('medication', 'appointment', 'lab', 'patient', 'system', 'inventory', 'billing')),
+    is_read BOOLEAN DEFAULT false,
+    read_at TIMESTAMP,
+    action_url VARCHAR(500), -- Link to take action
+    action_taken BOOLEAN DEFAULT false,
+    expires_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
--- Indexes
-CREATE INDEX idx_notification_recipients_notification ON notification_recipients(notification_id);
-CREATE INDEX idx_notification_recipients_recipient ON notification_recipients(recipient_id);
-CREATE INDEX idx_notification_recipients_channel ON notification_recipients(channel);
-CREATE INDEX idx_notification_recipients_status ON notification_recipients(status);
+    INDEX idx_notifications_recipient (recipient_id),
+    INDEX idx_notifications_type (notification_type),
+    INDEX idx_notifications_priority (priority),
+    INDEX idx_notifications_read (is_read),
+    INDEX idx_notifications_created (created_at)
+);
 ```
 
-### 3.9 Audit and Security Tables
+### 4.2 Audit Log Table
 
-#### audit_logs
 ```sql
-CREATE TABLE audit_logs (
+CREATE TABLE audit_log (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES users(id),
-    session_id UUID,
+    patient_id UUID REFERENCES patients(id),
     action VARCHAR(100) NOT NULL,
     resource_type VARCHAR(50) NOT NULL,
     resource_id UUID,
@@ -557,495 +507,384 @@ CREATE TABLE audit_logs (
     new_values JSONB,
     ip_address INET,
     user_agent TEXT,
-    timestamp TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    success BOOLEAN DEFAULT true,
-    error_message TEXT
+    session_id VARCHAR(255),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_audit_user (user_id),
+    INDEX idx_audit_patient (patient_id),
+    INDEX idx_audit_action (action),
+    INDEX idx_audit_resource (resource_type, resource_id),
+    INDEX idx_audit_timestamp (timestamp)
 );
+```
 
--- Indexes
-CREATE INDEX idx_audit_logs_user ON audit_logs(user_id);
-CREATE INDEX idx_audit_logs_action ON audit_logs(action);
-CREATE INDEX idx_audit_logs_resource ON audit_logs(resource_type, resource_id);
-CREATE INDEX idx_audit_logs_timestamp ON audit_logs(timestamp);
+### 4.3 System Configuration Table
 
--- Partitioning by month for large audit logs
--- CREATE TABLE audit_logs_y2024m01 PARTITION OF audit_logs FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
+```sql
+CREATE TABLE system_config (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    config_key VARCHAR(100) UNIQUE NOT NULL,
+    config_value JSONB NOT NULL,
+    description TEXT,
+    is_encrypted BOOLEAN DEFAULT false,
+    modified_by UUID REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    INDEX idx_system_config_key (config_key)
+);
 ```
 
 ---
 
-## 4. Database Optimization
+## 5. Indexes and Performance
 
-### 4.1 Indexing Strategy
+### 5.1 Primary Indexes
+- All primary keys are automatically indexed
+- Foreign key constraints create implicit indexes
+- Unique constraints create unique indexes
 
-#### 4.1.1 Primary Performance Indexes
+### 5.2 Performance Indexes
+
+**High-Cardinality Indexes**:
 ```sql
--- Composite indexes for common query patterns
-CREATE INDEX CONCURRENTLY idx_appointments_provider_date_time ON appointments(provider_id, scheduled_date, scheduled_time);
-CREATE INDEX CONCURRENTLY idx_consultations_patient_date ON consultations(patient_id, started_at DESC);
-CREATE INDEX CONCURRENTLY idx_lab_results_order_test ON lab_results(lab_order_id, test_code);
-CREATE INDEX CONCURRENTLY idx_billing_records_patient_status ON billing_records(patient_id, status);
+-- Patient search optimization
+CREATE INDEX CONCURRENTLY idx_patients_full_name ON patients (first_name, last_name);
+CREATE INDEX CONCURRENTLY idx_patients_dob_gender ON patients (date_of_birth, gender);
 
--- Partial indexes for active records
-CREATE INDEX CONCURRENTLY idx_active_appointments ON appointments(scheduled_date, scheduled_time) WHERE status IN ('scheduled', 'confirmed');
-CREATE INDEX CONCURRENTLY idx_active_prescriptions ON prescriptions(created_at) WHERE status NOT IN ('dispensed', 'cancelled');
+-- Appointment scheduling
+CREATE INDEX CONCURRENTLY idx_appointments_doctor_schedule ON appointments (doctor_id, scheduled_time) WHERE status = 'scheduled';
+CREATE INDEX CONCURRENTLY idx_appointments_patient_history ON appointments (patient_id, scheduled_time DESC);
 
--- JSONB indexes for flexible data
-CREATE INDEX CONCURRENTLY idx_user_permissions ON user_roles USING GIN(permissions);
-CREATE INDEX CONCURRENTLY idx_consultation_physical_exam ON consultations USING GIN(physical_examination);
+-- Consultation workflow
+CREATE INDEX CONCURRENTLY idx_consultations_active ON consultations (status) WHERE status = 'in_progress';
+CREATE INDEX CONCURRENTLY idx_consultations_doctor_active ON consultations (doctor_id, status) WHERE status = 'in_progress';
 ```
 
-#### 4.1.2 Full-Text Search Indexes
+**Partial Indexes**:
 ```sql
--- Full-text search for patient records
-CREATE INDEX CONCURRENTLY idx_patients_fulltext ON patients USING GIN(to_tsvector('english', first_name || ' ' || last_name || ' ' || COALESCE(email, '') || ' ' || COALESCE(phone_primary, '')));
+-- Active records only
+CREATE INDEX CONCURRENTLY idx_active_appointments ON appointments (patient_id, scheduled_time) WHERE status IN ('scheduled', 'confirmed');
+CREATE INDEX CONCURRENTLY idx_active_prescriptions ON prescriptions (patient_id, created_at) WHERE status NOT IN ('dispensed', 'cancelled');
 
--- Full-text search for medical notes
-CREATE INDEX CONCURRENTLY idx_consultations_fulltext ON consultations USING GIN(to_tsvector('english', chief_complaint || ' ' || COALESCE(history_of_present_illness, '') || ' ' || COALESCE(assessment, '') || ' ' || COALESCE(plan, '')));
+-- Recent records
+CREATE INDEX CONCURRENTLY idx_recent_lab_orders ON lab_orders (patient_id, ordered_at DESC) WHERE ordered_at > CURRENT_DATE - INTERVAL '90 days';
 ```
 
-### 4.2 Partitioning Strategy
-
-#### 4.2.1 Time-Based Partitioning
+**Full-Text Search Indexes**:
 ```sql
--- Partition audit logs by month
-CREATE TABLE audit_logs_y2024m01 PARTITION OF audit_logs
-    FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
+-- Patient search
+CREATE INDEX CONCURRENTLY idx_patients_fts ON patients USING gin(to_tsvector('english', first_name || ' ' || last_name || ' ' || mrn));
 
--- Partition appointments by quarter
-CREATE TABLE appointments_q1_2024 PARTITION OF appointments
-    FOR VALUES FROM ('2024-01-01') TO ('2024-04-01');
-
--- Automatic partition creation function
-CREATE OR REPLACE FUNCTION create_monthly_partition(
-    table_name TEXT,
-    start_date DATE
-) RETURNS VOID AS $$
-DECLARE
-    partition_name TEXT;
-    end_date DATE;
-BEGIN
-    partition_name := table_name || '_y' || EXTRACT(YEAR FROM start_date) || 'm' || LPAD(EXTRACT(MONTH FROM start_date)::TEXT, 2, '0');
-    end_date := start_date + INTERVAL '1 month';
-
-    EXECUTE format('CREATE TABLE IF NOT EXISTS %I PARTITION OF %I FOR VALUES FROM (%L) TO (%L)',
-                   partition_name, table_name, start_date, end_date);
-END;
-$$ LANGUAGE plpgsql;
+-- Medical records search
+CREATE INDEX CONCURRENTLY idx_medical_records_fts ON medical_records USING gin(to_tsvector('english', data::text)) WHERE is_active = true;
 ```
 
-### 4.3 Data Archiving Strategy
+### 5.3 Index Maintenance
 
-#### 4.3.1 Archive Tables
+**Index Monitoring**:
 ```sql
--- Archive completed consultations older than 7 years
-CREATE TABLE consultations_archive (LIKE consultations INCLUDING ALL);
+-- Check index usage
+SELECT schemaname, tablename, indexname, idx_scan, idx_tup_read, idx_tup_fetch
+FROM pg_stat_user_indexes
+ORDER BY idx_scan DESC;
 
--- Archive completed billing records older than 7 years
-CREATE TABLE billing_records_archive (LIKE billing_records INCLUDING ALL);
-
--- Automated archiving function
-CREATE OR REPLACE FUNCTION archive_old_records() RETURNS VOID AS $$
-BEGIN
-    -- Archive old consultations
-    INSERT INTO consultations_archive
-    SELECT * FROM consultations
-    WHERE completed_at < CURRENT_DATE - INTERVAL '7 years'
-    AND status = 'completed';
-
-    DELETE FROM consultations
-    WHERE completed_at < CURRENT_DATE - INTERVAL '7 years'
-    AND status = 'completed';
-
-    -- Archive old billing records
-    INSERT INTO billing_records_archive
-    SELECT * FROM billing_records
-    WHERE billed_at < CURRENT_DATE - INTERVAL '7 years'
-    AND status IN ('paid', 'written_off');
-
-    DELETE FROM billing_records
-    WHERE billed_at < CURRENT_DATE - INTERVAL '7 years'
-    AND status IN ('paid', 'written_off');
-END;
-$$ LANGUAGE plpgsql;
+-- Identify unused indexes
+SELECT indexrelname, tablename
+FROM pg_stat_user_indexes
+WHERE idx_scan = 0 AND schemaname = 'public';
 ```
 
 ---
 
-## 5. Data Integrity and Constraints
+## 6. Data Integrity and Constraints
 
-### 5.1 Check Constraints
+### 6.1 Check Constraints
 
 ```sql
--- Age validation
-ALTER TABLE patients ADD CONSTRAINT chk_patient_age
-    CHECK (date_of_birth <= CURRENT_DATE AND date_of_birth >= CURRENT_DATE - INTERVAL '150 years');
-
 -- Email format validation
-ALTER TABLE users ADD CONSTRAINT chk_email_format
+ALTER TABLE users ADD CONSTRAINT chk_users_email_format
     CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$');
 
--- Phone format validation
-ALTER TABLE patients ADD CONSTRAINT chk_phone_format
-    CHECK (phone_primary ~* '^\+?[1-9]\d{1,14}$');
+-- Date validations
+ALTER TABLE patients ADD CONSTRAINT chk_patients_dob_future
+    CHECK (date_of_birth <= CURRENT_DATE);
 
--- Vital signs ranges
-ALTER TABLE vital_signs ADD CONSTRAINT chk_blood_pressure
-    CHECK (blood_pressure_systolic BETWEEN 50 AND 300 AND blood_pressure_diastolic BETWEEN 30 AND 200);
+ALTER TABLE appointments ADD CONSTRAINT chk_appointments_future
+    CHECK (scheduled_time > CURRENT_TIMESTAMP);
 
-ALTER TABLE vital_signs ADD CONSTRAINT chk_heart_rate
-    CHECK (heart_rate BETWEEN 30 AND 250);
-
-ALTER TABLE vital_signs ADD CONSTRAINT chk_temperature_f
-    CHECK ((temperature_unit = 'F' AND temperature BETWEEN 80 AND 115) OR
-           (temperature_unit = 'C' AND temperature BETWEEN 26.7 AND 46.1));
+-- Status transition validations
+ALTER TABLE prescriptions ADD CONSTRAINT chk_prescription_status_flow
+    CHECK (status IN ('pending', 'sent_to_pharmacy', 'processing', 'ready', 'dispensed', 'cancelled'));
 ```
 
-### 5.2 Foreign Key Constraints
+### 6.2 Foreign Key Constraints
 
 ```sql
--- Cascading deletes for dependent records
-ALTER TABLE patient_allergies DROP CONSTRAINT patient_allergies_patient_id_fkey;
-ALTER TABLE patient_allergies ADD CONSTRAINT patient_allergies_patient_id_fkey
+-- Cascade deletes for patient data
+ALTER TABLE appointments ADD CONSTRAINT fk_appointments_patient
     FOREIGN KEY (patient_id) REFERENCES patients(id) ON DELETE CASCADE;
 
--- Restrict deletes for critical data
-ALTER TABLE prescriptions DROP CONSTRAINT prescriptions_provider_id_fkey;
-ALTER TABLE prescriptions ADD CONSTRAINT prescriptions_provider_id_fkey
-    FOREIGN KEY (provider_id) REFERENCES users(id) ON DELETE RESTRICT;
+-- Restrict deletes for user data
+ALTER TABLE consultations ADD CONSTRAINT fk_consultations_doctor
+    FOREIGN KEY (doctor_id) REFERENCES users(id) ON DELETE RESTRICT;
 ```
 
-### 5.3 Business Rules
+### 6.3 Triggers
 
+**Audit Trigger**:
 ```sql
--- Prevent scheduling appointments in the past
-CREATE OR REPLACE FUNCTION check_appointment_date()
-RETURNS TRIGGER AS $$
+CREATE OR REPLACE FUNCTION audit_trigger_function() RETURNS trigger AS $$
 BEGIN
-    IF NEW.scheduled_date < CURRENT_DATE THEN
-        RAISE EXCEPTION 'Cannot schedule appointments in the past';
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_check_appointment_date
-    BEFORE INSERT OR UPDATE ON appointments
-    FOR EACH ROW EXECUTE FUNCTION check_appointment_date();
-
--- Ensure prescriptions have valid medications
-CREATE OR REPLACE FUNCTION validate_prescription_items()
-RETURNS TRIGGER AS $$
-BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM medications m
-        WHERE m.id = NEW.medication_id AND m.is_active = true
-    ) THEN
-        RAISE EXCEPTION 'Invalid or inactive medication';
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER trg_validate_prescription_items
-    BEFORE INSERT OR UPDATE ON prescription_items
-    FOR EACH ROW EXECUTE FUNCTION validate_prescription_items();
-```
-
----
-
-## 6. Security Implementation
-
-### 6.1 Row-Level Security (RLS)
-
-```sql
--- Enable RLS on sensitive tables
-ALTER TABLE patients ENABLE ROW LEVEL SECURITY;
-ALTER TABLE consultations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE prescriptions ENABLE ROW LEVEL SECURITY;
-
--- Patient data access policy
-CREATE POLICY patients_access_policy ON patients
-    FOR ALL USING (
-        current_user_role() IN ('administrator', 'doctor', 'nurse', 'pharmacist', 'lab_technician') OR
-        id = current_user_patient_id()
-    );
-
--- Consultation access policy
-CREATE POLICY consultations_access_policy ON consultations
-    FOR ALL USING (
-        current_user_role() IN ('administrator', 'doctor') OR
-        (current_user_role() = 'nurse' AND patient_id IN (
-            SELECT patient_id FROM appointments
-            WHERE provider_id = current_user_id() AND status = 'in_progress'
-        ))
-    );
-```
-
-### 6.2 Data Encryption
-
-```sql
--- Create encryption functions
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-
--- Encrypt sensitive fields
-CREATE OR REPLACE FUNCTION encrypt_ssn(ssn TEXT)
-RETURNS TEXT AS $$
-BEGIN
-    RETURN encode(encrypt(ssn::bytea, current_setting('app.encryption_key')::bytea, 'aes'), 'hex');
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE OR REPLACE FUNCTION decrypt_ssn(encrypted_ssn TEXT)
-RETURNS TEXT AS $$
-BEGIN
-    RETURN convert_from(decrypt(decode(encrypted_ssn, 'hex'), current_setting('app.encryption_key')::bytea, 'aes'), 'utf8');
-END;
-$$ LANGUAGE plpgsql;
-```
-
-### 6.3 Audit Triggers
-
-```sql
--- Generic audit trigger function
-CREATE OR REPLACE FUNCTION audit_trigger_function()
-RETURNS TRIGGER AS $$
-DECLARE
-    old_row JSONB;
-    new_row JSONB;
-    action_type TEXT;
-BEGIN
-    IF TG_OP = 'INSERT' THEN
-        old_row := NULL;
-        new_row := to_jsonb(NEW);
-        action_type := 'INSERT';
-    ELSIF TG_OP = 'UPDATE' THEN
-        old_row := to_jsonb(OLD);
-        new_row := to_jsonb(NEW);
-        action_type := 'UPDATE';
-    ELSIF TG_OP = 'DELETE' THEN
-        old_row := to_jsonb(OLD);
-        new_row := NULL;
-        action_type := 'DELETE';
-    END IF;
-
-    INSERT INTO audit_logs (
-        user_id, action, resource_type, resource_id,
+    INSERT INTO audit_log (
+        user_id, patient_id, action, resource_type, resource_id,
         old_values, new_values, timestamp
     ) VALUES (
-        current_user_id(), action_type, TG_TABLE_NAME,
-        COALESCE(NEW.id, OLD.id), old_row, new_row, CURRENT_TIMESTAMP
+        NEW.modified_by, NEW.patient_id, TG_OP, TG_TABLE_NAME, NEW.id,
+        CASE WHEN TG_OP = 'UPDATE' THEN row_to_json(OLD) ELSE NULL END,
+        CASE WHEN TG_OP IN ('INSERT', 'UPDATE') THEN row_to_json(NEW) ELSE NULL END,
+        CURRENT_TIMESTAMP
     );
-
-    RETURN COALESCE(NEW, OLD);
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Apply audit triggers to critical tables
 CREATE TRIGGER audit_patients_trigger
     AFTER INSERT OR UPDATE OR DELETE ON patients
     FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
+```
 
-CREATE TRIGGER audit_prescriptions_trigger
-    AFTER INSERT OR UPDATE OR DELETE ON prescriptions
-    FOR EACH ROW EXECUTE FUNCTION audit_trigger_function();
+**Data Validation Triggers**:
+```sql
+-- Auto-calculate billing balance
+CREATE OR REPLACE FUNCTION update_billing_balance() RETURNS trigger AS $$
+BEGIN
+    NEW.balance = NEW.total_amount - COALESCE(NEW.paid_amount, 0);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_update_billing_balance
+    BEFORE INSERT OR UPDATE ON billing_records
+    FOR EACH ROW EXECUTE FUNCTION update_billing_balance();
 ```
 
 ---
 
-## 7. Database Maintenance
+## 7. Data Archiving and Retention
 
-### 7.1 Backup Strategy
+### 7.1 Archival Strategy
 
+**Table Partitioning**:
 ```sql
--- Full backup script
-CREATE OR REPLACE FUNCTION perform_full_backup()
-RETURNS TEXT AS $$
-DECLARE
-    backup_file TEXT;
-BEGIN
-    backup_file := 'hims_backup_' || to_char(CURRENT_TIMESTAMP, 'YYYYMMDD_HH24MI') || '.sql';
+-- Partition large tables by date
+CREATE TABLE appointments_y2025m01 PARTITION OF appointments
+    FOR VALUES FROM ('2025-01-01') TO ('2025-02-01');
 
-    EXECUTE format('pg_dump -h localhost -U hims_user -d hims_db -f /backups/%s -Fc', backup_file);
-
-    RETURN backup_file;
-END;
-$$ LANGUAGE plpgsql;
-
--- Incremental backup for audit logs
-CREATE OR REPLACE FUNCTION backup_audit_logs()
-RETURNS VOID AS $$
-BEGIN
-    -- Copy audit logs to backup table
-    INSERT INTO audit_logs_backup
-    SELECT * FROM audit_logs
-    WHERE timestamp >= CURRENT_DATE - INTERVAL '1 day';
-
-    -- Clean up old audit logs (keep 7 years)
-    DELETE FROM audit_logs
-    WHERE timestamp < CURRENT_DATE - INTERVAL '7 years';
-END;
-$$ LANGUAGE plpgsql;
+-- Automatic partitioning
+CREATE TABLE medical_records PARTITION BY RANGE (recorded_at);
 ```
 
-### 7.2 Performance Monitoring
-
+**Archival Process**:
 ```sql
--- Query performance monitoring
-CREATE OR REPLACE VIEW query_performance AS
-SELECT
-    query,
-    calls,
-    total_time,
-    mean_time,
-    rows,
-    shared_blks_hit,
-    shared_blks_read,
-    temp_blks_written
-FROM pg_stat_statements
-ORDER BY total_time DESC
-LIMIT 20;
+-- Move old records to archive
+INSERT INTO medical_records_archive
+SELECT * FROM medical_records
+WHERE recorded_at < CURRENT_DATE - INTERVAL '7 years';
 
--- Table bloat monitoring
-CREATE OR REPLACE VIEW table_bloat AS
-SELECT
-    schemaname,
-    tablename,
-    n_tup_ins,
-    n_tup_upd,
-    n_tup_del,
-    n_live_tup,
-    n_dead_tup,
-    ROUND(n_dead_tup::numeric / NULLIF(n_live_tup + n_dead_tup, 0) * 100, 2) AS bloat_ratio
+DELETE FROM medical_records
+WHERE recorded_at < CURRENT_DATE - INTERVAL '7 years';
+```
+
+### 7.2 Retention Policies
+
+| Data Type | Active Retention | Archive Retention | Legal Hold |
+|-----------|------------------|-------------------|------------|
+| Patient Records | 7 years | 20 years | Indefinite |
+| Consultations | 7 years | 20 years | Indefinite |
+| Prescriptions | 7 years | 20 years | Indefinite |
+| Lab Results | 7 years | 20 years | Indefinite |
+| Billing Records | 7 years | 20 years | Indefinite |
+| Audit Logs | 7 years | 20 years | Indefinite |
+| System Logs | 2 years | 5 years | N/A |
+
+---
+
+## 8. Backup and Recovery
+
+### 8.1 Backup Strategy
+
+**Full Backups**:
+- Daily full backups at 2:00 AM
+- Compressed and encrypted
+- Stored in primary and secondary locations
+- Retention: 30 days
+
+**Incremental Backups**:
+- Hourly incremental backups
+- Transaction log backups every 15 minutes
+- Retention: 7 days
+
+**Configuration Backups**:
+- Schema and configuration backups
+- Daily automated backups
+- Version-controlled storage
+
+### 8.2 Recovery Procedures
+
+**Point-in-Time Recovery**:
+```sql
+-- Restore to specific timestamp
+pg_restore -d hims_db -t 2025-01-15_14:30:00 backup_file.dump
+```
+
+**Disaster Recovery**:
+1. Activate backup database instance
+2. Restore latest backup
+3. Apply transaction logs
+4. Update DNS to point to backup instance
+5. Validate system functionality
+
+---
+
+## 9. Sample Data
+
+### 9.1 Development Data
+
+**Sample Patient**:
+```sql
+INSERT INTO patients (mrn, first_name, last_name, date_of_birth, gender, phone, email)
+VALUES ('MRN001', 'John', 'Doe', '1980-05-15', 'male', '+1-555-0123', 'john.doe@email.com');
+```
+
+**Sample User**:
+```sql
+INSERT INTO users (username, email, password_hash, role, first_name, last_name)
+VALUES ('dr.smith', 'dr.smith@hims.com', '$2b$10$...', 'doctor', 'Dr.', 'Smith');
+```
+
+### 9.2 Test Scenarios
+
+**Complete Patient Journey**:
+1. Patient registration
+2. Appointment booking
+3. Check-in and vitals recording
+4. Consultation workflow
+5. Prescription creation
+6. Lab order placement
+7. Billing and payment
+
+---
+
+## 10. Database Maintenance
+
+### 10.1 Routine Maintenance
+
+**Daily Tasks**:
+```sql
+-- Update table statistics
+ANALYZE VERBOSE;
+
+-- Vacuum tables to reclaim space
+VACUUM (ANALYZE, VERBOSE);
+
+-- Reindex tables with high fragmentation
+REINDEX TABLE CONCURRENTLY medical_records;
+```
+
+**Weekly Tasks**:
+```sql
+-- Check for table bloat
+SELECT schemaname, tablename, n_dead_tup, n_live_tup
 FROM pg_stat_user_tables
-WHERE n_live_tup + n_dead_tup > 0
-ORDER BY bloat_ratio DESC;
+WHERE n_dead_tup > 0
+ORDER BY n_dead_tup DESC;
+
+-- Archive old data
+CALL archive_old_records();
 ```
 
----
+### 10.2 Performance Monitoring
 
-## 8. Database Migration Strategy
-
-### 8.1 Version Control
-
+**Query Performance**:
 ```sql
--- Migration table
-CREATE TABLE schema_migrations (
-    version VARCHAR(255) PRIMARY KEY,
-    description TEXT,
-    applied_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    applied_by VARCHAR(255)
-);
+-- Identify slow queries
+SELECT query, calls, total_time, mean_time, rows
+FROM pg_stat_statements
+ORDER BY mean_time DESC
+LIMIT 10;
 
--- Migration application function
-CREATE OR REPLACE FUNCTION apply_migration(
-    migration_version VARCHAR(255),
-    migration_description TEXT,
-    migration_sql TEXT
-) RETURNS VOID AS $$
-BEGIN
-    -- Check if migration already applied
-    IF EXISTS (SELECT 1 FROM schema_migrations WHERE version = migration_version) THEN
-        RAISE NOTICE 'Migration % already applied', migration_version;
-        RETURN;
-    END IF;
-
-    -- Execute migration
-    EXECUTE migration_sql;
-
-    -- Record migration
-    INSERT INTO schema_migrations (version, description, applied_by)
-    VALUES (migration_version, migration_description, current_user);
-
-    RAISE NOTICE 'Migration % applied successfully', migration_version;
-END;
-$$ LANGUAGE plpgsql;
+-- Check for missing indexes
+SELECT
+    schemaname, tablename, attname, n_distinct, correlation
+FROM pg_stats
+WHERE schemaname = 'public' AND correlation < 0.5;
 ```
 
-### 8.2 Rollback Strategy
+---
 
+## 11. Security Considerations
+
+### 11.1 Data Encryption
+
+**At Rest**:
+- Transparent Data Encryption (TDE) for PostgreSQL
+- Encrypted backups
+- Secure key management with AWS KMS
+
+**In Transit**:
+- TLS 1.3 for all connections
+- Certificate-based authentication
+- VPN for administrative access
+
+### 11.2 Access Controls
+
+**Row-Level Security**:
 ```sql
--- Rollback function
-CREATE OR REPLACE FUNCTION rollback_migration(
-    migration_version VARCHAR(255),
-    rollback_sql TEXT
-) RETURNS VOID AS $$
-BEGIN
-    -- Check if migration exists
-    IF NOT EXISTS (SELECT 1 FROM schema_migrations WHERE version = migration_version) THEN
-        RAISE EXCEPTION 'Migration % not found', migration_version;
-    END IF;
+-- Enable RLS on sensitive tables
+ALTER TABLE patients ENABLE ROW LEVEL SECURITY;
 
-    -- Execute rollback
-    EXECUTE rollback_sql;
+-- Create policies for doctors
+CREATE POLICY doctor_patient_access ON patients
+    FOR ALL USING (
+        id IN (
+            SELECT patient_id FROM appointments
+            WHERE doctor_id = current_user_id()
+        )
+    );
+```
 
-    -- Remove migration record
-    DELETE FROM schema_migrations WHERE version = migration_version;
-
-    RAISE EXCEPTION 'Migration % rolled back successfully', migration_version;
-END;
-$$ LANGUAGE plpgsql;
+**Data Masking**:
+```sql
+-- Mask sensitive data in non-production environments
+CREATE VIEW patients_masked AS
+SELECT
+    id,
+    mrn,
+    first_name,
+    last_name,
+    date_of_birth,
+    CASE WHEN current_setting('app.environment') = 'production'
+         THEN phone ELSE 'XXX-XXX-' || RIGHT(phone, 4) END as phone,
+    CASE WHEN current_setting('app.environment') = 'production'
+         THEN email ELSE LEFT(email, 3) || '***' || RIGHT(email, POSITION('@' IN REVERSE(email))) END as email
+FROM patients;
 ```
 
 ---
 
-## Appendix A: Complete Table List
+## 12. Approval and Sign-off
 
-| Table Name | Description | Estimated Rows |
-|------------|-------------|----------------|
-| users | System users and authentication | 1,000 |
-| user_roles | User role definitions | 10 |
-| patients | Patient demographic information | 100,000 |
-| patient_allergies | Patient allergy records | 50,000 |
-| appointments | Scheduled appointments | 500,000 |
-| consultations | Medical consultations | 500,000 |
-| vital_signs | Vital signs measurements | 2,000,000 |
-| prescriptions | Prescription records | 300,000 |
-| medications | Medication catalog | 10,000 |
-| lab_orders | Laboratory test orders | 200,000 |
-| lab_results | Laboratory test results | 1,000,000 |
-| billing_records | Billing and invoicing | 500,000 |
-| notifications | System notifications | 1,000,000 |
-| audit_logs | Audit trail records | 10,000,000 |
+**Database Administrator**: ___________________________ Date: ____________
 
-## Appendix B: Index Performance Analysis
+**Data Architect**: ___________________________ Date: ____________
 
-### Recommended Indexes by Query Pattern
-
-1. **Patient Search Queries**
-   ```sql
-   CREATE INDEX idx_patients_search ON patients(last_name, first_name, date_of_birth);
-   CREATE INDEX idx_patients_phone_email ON patients(phone_primary, email);
-   ```
-
-2. **Appointment Queries**
-   ```sql
-   CREATE INDEX idx_appointments_provider_schedule ON appointments(provider_id, scheduled_date, status);
-   CREATE INDEX idx_appointments_patient_history ON appointments(patient_id, scheduled_date DESC);
-   ```
-
-3. **Consultation Queries**
-   ```sql
-   CREATE INDEX idx_consultations_provider_status ON consultations(provider_id, status, started_at DESC);
-   CREATE INDEX idx_consultations_patient_history ON consultations(patient_id, started_at DESC);
-   ```
+**Security Officer**: ___________________________ Date: ____________
 
 ---
 
-## Document Control
-
-- **Version**: 1.0
-- **Last Updated**: January 2025
-- **Approval Required**: Database Architect and Technical Lead
-- **Review Cycle**: Quarterly during development, annually post-launch
-- **Document Owner**: Database Architecture Team
-
----
-
-**Approval Sign-off**
-
-**Database Architect**: ___________________________ Date: ____________
-
-**Technical Lead**: ___________________________ Date: ____________
-
-**System Administrator**: ___________________________ Date: ____________
+**Document Control**  
+**Version**: 1.0  
+**Last Updated**: December 2025  
+**Next Review**: March 2026  
+**Document Owner**: Database Administration Team
