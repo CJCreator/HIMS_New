@@ -4,10 +4,7 @@ import { addNotification } from '../../../store/notificationSlice';
 import { Button } from '../../../components/Button';
 import { Card } from '../../../components/Card';
 import { Input } from '../../../components/Input';
-
-const CreditCard = ({ className }: { className?: string }) => <span className={className}>💳</span>;
-const DollarSign = ({ className }: { className?: string }) => <span className={className}>💵</span>;
-const Receipt = ({ className }: { className?: string }) => <span className={className}>🧾</span>;
+import { CreditCard, DollarSign, FileText } from 'lucide-react';
 
 interface PaymentCollectionProps {
   patientName: string;
@@ -121,8 +118,8 @@ export const PaymentCollection: React.FC<PaymentCollectionProps> = ({
               {[
                 { value: 'card', label: 'Credit/Debit Card', icon: <CreditCard className="w-5 h-5" /> },
                 { value: 'cash', label: 'Cash', icon: <DollarSign className="w-5 h-5" /> },
-                { value: 'check', label: 'Check', icon: <Receipt className="w-5 h-5" /> },
-                { value: 'insurance', label: 'Insurance', icon: <Receipt className="w-5 h-5" /> }
+                { value: 'check', label: 'Check', icon: <FileText className="w-5 h-5" /> },
+                { value: 'insurance', label: 'Insurance', icon: <FileText className="w-5 h-5" /> }
               ].map(({ value, label, icon }) => (
                 <button
                   key={value}
@@ -238,7 +235,7 @@ export const PaymentCollection: React.FC<PaymentCollectionProps> = ({
             </Button>
             <div className="flex gap-3">
               <Button variant="secondary">
-                <Receipt className="w-4 h-4 mr-2" />
+                <FileText className="w-4 h-4 mr-2" />
                 Print Receipt
               </Button>
               <Button 

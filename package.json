@@ -25,8 +25,8 @@
     "web-vitals": "^5.1.0"
   },
   "devDependencies": {
-    "@axe-core/playwright": "^4.8.3",
-    "@playwright/test": "^1.40.0",
+    "@axe-core/playwright": "^4.11.0",
+    "@playwright/test": "^1.57.0",
     "@tanstack/react-query-devtools": "^5.91.1",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.1.0",
@@ -41,6 +41,7 @@
     "@vitest/coverage-v8": "^4.0.16",
     "@vitest/ui": "^4.0.16",
     "autoprefixer": "^10.4.20",
+    "axe-core": "^4.11.0",
     "eslint": "^9.15.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
@@ -60,6 +61,9 @@
     "build": "tsc && vite build",
     "build:staging": "tsc && vite build --mode staging",
     "build:production": "tsc && vite build --mode production",
+    "build:analyze": "npm run build && npx vite-bundle-analyzer dist/stats.html",
+    "deploy:staging": "npm run build:staging && aws s3 sync dist/ s3://hims-staging-frontend --delete",
+    "deploy:production": "npm run build:production && echo 'Use GitHub Actions for production deployment'",
     "test:a11y": "playwright test e2e/tests/accessibility.spec.ts",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",

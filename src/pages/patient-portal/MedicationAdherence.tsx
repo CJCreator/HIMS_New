@@ -3,6 +3,7 @@ import { RootState } from '../../store';
 import { markTaken } from '../../store/adherenceSlice';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
+import { CheckCircle, Pill, Flame } from 'lucide-react';
 
 export default function MedicationAdherence() {
   const { schedule, adherenceRate, streak, missedDoses } = useSelector((state: RootState) => state.adherence);
@@ -23,8 +24,10 @@ export default function MedicationAdherence() {
           </div>
         </Card>
         <Card className="p-4">
-          <div className="text-3xl font-bold text-blue-600">{streak}</div>
-          <div className="text-sm text-gray-600">Day Streak 🔥</div>
+          <div className="text-3xl font-bold text-blue-600 flex items-center gap-2">
+            {streak} <Flame className="w-6 h-6 text-orange-500" />
+          </div>
+          <div className="text-sm text-gray-600">Day Streak</div>
         </Card>
         <Card className="p-4">
           <div className="text-3xl font-bold text-red-600">{missedDoses}</div>
@@ -39,7 +42,7 @@ export default function MedicationAdherence() {
             <div key={dose.id} className="flex items-center justify-between p-4 bg-gray-50 rounded">
               <div className="flex items-center gap-4">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center ${dose.taken ? 'bg-green-100' : 'bg-gray-200'}`}>
-                  {dose.taken ? '✓' : '💊'}
+                  {dose.taken ? <CheckCircle className="w-6 h-6 text-green-600" /> : <Pill className="w-6 h-6 text-gray-400" />}
                 </div>
                 <div>
                   <div className="font-semibold">{dose.medication}</div>

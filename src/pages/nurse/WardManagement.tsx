@@ -3,11 +3,7 @@ import { useDispatch } from 'react-redux';
 import { addNotification } from '../../store/notificationSlice';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
-
-const Bed = ({ className }: { className?: string }) => <span className={className}>🛏️</span>;
-const User = ({ className }: { className?: string }) => <span className={className}>👤</span>;
-const AlertTriangle = ({ className }: { className?: string }) => <span className={className}>⚠️</span>;
-const CheckCircle = ({ className }: { className?: string }) => <span className={className}>✅</span>;
+import { Bed as BedIcon, User, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface BedInfo {
   id: string;
@@ -139,7 +135,7 @@ export const WardManagement: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="p-4">
           <div className="flex items-center">
-            <Bed className="w-8 h-8 text-gray-600 mr-3" />
+            <BedIcon className="w-8 h-8 text-gray-600 mr-3" />
             <div>
               <p className="text-2xl font-bold text-gray-900">{wardStats.total}</p>
               <p className="text-sm text-gray-600">Total Beds</p>
@@ -190,7 +186,7 @@ export const WardManagement: React.FC = () => {
               `}
             >
               <div className="text-center">
-                <Bed className="w-8 h-8 mx-auto mb-2" />
+                <BedIcon className="w-8 h-8 mx-auto mb-2" />
                 <p className="font-medium">{bed.number}</p>
                 <p className="text-xs capitalize">{bed.status}</p>
                 {bed.patient && (

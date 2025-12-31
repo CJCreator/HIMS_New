@@ -1,5 +1,6 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, ReferenceLine } from 'recharts';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 
 interface ResultTrendChartProps {
   testName: string;
@@ -61,10 +62,14 @@ export const ResultTrendChart: React.FC<ResultTrendChartProps> = ({
         </div>
         <div className="p-3 bg-gray-50 rounded">
           <p className="text-gray-600">Trend</p>
-          <p className={`font-semibold ${
+          <p className={`font-semibold flex items-center gap-1 ${
             data[data.length - 1]?.value > data[0]?.value ? 'text-red-600' : 'text-green-600'
           }`}>
-            {data[data.length - 1]?.value > data[0]?.value ? '↑ Increasing' : '↓ Decreasing'}
+            {data[data.length - 1]?.value > data[0]?.value ? (
+              <><TrendingUp className="w-4 h-4" /> Increasing</>
+            ) : (
+              <><TrendingDown className="w-4 h-4" /> Decreasing</>
+            )}
           </p>
         </div>
       </div>

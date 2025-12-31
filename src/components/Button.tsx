@@ -10,8 +10,6 @@ interface ButtonProps extends Omit<HTMLMotionProps<'button'>, 'children'> {
   size?: ButtonSize;
   loading?: boolean;
   children: ReactNode;
-  'aria-label'?: string;
-  'aria-describedby'?: string;
 }
 
 export function Button({

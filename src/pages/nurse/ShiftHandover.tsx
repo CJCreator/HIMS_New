@@ -4,10 +4,7 @@ import { addNotification } from '../../store/notificationSlice';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { Input } from '../../components/Input';
-
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
-const User = ({ className }: { className?: string }) => <span className={className}>👤</span>;
-const FileText = ({ className }: { className?: string }) => <span className={className}>📄</span>;
+import { Clock, User, FileText, Pill, BarChart3, Hospital, AlertTriangle } from 'lucide-react';
 
 
 interface HandoverNote {
@@ -69,11 +66,11 @@ export const ShiftHandover: React.FC = () => {
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
-      case 'medication': return '💊';
-      case 'vitals': return '📊';
-      case 'care': return '🏥';
-      case 'alert': return '⚠️';
-      default: return '📝';
+      case 'medication': return <Pill className="w-6 h-6" />;
+      case 'vitals': return <BarChart3 className="w-6 h-6" />;
+      case 'care': return <Hospital className="w-6 h-6" />;
+      case 'alert': return <AlertTriangle className="w-6 h-6" />;
+      default: return <FileText className="w-6 h-6" />;
     }
   };
 
@@ -154,7 +151,7 @@ export const ShiftHandover: React.FC = () => {
                 <Card key={note.id} className="p-4">
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center space-x-3">
-                      <span className="text-2xl">{getCategoryIcon(note.category)}</span>
+                      <div className="text-gray-600">{getCategoryIcon(note.category)}</div>
                       <div>
                         <h3 className="font-medium text-gray-900">{note.patientName}</h3>
                         <p className="text-sm text-gray-600">Room {note.room}</p>
@@ -257,7 +254,7 @@ export const ShiftHandover: React.FC = () => {
                   <Card key={note.id} className="p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{getCategoryIcon(note.category)}</span>
+                        <div className="text-gray-600">{getCategoryIcon(note.category)}</div>
                         <div>
                           <h3 className="font-medium text-gray-900">{note.patientName}</h3>
                           <p className="text-sm text-gray-600">Room {note.room}</p>

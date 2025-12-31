@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIMS Health Check</title>
+</head>
+<body>
+    <script>
+        // Health check endpoint for deployment validation
+        if (window.location.pathname === '/health') {
+            document.body.innerHTML = JSON.stringify({
+                status: 'healthy',
+                timestamp: new Date().toISOString(),
+                version: '2.1.0',
+                environment: import.meta.env.VITE_ENVIRONMENT || 'development',
+                build: import.meta.env.VITE_BUILD_NUMBER || 'local'
+            });
+            document.body.style.fontFamily = 'monospace';
+            document.body.style.whiteSpace = 'pre';
+        }
+    </script>
+</body>
+</html>

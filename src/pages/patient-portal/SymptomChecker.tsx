@@ -4,6 +4,7 @@ import { RootState } from '../../store';
 import { addSymptomCheck } from '../../store/symptomSlice';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
+import { AlertCircle, AlertTriangle, Info } from 'lucide-react';
 
 const urgencyColors: Record<string, string> = { high: 'red', medium: 'orange', low: 'blue' };
 const urgencyMessages: Record<string, string> = {
@@ -66,7 +67,7 @@ export default function SymptomChecker() {
             <Card className={`p-6 mb-6 border-2 ${result.urgency === 'high' ? 'border-red-500' : result.urgency === 'medium' ? 'border-orange-500' : 'border-blue-500'}`}>
               <div className="flex items-center gap-3 mb-4">
                 <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl ${result.urgency === 'high' ? 'bg-red-100' : result.urgency === 'medium' ? 'bg-orange-100' : 'bg-blue-100'}`}>
-                  {result.urgency === 'high' ? '🚨' : result.urgency === 'medium' ? '⚠️' : 'ℹ️'}
+                  {result.urgency === 'high' ? <AlertCircle className="w-6 h-6 text-red-600" /> : result.urgency === 'medium' ? <AlertTriangle className="w-6 h-6 text-orange-600" /> : <Info className="w-6 h-6 text-blue-600" />}
                 </div>
                 <div>
                   <div className={`font-semibold capitalize ${result.urgency === 'high' ? 'text-red-800' : result.urgency === 'medium' ? 'text-orange-800' : 'text-blue-800'}`}>{result.urgency} Urgency</div>

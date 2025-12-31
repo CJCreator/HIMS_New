@@ -32,6 +32,7 @@ import revenueReducer from './revenueSlice';
 import inventoryAnalyticsReducer from './inventoryAnalyticsSlice';
 import demographicsReducer from './demographicsSlice';
 import insuranceReducer from './insuranceSlice';
+import icd10Reducer from './icd10Slice';
 import { notificationMiddleware } from './notificationMiddleware';
 
 export const store = configureStore({
@@ -69,6 +70,7 @@ export const store = configureStore({
     inventoryAnalytics: inventoryAnalyticsReducer,
     demographics: demographicsReducer,
     insurance: insuranceReducer,
+    icd10: icd10Reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(notificationMiddleware),

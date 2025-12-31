@@ -1,0 +1,153 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'production'
+        type: choice
+        options:
+        - production
+        - rollback
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run full test suite
+      run: |
+        npm run test:coverage
+        npm run lint
+        npx tsc --noEmit
+    
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps
+    
+    - name: Run E2E tests
+      run: npm run test:e2e
+    
+    - name: Run accessibility tests
+      run: npm run test:a11y
+    
+    - name: Build for production
+      run: npm run build:production
+      env:
+        VITE_API_URL: ${{ secrets.PRODUCTION_API_URL }}
+        VITE_WS_URL: ${{ secrets.PRODUCTION_WS_URL }}
+        VITE_SENTRY_DSN: ${{ secrets.PRODUCTION_SENTRY_DSN }}
+        VITE_ENVIRONMENT: production
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: Deploy to Blue environment
+      run: |
+        aws s3 sync dist/ s3://${{ secrets.PRODUCTION_S3_BUCKET_BLUE }} --delete
+    
+    - name: Update Blue CloudFront
+      run: |
+        aws cloudfront create-invalidation \
+          --distribution-id ${{ secrets.PRODUCTION_CLOUDFRONT_BLUE_ID }} \
+          --paths "/*"
+    
+    - name: Wait for deployment
+      run: sleep 60
+    
+    - name: Health check Blue environment
+      run: |
+        for i in {1..5}; do
+          if curl -f ${{ secrets.PRODUCTION_BLUE_URL }}/health; then
+            echo "Health check passed"
+            break
+          fi
+          echo "Health check failed, retrying..."
+          sleep 30
+        done
+    
+    - name: Run smoke tests on Blue
+      run: |
+        curl -f ${{ secrets.PRODUCTION_BLUE_URL }}/health || exit 1
+        # Add more smoke tests here
+    
+    - name: Switch traffic to Blue (Blue-Green deployment)
+      run: |
+        # Update ALB target group to point to Blue environment
+        aws elbv2 modify-listener \
+          --listener-arn ${{ secrets.ALB_LISTENER_ARN }} \
+          --default-actions Type=forward,TargetGroupArn=${{ secrets.BLUE_TARGET_GROUP_ARN }}
+    
+    - name: Monitor for 5 minutes
+      run: |
+        echo "Monitoring production for 5 minutes..."
+        sleep 300
+    
+    - name: Check error rates
+      run: |
+        # Check CloudWatch metrics for error rates
+        ERROR_RATE=$(aws cloudwatch get-metric-statistics \
+          --namespace AWS/ApplicationELB \
+          --metric-name HTTPCode_Target_5XX_Count \
+          --start-time $(date -u -d '5 minutes ago' +%Y-%m-%dT%H:%M:%S) \
+          --end-time $(date -u +%Y-%m-%dT%H:%M:%S) \
+          --period 300 \
+          --statistics Sum \
+          --query 'Datapoints[0].Sum' \
+          --output text)
+        
+        if [ "$ERROR_RATE" != "None" ] && [ "$ERROR_RATE" -gt 10 ]; then
+          echo "High error rate detected: $ERROR_RATE"
+          exit 1
+        fi
+    
+    - name: Cleanup Green environment
+      if: success()
+      run: |
+        echo "Deployment successful, cleaning up old Green environment"
+        # Keep Green as backup for potential rollback
+    
+    - name: Rollback on failure
+      if: failure()
+      run: |
+        echo "Deployment failed, rolling back to Green environment"
+        aws elbv2 modify-listener \
+          --listener-arn ${{ secrets.ALB_LISTENER_ARN }} \
+          --default-actions Type=forward,TargetGroupArn=${{ secrets.GREEN_TARGET_GROUP_ARN }}
+    
+    - name: Notify deployment result
+      uses: 8398a7/action-slack@v3
+      if: always()
+      with:
+        status: ${{ job.status }}
+        channel: '#production-deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+    
+    - name: Create deployment tag
+      if: success()
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git tag -a "v$(date +'%Y%m%d-%H%M%S')" -m "Production deployment $(date)"
+        git push origin --tags

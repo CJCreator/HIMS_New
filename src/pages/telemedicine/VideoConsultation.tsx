@@ -3,9 +3,7 @@ import { VideoCall } from '../../components/VideoCall';
 import { ConsultationChat } from '../../components/ConsultationChat';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
-
-const MessageCircle = ({ className }: { className?: string }) => <span className={className}>💬</span>;
-const FileText = ({ className }: { className?: string }) => <span className={className}>📄</span>;
+import { MessageCircle, FileText, X } from 'lucide-react';
 
 interface VideoConsultationProps {
   patientName?: string;
@@ -59,7 +57,7 @@ export const VideoConsultation: React.FC<VideoConsultationProps> = ({
             <div className="flex justify-between items-center">
               <h3 className="font-semibold">Chat</h3>
               <Button variant="secondary" size="sm" onClick={() => setShowChat(false)}>
-                ✕
+                <X className="w-4 h-4" />
               </Button>
             </div>
           </div>
@@ -74,7 +72,7 @@ export const VideoConsultation: React.FC<VideoConsultationProps> = ({
             <div className="flex justify-between items-center">
               <h3 className="font-semibold">Consultation Notes</h3>
               <Button variant="secondary" size="sm" onClick={() => setShowNotes(false)}>
-                ✕
+                <X className="w-4 h-4" />
               </Button>
             </div>
           </div>

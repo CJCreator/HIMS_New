@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from './Card';
 import { Input } from './Input';
-
-const Search = ({ className }: { className?: string }) => <span className={className}>🔍</span>;
-const Copy = ({ className }: { className?: string }) => <span className={className}>📋</span>;
+import { Search, Copy } from 'lucide-react';
 
 interface ICD10Code {
   code: string;

@@ -1,12 +1,6 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// Icons as simple components
-const Bell = ({ className }: { className?: string }) => <span className={className}>🔔</span>;
-const X = ({ className }: { className?: string }) => <span className={className}>❌</span>;
-const CheckCircle = ({ className }: { className?: string }) => <span className={className}>✅</span>;
-const AlertTriangle = ({ className }: { className?: string }) => <span className={className}>⚠️</span>;
-const Info = ({ className }: { className?: string }) => <span className={className}>ℹ️</span>;
-const AlertCircle = ({ className }: { className?: string }) => <span className={className}>⚠️</span>;
+import { Bell, X, CheckCircle, AlertTriangle, Info, AlertCircle } from 'lucide-react';
 import { RootState } from '../store';
 import { markAsRead, removeNotification, markAllAsRead } from '../store/notificationSlice';
 

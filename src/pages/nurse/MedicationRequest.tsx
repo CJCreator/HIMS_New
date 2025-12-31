@@ -3,13 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../store';
 import { addMedicationRequest } from '../../store/medicationSlice';
 import { addNotification, addRoleNotification } from '../../store/notificationSlice';
-// Icons as simple components
-const Plus = ({ className }: { className?: string }) => <span className={className}>➕</span>;
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
-const CheckCircle = ({ className }: { className?: string }) => <span className={className}>✅</span>;
-const Truck = ({ className }: { className?: string }) => <span className={className}>🚛</span>;
-const Package = ({ className }: { className?: string }) => <span className={className}>📦</span>;
-const AlertCircle = ({ className }: { className?: string }) => <span className={className}>⚠️</span>;
+import { Plus, Clock, CheckCircle, Truck, Package, AlertCircle } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { Card } from '../../components/Card';

@@ -5,8 +5,7 @@ import { RootState } from '../../store';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
 import { PatientDetails } from '../../components/PatientDetails';
-
-const Search = ({ className }: { className?: string }) => <span className={className}>🔍</span>;
+import { Search, BarChart3, Calendar, Syringe, FileText, AlertTriangle } from 'lucide-react';
 
 export const PatientRecords: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -69,7 +68,7 @@ export const PatientRecords: React.FC = () => {
                 }}
                 className="ml-2"
               >
-                📊 Record Vitals
+                <BarChart3 className="w-4 h-4 mr-1" /> Record Vitals
               </Button>
             </div>
             <div 
@@ -94,8 +93,11 @@ export const PatientRecords: React.FC = () => {
               </div>
             </div>
             <div className="mt-3 pt-3 border-t border-gray-100">
-              <p className="text-xs text-gray-500">
-                📅 Timeline • 💉 Immunizations • 📝 Problem List • ⚠️ Allergies
+              <p className="text-xs text-gray-500 flex items-center gap-2 flex-wrap">
+                <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Timeline</span>
+                <span className="flex items-center gap-1"><Syringe className="w-3 h-3" /> Immunizations</span>
+                <span className="flex items-center gap-1"><FileText className="w-3 h-3" /> Problem List</span>
+                <span className="flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> Allergies</span>
               </p>
             </div>
           </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, Button, Badge } from '@/components';
 import { mockDataService } from '@/services/mockDataService';
 import { useNavigate } from 'react-router-dom';
+import { Pill, TestTube, DollarSign, Calendar, Clock, RefreshCw } from 'lucide-react';
 
 interface SummaryHandoffDashboardProps {
   onPrevious: () => void;
@@ -157,7 +158,7 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
           <div className="p-4 bg-neutral-50 rounded-lg border-2 border-neutral-200">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">💊</span>
+                <Pill className="w-6 h-6 text-blue-600" />
                 <span className="text-body font-medium">Pharmacy</span>
               </div>
               <Badge status={handoffStatus.pharmacy.status === 'sent' ? 'delivered' : 'pending'}>
@@ -165,8 +166,8 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
               </Badge>
             </div>
             {handoffStatus.pharmacy.timestamp && (
-              <p className="text-xs text-neutral-600 mb-2">
-                🕒 Sent at {handoffStatus.pharmacy.timestamp}
+              <p className="text-xs text-neutral-600 mb-2 flex items-center gap-1">
+                <Clock className="w-3 h-3" /> Sent at {handoffStatus.pharmacy.timestamp}
               </p>
             )}
             {handoffStatus.pharmacy.attempts > 0 && (
@@ -181,7 +182,11 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
                 onClick={() => handleRefresh('pharmacy')}
                 disabled={retrying === 'pharmacy'}
               >
-                {retrying === 'pharmacy' ? '⏳ Refreshing...' : '🔄 Refresh'}
+                {retrying === 'pharmacy' ? (
+                  <><Clock className="w-4 h-4 mr-1" /> Refreshing...</>
+                ) : (
+                  <><RefreshCw className="w-4 h-4 mr-1" /> Refresh</>
+                )}
               </Button>
               {handoffStatus.pharmacy.status !== 'sent' && (
                 <Button 
@@ -200,7 +205,7 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
           <div className="p-4 bg-neutral-50 rounded-lg border-2 border-neutral-200">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">🔬</span>
+                <TestTube className="w-6 h-6 text-purple-600" />
                 <span className="text-body font-medium">Laboratory</span>
               </div>
               <Badge status={handoffStatus.lab.status === 'sent' ? 'delivered' : 'pending'}>
@@ -208,8 +213,8 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
               </Badge>
             </div>
             {handoffStatus.lab.timestamp && (
-              <p className="text-xs text-neutral-600 mb-2">
-                🕒 Sent at {handoffStatus.lab.timestamp}
+              <p className="text-xs text-neutral-600 mb-2 flex items-center gap-1">
+                <Clock className="w-3 h-3" /> Sent at {handoffStatus.lab.timestamp}
               </p>
             )}
             {handoffStatus.lab.attempts > 0 && (
@@ -224,7 +229,11 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
                 onClick={() => handleRefresh('lab')}
                 disabled={retrying === 'lab'}
               >
-                {retrying === 'lab' ? '⏳ Refreshing...' : '🔄 Refresh'}
+                {retrying === 'lab' ? (
+                  <><Clock className="w-4 h-4 mr-1" /> Refreshing...</>
+                ) : (
+                  <><RefreshCw className="w-4 h-4 mr-1" /> Refresh</>
+                )}
               </Button>
               {handoffStatus.lab.status !== 'sent' && (
                 <Button 
@@ -243,7 +252,7 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
           <div className="p-4 bg-neutral-50 rounded-lg border-2 border-neutral-200">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">💰</span>
+                <DollarSign className="w-6 h-6 text-green-600" />
                 <span className="text-body font-medium">Billing</span>
               </div>
               <Badge status={handoffStatus.billing.status === 'sent' ? 'delivered' : 'pending'}>
@@ -251,8 +260,8 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
               </Badge>
             </div>
             {handoffStatus.billing.timestamp && (
-              <p className="text-xs text-neutral-600 mb-2">
-                🕒 Sent at {handoffStatus.billing.timestamp}
+              <p className="text-xs text-neutral-600 mb-2 flex items-center gap-1">
+                <Clock className="w-3 h-3" /> Sent at {handoffStatus.billing.timestamp}
               </p>
             )}
             {handoffStatus.billing.attempts > 0 && (
@@ -267,7 +276,11 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
                 onClick={() => handleRefresh('billing')}
                 disabled={retrying === 'billing'}
               >
-                {retrying === 'billing' ? '⏳ Refreshing...' : '🔄 Refresh'}
+                {retrying === 'billing' ? (
+                  <><Clock className="w-4 h-4 mr-1" /> Refreshing...</>
+                ) : (
+                  <><RefreshCw className="w-4 h-4 mr-1" /> Refresh</>
+                )}
               </Button>
               {handoffStatus.billing.status !== 'sent' && (
                 <Button 
@@ -286,7 +299,7 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
           <div className="p-4 bg-neutral-50 rounded-lg border-2 border-neutral-200">
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
-                <span className="text-2xl">📅</span>
+                <Calendar className="w-6 h-6 text-orange-600" />
                 <span className="text-body font-medium">Follow-up</span>
               </div>
               <Badge status={handoffStatus.followUp.status === 'sent' ? 'delivered' : 'pending'}>
@@ -294,8 +307,8 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
               </Badge>
             </div>
             {handoffStatus.followUp.timestamp && (
-              <p className="text-xs text-neutral-600 mb-2">
-                🕒 Sent at {handoffStatus.followUp.timestamp}
+              <p className="text-xs text-neutral-600 mb-2 flex items-center gap-1">
+                <Clock className="w-3 h-3" /> Sent at {handoffStatus.followUp.timestamp}
               </p>
             )}
             {handoffStatus.followUp.attempts > 0 && (
@@ -310,7 +323,11 @@ export function SummaryHandoffDashboard({ onPrevious, data }: SummaryHandoffDash
                 onClick={() => handleRefresh('followUp')}
                 disabled={retrying === 'followUp'}
               >
-                {retrying === 'followUp' ? '⏳ Refreshing...' : '🔄 Refresh'}
+                {retrying === 'followUp' ? (
+                  <><Clock className="w-4 h-4 mr-1" /> Refreshing...</>
+                ) : (
+                  <><RefreshCw className="w-4 h-4 mr-1" /> Refresh</>
+                )}
               </Button>
               {handoffStatus.followUp.status !== 'sent' && (
                 <Button 

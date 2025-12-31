@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { Card, Button, Modal, Input, Breadcrumbs } from '@/components';
+import { TrendingUp, Lock, Calendar, Home, Wrench, CheckCircle, AlertTriangle, Users, Bed as BedIcon } from 'lucide-react';
 
 interface Bed {
   id: string;
@@ -348,7 +349,8 @@ export function BedManagement() {
                 variant="secondary"
                 onClick={() => setShowAnalyticsModal(true)}
               >
-                📈 Ward Analytics
+                <TrendingUp className="w-4 h-4 mr-2" />
+                Ward Analytics
               </Button>
               <Button onClick={() => setShowAddBedModal(true)}>Add New Bed</Button>
             </div>
@@ -364,8 +366,8 @@ export function BedManagement() {
                       <h3 className="text-h4 text-neutral-900">Bed {bed.number}</h3>
                       <p className="text-body-sm text-neutral-600">{bed.ward} Ward • {bed.bedType}</p>
                       {bed.isolation && (
-                        <span className="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full mt-1">
-                          🔒 Isolation
+                        <span className="inline-block px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full mt-1 flex items-center gap-1">
+                          <Lock className="w-3 h-3" /> Isolation
                         </span>
                       )}
                     </div>
@@ -386,12 +388,12 @@ export function BedManagement() {
                         <p className="text-xs text-red-700">Assigned to: {bed.assignedTo}</p>
                         {bed.admissionDate && (
                           <div className="mt-1">
-                            <p className="text-xs text-red-600">
-                              📅 Admitted: {bed.admissionDate} ({occupancyInfo.days} days)
+                            <p className="text-xs text-red-600 flex items-center gap-1">
+                              <Calendar className="w-3 h-3" /> Admitted: {bed.admissionDate} ({occupancyInfo.days} days)
                             </p>
                             {bed.expectedDischarge && (
-                              <p className="text-xs text-red-600">
-                                🏠 Expected discharge: {bed.expectedDischarge}
+                              <p className="text-xs text-red-600 flex items-center gap-1">
+                                <Home className="w-3 h-3" /> Expected discharge: {bed.expectedDischarge}
                               </p>
                             )}
                           </div>
@@ -419,13 +421,13 @@ export function BedManagement() {
                   {!bed.patient && (
                     <div className="mb-3">
                       {bed.lastCleaned && (
-                        <p className="text-xs text-neutral-500">
-                          🧹 Last cleaned: {bed.lastCleaned}
+                        <p className="text-xs text-neutral-500 flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" /> Last cleaned: {bed.lastCleaned}
                         </p>
                       )}
                       {bed.nextMaintenance && (
-                        <p className="text-xs text-neutral-500">
-                          🔧 Next maintenance: {bed.nextMaintenance}
+                        <p className="text-xs text-neutral-500 flex items-center gap-1">
+                          <Wrench className="w-3 h-3" /> Next maintenance: {bed.nextMaintenance}
                         </p>
                       )}
                     </div>
@@ -441,7 +443,7 @@ export function BedManagement() {
                           className="flex-1"
                           onClick={() => handleQuickAction(bed, 'assign')}
                         >
-                          👥 Assign Patient
+                          <Users className="w-4 h-4 mr-1" /> Assign Patient
                         </Button>
                         <Button 
                           variant="tertiary" 
@@ -449,7 +451,7 @@ export function BedManagement() {
                           onClick={() => handleEmergencyAction(bed, 'immediate_discharge')}
                           title="Emergency Assignment"
                         >
-                          🚨
+                          <AlertTriangle className="w-4 h-4" />
                         </Button>
                       </div>
                     )}
@@ -462,7 +464,7 @@ export function BedManagement() {
                           className="flex-1"
                           onClick={() => handleQuickAction(bed, 'discharge')}
                         >
-                          🏠 Schedule Discharge
+                          <Home className="w-4 h-4 mr-1" /> Schedule Discharge
                         </Button>
                         <Button 
                           variant="tertiary" 
@@ -470,7 +472,7 @@ export function BedManagement() {
                           onClick={() => handleEmergencyAction(bed, 'transfer')}
                           title="Emergency Transfer"
                         >
-                          🚨
+                          <AlertTriangle className="w-4 h-4" />
                         </Button>
                       </div>
                     )}
@@ -482,7 +484,7 @@ export function BedManagement() {
                         className="w-full"
                         onClick={() => handleQuickAction(bed, 'clean')}
                       >
-                        ✅ Mark Cleaned
+                        <CheckCircle className="w-4 h-4 mr-1" /> Mark Cleaned
                       </Button>
                     )}
                     
@@ -493,7 +495,7 @@ export function BedManagement() {
                           size="sm"
                           onClick={() => handleEmergencyAction(bed, 'expedited_cleaning')}
                         >
-                          🔧 Complete Maintenance
+                          <Wrench className="w-4 h-4 mr-1" /> Complete Maintenance
                         </Button>
                       </div>
                     )}

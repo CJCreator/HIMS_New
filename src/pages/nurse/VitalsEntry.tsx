@@ -6,6 +6,7 @@ import { addNotification, addRoleNotification } from '@/store/notificationSlice'
 import { updatePatientVitals } from '@/store/patientSlice';
 import { RootState } from '@/store';
 import { toast } from 'sonner';
+import { AlertTriangle, CheckCircle } from 'lucide-react';
 
 export function VitalsEntry() {
   const { patientId } = useParams();
@@ -232,7 +233,7 @@ export function VitalsEntry() {
                     <div className={`mt-1 text-sm flex items-center gap-1 ${
                       getVitalWarning('heartRate', vitals.heartRate)?.severity === 'error' ? 'text-red-600' : 'text-yellow-600'
                     }`}>
-                      ⚠️ {getVitalWarning('heartRate', vitals.heartRate)?.message}
+                      <AlertTriangle className="w-4 h-4" /> {getVitalWarning('heartRate', vitals.heartRate)?.message}
                     </div>
                   )}
                 </div>
@@ -252,7 +253,7 @@ export function VitalsEntry() {
                     <div className={`mt-1 text-sm flex items-center gap-1 ${
                       getVitalWarning('temperature', vitals.temperature)?.severity === 'error' ? 'text-red-600' : 'text-yellow-600'
                     }`}>
-                      ⚠️ {getVitalWarning('temperature', vitals.temperature)?.message}
+                      <AlertTriangle className="w-4 h-4" /> {getVitalWarning('temperature', vitals.temperature)?.message}
                     </div>
                   )}
                 </div>
@@ -269,7 +270,7 @@ export function VitalsEntry() {
                   {errors.respiratoryRate && <p className="text-sm text-red-500 mt-1">{errors.respiratoryRate}</p>}
                   {getVitalWarning('respiratoryRate', vitals.respiratoryRate) && (
                     <div className="mt-1 text-sm text-yellow-600 flex items-center gap-1">
-                      ⚠️ {getVitalWarning('respiratoryRate', vitals.respiratoryRate)?.message}
+                      <AlertTriangle className="w-4 h-4" /> {getVitalWarning('respiratoryRate', vitals.respiratoryRate)?.message}
                     </div>
                   )}
                 </div>
@@ -289,7 +290,7 @@ export function VitalsEntry() {
                   />
                   {getVitalWarning('oxygenSaturation', vitals.oxygenSaturation) && (
                     <div className="mt-1 text-sm text-red-600 flex items-center gap-1">
-                      ⚠️ {getVitalWarning('oxygenSaturation', vitals.oxygenSaturation)?.message}
+                      <AlertTriangle className="w-4 h-4" /> {getVitalWarning('oxygenSaturation', vitals.oxygenSaturation)?.message}
                     </div>
                   )}
                 </div>
@@ -363,7 +364,9 @@ export function VitalsEntry() {
           </div>
 
           <div className="mt-6 p-4 bg-nurse/10 rounded-small">
-            <h4 className="text-body font-medium text-nurse mb-2">✅ Pre-Consultation Checklist</h4>
+            <h4 className="text-body font-medium text-nurse mb-2 flex items-center gap-2">
+              <CheckCircle className="w-5 h-5" /> Pre-Consultation Checklist
+            </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-body-sm text-neutral-600">
               <div>• Vital signs recorded</div>
               <div>• Patient comfort assessed</div>

@@ -6,6 +6,7 @@ import { NotificationCenter } from './NotificationCenter';
 import { RealTimeUpdates } from './RealtimeUpdates';
 import { Breadcrumb } from './Breadcrumb';
 import { SkipNavLink } from './SkipNavLink';
+import { Menu, X } from 'lucide-react';
 
 interface ResponsiveLayoutProps {
   children: React.ReactNode;
@@ -42,7 +43,7 @@ export const ResponsiveLayout: React.FC<ResponsiveLayoutProps> = ({ children }) 
             className="p-3 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Toggle sidebar"
           >
-            <span className="text-xl">{sidebarOpen ? '✕' : '☰'}</span>
+            {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
           <h1 className="text-lg font-semibold text-gray-900 truncate">AroCord HIMS</h1>
           <div className="min-h-[44px] min-w-[44px] flex items-center justify-center">

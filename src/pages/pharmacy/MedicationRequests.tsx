@@ -6,10 +6,7 @@ import { addNotification, addRoleNotification } from '../../store/notificationSl
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { MedicationStatusTracker } from '../../components/MedicationStatusTracker';
-
-const Search = ({ className }: { className?: string }) => <span className={className}>🔍</span>;
-const Package = ({ className }: { className?: string }) => <span className={className}>📦</span>;
-const Truck = ({ className }: { className?: string }) => <span className={className}>🚛</span>;
+import { Search, Package, Truck } from 'lucide-react';
 
 export const MedicationRequests: React.FC = () => {
   const dispatch = useDispatch();

@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
-
-const User = ({ className }: { className?: string }) => <span className={className}>👤</span>;
-const Search = ({ className }: { className?: string }) => <span className={className}>🔍</span>;
-const FileText = ({ className }: { className?: string }) => <span className={className}>📄</span>;
+import { User, Search, FileText } from 'lucide-react';
 
 
 interface Patient {

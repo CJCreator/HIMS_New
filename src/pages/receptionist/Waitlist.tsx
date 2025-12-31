@@ -5,6 +5,7 @@ import { addToWaitlist, removeFromWaitlist, bookFromWaitlist } from '@/store/wai
 import { addAppointment } from '@/store/appointmentSlice';
 import { addNotification } from '@/store/notificationSlice';
 import { Card, Button, Input, Modal } from '@/components';
+import { Phone, Stethoscope } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Waitlist() {
@@ -117,7 +118,9 @@ export default function Waitlist() {
                     {entry.priority}
                   </span>
                 </div>
-                <p className="text-sm text-gray-600">📞 {entry.phone} • 👨⚕️ {entry.doctor}</p>
+                <p className="text-sm text-gray-600 flex items-center gap-2">
+                  <Phone className="w-4 h-4" /> {entry.phone} • <Stethoscope className="w-4 h-4" /> {entry.doctor}
+                </p>
                 <p className="text-sm text-gray-700">Reason: {entry.reason}</p>
                 <p className="text-sm text-gray-500">Added: {entry.addedDate}</p>
                 {entry.preferredDates.length > 0 && (

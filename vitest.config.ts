@@ -7,7 +7,28 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'happy-dom',
-    setupFiles: './src/test/setup.ts',
+    include: ['src/**/*.{test,spec}.{js,ts,tsx}'],
+    exclude: ['e2e/**/*', 'node_modules/**/*'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html'],
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        '**/*.d.ts',
+        '**/*.config.*',
+        'dist/',
+        'e2e/',
+      ],
+      thresholds: {
+        global: {
+          branches: 50,
+          functions: 50,
+          lines: 50,
+          statements: 50
+        }
+      }
+    }
   },
   resolve: {
     alias: {

@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
 import { Input } from '../../components/Input';
-
-
-const Video = ({ className }: { className?: string }) => <span className={className}>📹</span>;
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
+import { Video, Clock } from 'lucide-react';
 
 interface ScheduleData {
   patientName: string;

@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
-
-const Video = ({ className }: { className?: string }) => <span className={className}>📹</span>;
-const Calendar = ({ className }: { className?: string }) => <span className={className}>📅</span>;
-const Users = ({ className }: { className?: string }) => <span className={className}>👥</span>;
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
+import { Video, Calendar, Users, Clock } from 'lucide-react';
 
 interface VideoConsultation {
   id: string;

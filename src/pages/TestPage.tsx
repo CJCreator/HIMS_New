@@ -1,4 +1,5 @@
 import { Card } from '@/components';
+import { CheckCircle } from 'lucide-react';
 
 export function TestPage() {
   return (
@@ -10,7 +11,9 @@ export function TestPage() {
             This is a test page to verify routing is working correctly.
           </p>
           <div className="mt-4 p-4 bg-success/10 rounded-small">
-            <p className="text-body text-success">✅ If you can see this page, routing is working!</p>
+            <p className="text-body text-success flex items-center gap-2">
+              <CheckCircle className="w-5 h-5" /> If you can see this page, routing is working!
+            </p>
           </div>
         </Card>
       </div>

@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from '../../components/Card';
 import { Button } from '../../components/Button';
-
-const Users = ({ className }: { className?: string }) => <span className={className}>👥</span>;
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
-const Video = ({ className }: { className?: string }) => <span className={className}>📹</span>;
+import { Users, Clock, Video, AlertTriangle } from 'lucide-react';
 
 interface WaitingPatient {
   id: string;
@@ -178,8 +175,8 @@ export const VirtualWaitingRoom: React.FC = () => {
 
             {patient.techCheck === 'failed' && (
               <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                <p className="text-sm text-red-800">
-                  ⚠️ Technical issues detected. Patient may need assistance with camera/microphone setup.
+                <p className="text-sm text-red-800 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4" /> Technical issues detected. Patient may need assistance with camera/microphone setup.
                 </p>
               </div>
             )}

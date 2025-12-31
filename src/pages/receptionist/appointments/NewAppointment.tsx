@@ -5,11 +5,7 @@ import { Button } from '../../../components/Button';
 import { Card } from '../../../components/Card';
 import { Input } from '../../../components/Input';
 import { Calendar } from '../../../components/Calendar';
-
-// const Search = ({ className }: { className?: string }) => <span className={className}>🔍</span>;
-const Clock = ({ className }: { className?: string }) => <span className={className}>🕐</span>;
-const User = ({ className }: { className?: string }) => <span className={className}>👤</span>;
-const AlertCircle = ({ className }: { className?: string }) => <span className={className}>⚠️</span>;
+import { Clock, User, AlertCircle, X } from 'lucide-react';
 
 interface Doctor {
   id: string;
@@ -156,7 +152,7 @@ export const NewAppointment: React.FC<NewAppointmentProps> = ({ onClose, onSucce
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold text-gray-900">New Appointment</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
-              ✕
+              <X className="w-5 h-5" />
             </button>
           </div>
 

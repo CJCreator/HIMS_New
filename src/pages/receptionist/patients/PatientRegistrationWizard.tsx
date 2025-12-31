@@ -4,10 +4,7 @@ import { addNotification } from '../../../store/notificationSlice';
 import { Button } from '../../../components/Button';
 import { Card } from '../../../components/Card';
 import { Input } from '../../../components/Input';
-
-const Upload = ({ className }: { className?: string }) => <span className={className}>📤</span>;
-const User = ({ className }: { className?: string }) => <span className={className}>👤</span>;
-const Shield = ({ className }: { className?: string }) => <span className={className}>🛡️</span>;
+import { Upload, User, Shield, CheckCircle, X } from 'lucide-react';
 
 interface PatientRegistrationWizardProps {
   onClose: () => void;
@@ -91,7 +88,9 @@ export const PatientRegistrationWizard: React.FC<PatientRegistrationWizardProps>
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold text-gray-900">Patient Registration</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">✕</button>
+            <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* Progress Steps */}
@@ -103,7 +102,7 @@ export const PatientRegistrationWizard: React.FC<PatientRegistrationWizardProps>
                   ${step > index + 1 ? 'bg-green-500 text-white' : 
                     step === index + 1 ? 'bg-receptionist-500 text-white' : 'bg-gray-200 text-gray-600'}
                 `}>
-                  {step > index + 1 ? '✓' : stepInfo.icon}
+                  {step > index + 1 ? <CheckCircle className="w-5 h-5" /> : stepInfo.icon}
                 </div>
                 <div className="ml-2 min-w-0">
                   <p className="text-sm font-medium text-gray-900 truncate">{stepInfo.title}</p>
